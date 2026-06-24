@@ -1,0 +1,17 @@
+{
+  "nodeModulesDir": "auto",
+  "workspace": ["core", "plugins", "react", "examples/*"],
+  "tasks": {
+    "test": "deno test -A"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.19"
+  },
+  "unstable": [
+    "bare-node-builtins",
+    "detect-cjs",
+    "node-globals",
+    "unsafe-proto",
+    "sloppy-imports"
+  ]
+}

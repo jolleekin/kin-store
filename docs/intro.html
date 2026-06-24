@@ -1,0 +1,2125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kin Store — A state library built by arguing with itself</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #07070f;
+        --surface: #0e0e1c;
+        --border: #1c1c2e;
+        --text: #ececf0;
+        --muted: #a0a0c0;
+        --accent: #f5c518;
+        --accent-a20: #f5c51833;
+        --blue: #60a5fa;
+        --red: #f87171;
+        --green: #4ade80;
+        --purple: #c084fc;
+        --code-bg: #0b0b16;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          "Space Grotesk",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        cursor: default;
+        user-select: none;
+      }
+
+      /* ── Slideshow shell ─────────────────────────────────────────── */
+
+      .deck {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 52px 80px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        overflow: hidden;
+      }
+      .slide.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* ── Progress + counter ──────────────────────────────────────── */
+
+      #progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--accent);
+        transition: width 0.3s ease;
+        z-index: 10;
+      }
+      #counter {
+        position: fixed;
+        bottom: 18px;
+        right: 28px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #5d5d85;
+        z-index: 10;
+      }
+      #nav-hint {
+        position: fixed;
+        bottom: 18px;
+        left: 28px;
+        font-size: 12px;
+        color: #5d5d85;
+        z-index: 10;
+      }
+
+      /* ── Typography ──────────────────────────────────────────────── */
+
+      .label {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        font-size: clamp(56px, 6.5vw, 112px);
+        font-weight: 800;
+        line-height: 1.03;
+        letter-spacing: -0.035em;
+      }
+      h2 {
+        font-size: clamp(40px, 4.6vw, 72px);
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.08;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: clamp(20px, 2.2vw, 28px);
+        margin-top: 14px;
+        line-height: 1.55;
+        font-weight: 400;
+      }
+
+      .accent {
+        color: var(--accent);
+      }
+      .blue {
+        color: var(--blue);
+      }
+      .red {
+        color: var(--red);
+      }
+      .muted {
+        color: var(--muted);
+      }
+
+      /* ── Code ────────────────────────────────────────────────────── */
+
+      pre,
+      code {
+        font-family: "JetBrains Mono", "Consolas", "Monaco", monospace;
+      }
+
+      pre {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 26px;
+        font-size: clamp(11px, 1.1vw, 13.5px);
+        line-height: 1.75;
+        width: 100%;
+      }
+
+      .tk {
+        color: var(--purple);
+      }
+      .ts {
+        color: var(--green);
+      }
+      .tf {
+        color: var(--blue);
+      }
+      .tc {
+        color: #3a3a5a;
+      }
+      .tp {
+        color: #fde68a;
+      }
+
+      /* ── RTK 2-col grid blocks ───────────────────────────────────── */
+
+      .rtk-block {
+        position: relative;
+        padding-top: 14px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .rtk-block.on {
+        opacity: 1;
+      }
+      .rtk-block pre {
+        height: 100%;
+      }
+
+      .block-label {
+        position: absolute;
+        top: 14px;
+        left: 20px;
+        transform: translateY(-50%);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--bg);
+        padding: 2px 10px;
+        border: 1px solid rgba(245, 197, 24, 0.35);
+        border-radius: 20px;
+        z-index: 1;
+        white-space: nowrap;
+      }
+
+      /* ── Zustand highlight spans ─────────────────────────────────── */
+
+      .z-line {
+        display: inline;
+        transition:
+          opacity 0.3s,
+          background 0.3s;
+      }
+      .z-line.hl {
+        background-color: rgba(245, 197, 24, 0.3);
+        box-shadow: inset 3px 0 0 var(--accent);
+        padding-left: 4px;
+        margin-left: -4px;
+      }
+      .z-line.dim {
+        opacity: 0.2;
+      }
+
+      /* ── Two-column ──────────────────────────────────────────────── */
+
+      .cols {
+        display: grid;
+        gap: 40px;
+        width: 100%;
+        align-items: start;
+      }
+      .cols-half {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      /* ── Problem card ────────────────────────────────────────────── */
+
+      .problems {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .pcard {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease,
+          border-color 0.3s;
+      }
+      .pcard.on {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .pcard.current {
+        border-color: rgba(245, 197, 24, 0.4);
+      }
+      .pcard .pnum {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 5px;
+      }
+      .pcard h4 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .pcard p {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .pcard code {
+        font-size: 13px;
+        color: var(--accent);
+        background: rgba(245, 197, 24, 0.08);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+      .pcard code.bad {
+        color: var(--red);
+        background: rgba(248, 113, 113, 0.08);
+      }
+      .pcard.dim {
+        opacity: 0.28;
+        transition: opacity 0.3s;
+      }
+
+      /* Red wavy underline (TypeScript error style) */
+      .wavy-red {
+        text-decoration: underline wavy var(--red);
+        text-underline-offset: 3px;
+      }
+
+      /* Full-line highlight inside a pre block */
+      .hl-line {
+        background-color: var(--accent-a20);
+        margin: 0 -26px;
+        padding: 2px 26px;
+      }
+
+      /* ── Feature / answer list ───────────────────────────────────── */
+
+      .flist {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 32px;
+        width: 100%;
+        max-width: 860px;
+      }
+      .fitem {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: clamp(15px, 1.6vw, 18px);
+        font-weight: 500;
+        line-height: 1.4;
+        opacity: 0;
+        transform: translateY(8px);
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+      }
+      .fitem.on {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .fitem .icon {
+        font-size: 14px;
+        color: var(--blue);
+        flex-shrink: 0;
+        font-weight: 700;
+      }
+      .fkey {
+        font-weight: 700;
+        color: var(--text);
+      }
+      .fsep {
+        color: var(--border);
+        margin: 0 6px;
+      }
+      .fval {
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      /* ── Critique list (RTK) ─────────────────────────────────────── */
+
+      .clist {
+        display: flex;
+        flex-direction: column;
+        gap: 13px;
+        width: 100%;
+        max-width: 900px;
+        margin-top: 28px;
+      }
+      .citem {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px 22px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+      .citem .arrow {
+        color: var(--accent);
+        font-weight: 800;
+        font-size: 16px;
+        margin-top: 1px;
+        flex-shrink: 0;
+      }
+      .citem p {
+        font-size: clamp(14px, 1.5vw, 17px);
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .citem code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--accent);
+        background: rgba(245, 197, 24, 0.08);
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+
+      /* ── Decorative big number ───────────────────────────────────── */
+      .bignumber {
+        position: absolute;
+        right: -12px;
+        bottom: -28px;
+        font-size: 220px;
+        font-weight: 800;
+        color: var(--border);
+        line-height: 1;
+        letter-spacing: -0.05em;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Box pair (Jotai/MobX) ───────────────────────────────────── */
+      .box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 32px 36px;
+      }
+      .box .box-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 14px;
+      }
+      .box p {
+        font-size: clamp(14px, 1.5vw, 17px);
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      /* ── Answer card (green accent, mirrors .pcard) ──────────────── */
+      .acard {
+        background: var(--surface);
+        border: 1px solid rgba(74, 222, 128, 0.25);
+        border-radius: 10px;
+        padding: 16px 20px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+      }
+      .acard.on {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .acard h4 {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--green);
+        margin-bottom: 6px;
+      }
+      .acard p {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .acard code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: var(--green);
+        background: rgba(74, 222, 128, 0.08);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+
+      /* ── Kin Store code highlight spans (Part 2) ─────────────────── */
+      .ks-span {
+        display: inline;
+        transition:
+          opacity 0.3s,
+          background 0.3s;
+      }
+      .ks-span.hl {
+        box-shadow: inset 0 -2px 0 var(--accent);
+      }
+      .ks-span.dim {
+        opacity: 0.2;
+      }
+      .ks-block {
+        display: block;
+        transition: background 0.2s;
+      }
+      .ks-block.hl {
+        background-color: rgba(245, 197, 24, 0.12);
+        /* box-shadow: inset 3px 0 0 var(--accent); */
+        padding-left: 4px;
+        margin-left: -4px;
+      }
+      .ks-block.del {
+        background-color: rgba(248, 113, 113, 0.1);
+        box-shadow: inset 3px 0 0 var(--red);
+        padding-left: 4px;
+        margin-left: -4px;
+      }
+      .ks-block.add {
+        background-color: rgba(74, 222, 128, 0.08);
+        box-shadow: inset 3px 0 0 var(--green);
+        padding-left: 4px;
+        margin-left: -4px;
+      }
+
+      /* ── Three-pillars overview ──────────────────────────────────── */
+      .trio {
+        display: flex;
+        gap: 28px;
+        margin-top: 40px;
+        width: 100%;
+      }
+      .trio-card {
+        flex: 1;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 40px 36px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.35s ease,
+          transform 0.35s ease;
+      }
+      .trio-card.on {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .trio-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: clamp(18px, 1.9vw, 24px);
+        font-weight: 600;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .trio-desc {
+        font-size: clamp(14px, 1.4vw, 17px);
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .trio-desc > code {
+        color: white;
+      }
+      /* ── Thumbnail panel ─────────────────────────────────────────────── */
+
+      #thumb-btn {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(10, 10, 20, 0.7);
+        border: 1px solid #2a2a3e;
+        border-radius: 7px;
+        color: #5d5d85;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 30;
+        transition:
+          color 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+      #thumb-btn:hover,
+      #thumb-btn.open {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: rgba(245, 197, 24, 0.06);
+      }
+      #thumb-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 220px;
+        height: 100vh;
+        background: rgba(6, 6, 16, 0.96);
+        backdrop-filter: blur(16px);
+        border-left: 1px solid #181828;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 56px 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 25;
+        scrollbar-color: gray transparent;
+        scrollbar-width: thin;
+      }
+      #thumb-panel.open {
+        transform: translateX(0);
+      }
+      .thumb-item {
+        position: relative;
+        width: 196px;
+        height: 110px;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 2px solid #1e1e30;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: border-color 0.15s;
+      }
+      .thumb-item:hover {
+        border-color: rgba(245, 197, 24, 0.35);
+      }
+      .thumb-item.t-active {
+        border-color: var(--accent);
+      }
+      .thumb-viewport {
+        width: 196px;
+        height: 110px;
+        overflow: hidden;
+        position: relative;
+        background: #08080f;
+      }
+      .thumb-clone {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        transform: scale(0.153125);
+        transform-origin: top left;
+        pointer-events: none;
+      }
+      .thumb-clone * {
+        transition: none !important;
+        animation: none !important;
+      }
+      .thumb-num {
+        position: absolute;
+        bottom: 5px;
+        left: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        font-family: "JetBrains Mono", monospace;
+        color: rgba(255, 255, 255, 0.45);
+        background: rgba(0, 0, 0, 0.55);
+        padding: 1px 5px;
+        border-radius: 3px;
+        letter-spacing: 0.04em;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck" id="deck">
+      <!-- ══ SLIDE 0 — Title ════════════════════════════════════════════ -->
+      <div class="slide" data-slide="0">
+        <h1>
+          A state library built<br />by <span class="accent">arguing</span
+          ><br />with itself
+        </h1>
+        <p
+          class="sub"
+          style="
+            margin-top: 36px;
+            font-size: clamp(16px, 1.6vw, 20px);
+            letter-spacing: 0.06em;
+            color: var(--muted);
+          "
+        >
+          MAN HOANG
+        </p>
+        <div
+          class="bignumber"
+          style="font-size: 320px; right: -40px; bottom: -60px; color: #0d0d1a"
+        >
+          KS
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 1 — Part 1 section ═══════════════════════════════════ -->
+      <div class="slide" data-slide="1" style="overflow: hidden">
+        <div style="position: relative; z-index: 1">
+          <div class="label">Part 1</div>
+          <h1>The <span class="accent">irritation</span></h1>
+          <p class="sub" style="max-width: 600px">
+            Every state library made a tradeoff you could live with. Until you
+            couldn't.
+          </p>
+        </div>
+        <div class="bignumber">01</div>
+      </div>
+
+      <!-- ══ SLIDE 2 — Redux (2-col grid, step reveals) ══════════════ -->
+      <div
+        class="slide"
+        data-slide="2"
+        data-steps="5"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <!-- Header (always visible) -->
+        <div>
+          <div class="label">Part 1 — Irritation</div>
+          <h2>A <span class="accent">"simple store"</span> in Redux / RTK</h2>
+          <p class="sub" style="margin-top: 10px">
+            1 async thunk &nbsp;·&nbsp; 1 slice &nbsp;·&nbsp; 1 logging
+            middleware
+          </p>
+        </div>
+
+        <!-- 2-column grid, vertical flow: [1,2] left, [3,4] right -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            grid-auto-flow: column;
+            column-gap: 48px;
+            row-gap: 20px;
+            flex: 1;
+            min-height: 0;
+          "
+        >
+          <div class="rtk-block" id="rb1">
+            <span class="block-label">01 — Async thunk</span>
+            <pre
+              style="font-size: 11.5px; line-height: 1.7; height: 100%"
+            ><code><span class="tk">export const</span> fetchTodos = <span class="tf">createAsyncThunk</span>(
+  <span class="ts">"todos/fetch"</span>,
+  <span class="tk">async</span> () => {
+    <span class="tk">const</span> res = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
+    <span class="tk">return</span> (<span class="tk">await</span> res.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+  }
+)</code></pre>
+          </div>
+
+          <div class="rtk-block" id="rb2">
+            <span class="block-label">02 — Slice</span>
+            <pre
+              style="font-size: 11.5px; line-height: 1.7; height: 100%"
+            ><code><span class="tk">const</span> todoSlice = <span class="tf">createSlice</span>({
+  name: <span class="ts">"todos"</span>,
+  initialState: { items: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState,
+  reducers: {
+    <span class="tf">toggle</span>(state, action: PayloadAction&lt;number&gt;) {
+      <span class="tk">const</span> todo = state.items.<span class="tf">find</span>(t => t.id === action.payload)
+      <span class="tk">if</span> (todo) todo.done = !todo.done
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .<span class="tf">addCase</span>(fetchTodos.pending,   s => { s.status = <span class="ts">"loading"</span> })
+      .<span class="tf">addCase</span>(fetchTodos.fulfilled, (s, a) => { s.items = a.payload })
+      .<span class="tf">addCase</span>(fetchTodos.rejected,  s => { s.status = <span class="ts">"failed"</span> })
+  },
+})
+<span class="tk">export const</span> { toggle } = todoSlice.actions</code></pre>
+          </div>
+
+          <div class="rtk-block" id="rb3">
+            <span class="block-label">03 — Middleware</span>
+            <pre
+              style="font-size: 11.5px; line-height: 1.7; height: 100%"
+            ><code><span class="tk">const</span> logger: Middleware =
+  (api) => (next) => (action) => {
+    console.<span class="tf">log</span>(<span class="ts">"dispatch"</span>, action)
+    <span class="tk">const</span> result = <span class="tf">next</span>(action)
+    console.<span class="tf">log</span>(<span class="ts">"state"</span>, api.<span class="tf">getState</span>())
+    <span class="tk">return</span> result
+  }</code></pre>
+          </div>
+
+          <div class="rtk-block" id="rb4">
+            <span class="block-label">04 — Assemble</span>
+            <pre
+              style="font-size: 11.5px; line-height: 1.7; height: 100%"
+            ><code><span class="tk">export const</span> store = <span class="tf">configureStore</span>({
+  reducer: { todos: todoSlice.reducer },
+  middleware: (m) => <span class="tf">m</span>().<span class="tf">concat</span>(logger),
+})
+
+<span class="tk">export type</span> RootState =
+  ReturnType&lt;<span class="tk">typeof</span> store.getState&gt;
+<span class="tk">export type</span> AppDispatch =
+  <span class="tk">typeof</span> store.dispatch</code></pre>
+          </div>
+        </div>
+
+        <!-- Step-5 verdict overlay -->
+        <div
+          id="rtk-verdict"
+          style="
+            position: absolute;
+            inset: 0;
+            background: rgba(7, 7, 15, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+            z-index: 5;
+          "
+        >
+          <p
+            style="
+              font-size: clamp(20px, 2.2vw, 34px);
+              font-weight: 700;
+              line-height: 1.55;
+              color: var(--text);
+              max-width: 900px;
+            "
+          >
+            The structure becomes harder to reason about<br />than the problem
+            it is <span class="accent">solving</span>.
+          </p>
+        </div>
+      </div>
+      <!-- /slide 2 -->
+
+      <!-- ══ SLIDE 4 — Zustand (4 sub-steps) ═══════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="4"
+        data-steps="5"
+        style="justify-content: flex-start; padding-top: 44px"
+      >
+        <div class="label">Part 1 — Irritation</div>
+        <h2 style="margin-bottom: 20px">What about Zustand?</h2>
+        <div class="cols cols-half" style="align-items: start">
+          <!-- Left: code -->
+          <pre
+            id="zcode"
+          ><code><span class="tk">const</span> useStore = <span class="tf">create</span>(
+  <span id="zw-all" class="z-line"><span id="zw-mw" class="z-line"><span class="tf">devtools</span>(
+    <span class="tf">persist</span>(
+      <span class="tf">immer</span>(<span id="zw-set" class="z-line">(<span class="tp">set</span>) => </span>({</span>
+        <span id="zs-todos" class="z-line">todos: [] <span class="tk">as</span> string[],</span>
+        <span id="zs-addtodo" class="z-line">addTodo: (todo: string) => <span class="tf">set</span>((<span id="zs1">state</span>) => {
+          <span id="zs2">state</span>.todos.<span class="tf">push</span>(todo)
+        }),</span>
+      })),
+      { name: <span class="ts">'todo-storage'</span> }
+    ),
+    { name: <span class="ts">'TodoStore'</span> }
+  )</span>
+)
+
+<span class="tk">function</span> <span class="tf">TodoApp</span>() {
+  <span class="tk">const</span> todos = <span class="tf">useStore</span>(<span id="zs3">state</span> => <span id="zs4">state</span>.todos);
+  <span id="zw-action" class="z-line"><span class="tk">const</span> addTodo = <span class="tf">useStore</span>(<span id="zs5">state</span> => <span id="zs6">state</span>.addTodo);</span>
+}</code></pre>
+
+          <!-- Right: problems -->
+          <div class="problems" id="zproblems">
+            <div class="pcard" id="p1">
+              <div class="pnum">Problem 01</div>
+              <h4>No type safety</h4>
+              <p>
+                <code>state</code> inside the immer callback is
+                <code class="bad">any</code>. <code>state</code> in
+                <code>state.todos</code> and <code>state.addTodo</code> is
+                <code class="bad">unknown</code> — TypeScript can't help you
+                here.
+              </p>
+            </div>
+            <div class="pcard" id="p2">
+              <div class="pnum">Problem 02</div>
+              <h4>State and actions are indistinguishable</h4>
+              <p>
+                <code>todos</code> (data) and <code>addTodo</code> (a command)
+                live in the same object with no structural distinction. You
+                can't tell from the type alone what's state and what's behavior.
+              </p>
+            </div>
+            <div class="pcard" id="p3">
+              <div class="pnum">Problem 03</div>
+              <h4>Stable refs forced through subscriptions</h4>
+              <p>
+                <code>addTodo</code> is stable — it will never change. Yet
+                <code>useStore(state => state.addTodo)</code> registers a
+                subscription that runs on every state update, forever.
+              </p>
+            </div>
+            <div class="pcard" id="p4">
+              <div class="pnum">Problem 04</div>
+              <h4>Inside-out middleware pipeline</h4>
+              <p>
+                <code>devtools(persist(immer(...)))</code> reads left-to-right
+                but executes right-to-left. You must mentally invert the nesting
+                to understand the pipeline order.
+              </p>
+            </div>
+            <div class="pcard" id="p5">
+              <div class="pnum">Problem 05</div>
+              <h4>Unpredictable API shape</h4>
+              <p>
+                Each middleware wraps the store itself, and can even alter its
+                API. Two middlewares can make conflicting assumptions —
+                what <code>set</code> does depends on composition order.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 5 — Jotai / MobX ════════════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="5"
+        data-steps="1"
+        style="justify-content: flex-start; padding-top: 44px"
+      >
+        <div class="label">Part 1 — Irritation</div>
+        <h2 style="margin-bottom: 20px">Jotai <span class="accent">&amp;</span> MobX</h2>
+        <div class="cols cols-half" style="align-items: start">
+          <!-- Left: Jotai -->
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">JOTAI — ATOM-BASED</div>
+            <pre><code><span class="tk">import</span> { atom, useAtom, useAtomValue } <span class="tk">from</span> <span class="ts">"jotai"</span>
+
+<span class="tk">const</span> todosAtom = <span class="tf">atom</span>&lt;string[]&gt;([])
+<span class="tk">const</span> statusAtom = <span class="tf">atom</span>&lt;<span class="ts">"idle"</span> | <span class="ts">"loading"</span>&gt;(<span class="ts">"idle"</span>)
+
+<span class="tk">const</span> countAtom = <span class="tf">atom</span>((get) => <span class="tf">get</span>(todosAtom).length)
+
+<span class="tk">function</span> <span class="tf">useTodos</span>() {
+  <span class="tk">const</span> [todos, setTodos] = <span class="tf">useAtom</span>(todosAtom)
+  <span class="tk">const</span> count = <span class="tf">useAtomValue</span>(countAtom)
+  <span class="tk">return</span> {
+    todos,
+    count,
+    addTodo: (text: string) =>
+      <span class="tf">setTodos</span>((prev) => [...prev, text]),
+  }
+}</code></pre>
+          </div>
+          <!-- Right: MobX -->
+          <div>
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">MOBX — OBSERVABLE CLASS</div>
+            <pre><code><span class="tk">import</span> { makeAutoObservable } <span class="tk">from</span> <span class="ts">"mobx"</span>
+<span class="tk">import</span> { observer } <span class="tk">from</span> <span class="ts">"mobx-react-lite"</span>
+
+<span class="tk">class</span> TodoStore {
+  todos: string[] = []
+  status = <span class="ts">"idle"</span>
+
+  <span class="tf">constructor</span>() { <span class="tf">makeAutoObservable</span>(<span class="tk">this</span>) }
+
+  <span class="tk">get</span> <span class="tf">count</span>() { <span class="tk">return this</span>.todos.length }
+
+  <span class="tf">addTodo</span>(text: string) {
+    <span class="tk">this</span>.todos.<span class="tf">push</span>(text)
+  }
+}
+
+<span class="tk">const</span> store = <span class="tk">new</span> <span class="tf">TodoStore</span>()</code></pre>
+          </div>
+        </div>
+
+        <!-- Tagline overlay -->
+        <div
+          id="jm-tagline"
+          style="position: absolute; inset: 0; background: rgba(7,7,15,0.9); display: flex; align-items: center; justify-content: center; text-align: center; padding: 80px; opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 5"
+        >
+          <p style="font-size: clamp(20px,2.2vw,34px); font-weight: 700; line-height: 1.55; color: var(--text); max-width: 900px">
+            Both do their thing well —<br />but built on <span class="accent">hidden magic</span>.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 6 — The question ═════════════════════════════════════ -->
+      <div class="slide" data-slide="6" data-steps="5">
+        <div class="label">The question</div>
+        <h1>Can we do <span class="accent">better?</span></h1>
+        <div class="flist">
+          <div class="fitem" id="fi1">
+            <span class="icon">✦</span
+            ><span
+              ><span class="fkey">Structure</span><span class="fsep">—</span
+              ><span class="fval">without the ceremony</span></span
+            >
+          </div>
+          <div class="fitem" id="fi2">
+            <span class="icon">✦</span
+            ><span
+              ><span class="fkey">Zero boilerplate</span
+              ><span class="fsep">—</span
+              ><span class="fval">or as close as possible</span></span
+            >
+          </div>
+          <div class="fitem" id="fi3">
+            <span class="icon">✦</span
+            ><span
+              ><span class="fkey">100% type-safe</span
+              ><span class="fsep">—</span
+              ><span class="fval"
+                >by default, not as an afterthought</span
+              ></span
+            >
+          </div>
+          <div class="fitem" id="fi4">
+            <span class="icon">✦</span
+            ><span
+              ><span class="fkey">No hidden cost</span
+              ><span class="fsep">—</span
+              ><span class="fval">pay only for what you use</span></span
+            >
+          </div>
+          <div class="fitem" id="fi5">
+            <span class="icon">✦</span
+            ><span
+              ><span class="fkey">Opt-in complexity</span
+              ><span class="fsep">—</span
+              ><span class="fval"
+                >that composes linearly, not exponentially</span
+              ></span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 7 — Part 2 section ════════════════════════════════════ -->
+      <div class="slide" data-slide="7" style="overflow: hidden">
+        <div style="position: relative; z-index: 1">
+          <div class="label">Part 2</div>
+          <h1>Kin <span class="accent">Store</span></h1>
+          <p class="sub" style="max-width: 540px">
+            Start simple. Add only what you need.
+          </p>
+        </div>
+        <div class="bignumber">02</div>
+      </div>
+
+      <!-- ══ SLIDE 8 — Three pillars ══════════════════════════════════════ -->
+      <div class="slide" data-slide="8" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+        <div class="label">Part 2 — Kin Store</div>
+        <h2>Three primitives.</h2>
+        <p class="sub" style="margin-top: 10px; max-width: 600px">
+          Each composable. None mandatory.
+        </p>
+        <div class="trio">
+          <div class="trio-card" id="t1">
+            <div class="trio-name">createStore</div>
+            <div class="trio-desc">
+              The irreducible floor. <code>getState</code> ·
+              <code>setState</code> · <code>subscribe</code>. Nothing else.
+            </div>
+          </div>
+          <div class="trio-card" id="t2">
+            <div class="trio-name">withPlugins</div>
+            <div class="trio-desc">
+              Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins.
+            </div>
+          </div>
+          <div class="trio-card" id="t3">
+            <div class="trio-name">derive</div>
+            <div class="trio-desc">
+              Lazy, dependency-tracked, read-only views composed from one or
+              more stores.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 9 — createStore ══════════════════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="9"
+        data-steps="5"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <div>
+          <div class="label">Part 2 — Kin Store — First primitive</div>
+          <h2><span class="accent">createStore</span></h2>
+          <p class="sub" style="margin-top: 10px">
+            A value. 3 methods. Nothing else.
+          </p>
+        </div>
+        <div
+          id="s9-body"
+          style="
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+            min-height: 0;
+            align-items: start;
+          "
+        >
+          <pre
+            style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
+          ><code><span id="s9-create" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">type</span> Todo = string
+<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> }
+
+<span class="tk">const</span> todoStore = <span class="tf">createStore</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)</span><span id="s9-fns" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">function</span> <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
+  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, todos: [...state.todos, text] }))
+}
+
+<span class="tk">async</span> <span class="tk">function</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
+  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))
+  <span class="tk">try</span> {
+    <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
+    <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+    todoStore.<span class="tf ks-span s9-set">setState</span>({ todos, status: <span class="ts">"idle"</span> })
+  } <span class="tk">catch</span> {
+    todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))
+  }
+}</span><span id="s9-trigger" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tf">addTodo</span>(<span class="ts">'Hello world'</span>)</span><span id="s9-getline" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s9-get">getState</span>() <span class="tc">// { todos: ["Hello world"], status: "idle" }</span></span><span id="s9-subline" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s9-sub">subscribe</span>((getState, prevState) => {
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>())
+})</span></code></pre>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              padding-top: 8px;
+            "
+          >
+            <div class="acard" id="sc1">
+              <h4>createStore</h4>
+              <p>
+                Holds any value. Returns three methods:
+                <code>getState</code> · <code>setState</code> ·
+                <code>subscribe</code>. Nothing else.
+              </p>
+            </div>
+            <div class="acard" id="sc2">
+              <h4>setState</h4>
+              <p>
+                Accepts a new value or an updater
+                <code>(state) =&gt; nextState</code>. Notifies all subscribers.
+              </p>
+            </div>
+            <div class="acard" id="sc3">
+              <h4>Calling your functions</h4>
+              <p>
+                Logic lives in plain functions. No dispatch, no action types.
+              </p>
+            </div>
+            <div class="acard" id="sc4">
+              <h4>getState</h4>
+              <p>
+                Reads the current state synchronously. Always the latest value.
+              </p>
+            </div>
+            <div class="acard" id="sc5">
+              <h4>subscribe</h4>
+              <p>
+                Fires on every change. Receives a <code>getState</code> getter
+                and the previous state.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 10 — Step 2: withPlugins + methods ═══════════════════════ -->
+      <div
+        class="slide"
+        data-slide="10"
+        data-steps="4"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <div>
+          <div class="label">Part 2 — Kin Store — Second primitive</div>
+          <h2><span class="accent">withPlugins</span></h2>
+          <p class="sub" style="margin-top: 10px">
+            <span class="accent">Step 1</span> — Move logic inside the store. Still plain setState.
+          </p>
+        </div>
+        <div
+          id="s10-body"
+          style="
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+            min-height: 0;
+            align-items: start;
+          "
+        >
+          <pre
+            style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
+          ><code><span id="s10-create" class="ks-block" style="display:none"><span class="tk">type</span> Todo = string
+<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> }
+
+<span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)</span><span id="s10-methods" class="ks-block" style="display:none;margin-bottom:1.65em">  .<span class="tf">use</span>({
+    methods: (store) => ({
+      <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
+        store.<span class="tf ks-span s10-set">setState</span>((state) => ({
+          ...state,
+          todos: [...state.todos, text],
+        }))
+      },
+
+      <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
+        store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))
+        <span class="tk">try</span> {
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+          store.<span class="tf ks-span s10-set">setState</span>({ todos, status: <span class="ts">"idle"</span> })
+        } <span class="tk">catch</span> {
+          store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))
+        }
+      },
+    }),
+  })</span><span id="s10-call" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s10-add">addTodo</span>(<span class="ts">"Hello world"</span>)</span><span id="s10-react" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s10-get">getState</span>()
+
+todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, prevState) => {
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>())
+})</span></code></pre>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              padding-top: 8px;
+            "
+          >
+            <div class="acard" id="wc1">
+              <h4>withPlugins</h4>
+              <p>
+                Upgrades/creates a store with plugin support. Each
+                <code>.use()</code>
+                adds capability — no nesting, no wrapping.
+              </p>
+            </div>
+            <div class="acard" id="wc2">
+              <h4>methods</h4>
+              <p>
+                Factory <code>(store) =&gt; ({...})</code> that returns your
+                logic as methods. Methods have full access to the store API.
+              </p>
+            </div>
+            <div class="acard" id="wc3">
+              <h4>Calling methods</h4>
+              <p>
+                Methods become properties of the store. No dispatch, no action
+                types.
+              </p>
+            </div>
+            <div class="acard" id="wc4">
+              <h4>getState · subscribe</h4>
+              <p>
+                Identical to createStore — <code>getState</code> reads
+                synchronously, <code>subscribe</code> fires on every change.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 11 — Add plugins ════════════════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="11"
+        data-steps="3"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <div>
+          <div class="label">Part 2 - Kin Store - Second primitive</div>
+          <h2><span class="accent">withPlugins</span></h2>
+          <p class="sub" style="margin-top: 10px">
+            <span class="accent">Step 2</span> — Add features. One <span class="accent">.use( )</span> at a time.
+          </p>
+        </div>
+        <div
+          class="cols cols-half"
+          style="flex: 1; min-height: 0; align-items: start"
+        >
+          <pre><code><span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)<span id="p11-persist" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"persist"</span>, <span class="tf">persist</span>({ key: <span class="ts">"todos"</span> }))</span><span id="p11-history" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"history"</span>, <span class="tf">history</span>())</span>
+  .<span class="tf">use</span>({
+    methods: (store) => ({
+      <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
+        store.<span class="tf">setState</span>((s) => ({
+          ...s,
+          todos: [...s.todos, text],
+        }))
+      },
+    }),
+  })<span id="p11-usage" class="ks-block" style="display:none;margin-top:1.65em">todoStore.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)
+todoStore.persist.<span class="tf">hydrate</span>()
+todoStore.history.<span class="tf">undo</span>()</span></code></pre>
+          <div class="problems" style="gap: 14px">
+            <div class="acard" id="pa1">
+              <h4>persist</h4>
+              <p>
+                Saves to localStorage on every change. Hydrates on startup.
+                Custom storage, partial slices.
+              </p>
+            </div>
+            <div class="acard" id="pa2">
+              <h4>history</h4>
+              <p>
+                <code>history.undo()</code> · <code>history.redo()</code> ·
+                <code>history.reset()</code>. Works with any state change.
+              </p>
+            </div>
+            <div class="acard" id="pa3">
+              <h4>Namespaced calls</h4>
+              <p>
+                Each plugin lives under its key. No conflicts, no surprises.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 12 — setState → reducers ═══════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="12"
+        data-steps="1"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <div>
+          <div class="label">Part 2 - Kin Store - Second primitive</div>
+          <h2><span class="accent">withPlugins</span></h2>
+          <p class="sub" style="margin-top: 10px">
+            <span class="accent">Step 3</span> — Extract <span class="accent">setState</span> into
+            <span class="accent">reducers</span>. Pure functions. Full pipeline.
+          </p>
+        </div>
+        <div
+          class="cols cols-half"
+          style="flex: 1; min-height: 0; align-items: start"
+        >
+          <div>
+            <div
+              style="
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                color: var(--muted);
+                margin-bottom: 10px;
+              "
+            >
+              BEFORE — <span class="accent">setState</span>
+            </div>
+            <pre
+              style="font-size: clamp(10px, 1vw, 12px); line-height: 1.7"
+            ><code><span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)
+  .<span class="tf">use</span>(<span class="ts">"persist"</span>, <span class="tf">persist</span>({ key: <span class="ts">"todos"</span> }))
+  .<span class="tf">use</span>(<span class="ts">"history"</span>, <span class="tf">history</span>())
+  .<span class="tf">use</span>({
+    methods: (store) => ({
+      <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
+<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({
+          ...state,
+          todos: [...state.todos, text],
+        }))</span>      },
+
+
+
+
+      <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
+<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))</span>        <span class="tk">try</span> {
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+<span class="ks-block d12-set">          store.<span class="tf">setState</span>({ todos, status: <span class="ts">"idle"</span> })</span>        } <span class="tk">catch</span> {
+<span class="ks-block d12-set">          store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))</span>        }
+      },
+    }),
+  })
+
+<span id="d12-usage-l" class="ks-block">todoStore.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)</span></code></pre>
+          </div>
+          <div>
+            <div
+              style="
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                color: var(--muted);
+                margin-bottom: 10px;
+              "
+            >
+              AFTER — REDUCERS + <span class="accent">dispatch.*</span>
+            </div>
+            <pre
+              style="font-size: clamp(10px, 1vw, 12px); line-height: 1.7"
+            ><code><span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)
+  .<span class="tf">use</span>(<span class="ts">"persist"</span>, <span class="tf">persist</span>({ key: <span class="ts">"todos"</span> }))
+  .<span class="tf">use</span>(<span class="ts">"history"</span>, <span class="tf">history</span>())
+  .<span class="tf">use</span>({
+<span id="d12-reducers" class="ks-block">    reducers: {
+      addTodo: (state, text: string) => ({
+        ...state,
+        todos: [...state.todos, text],
+      }),
+      fetchStart: (state) => ({ ...state, status: <span class="ts">"loading"</span> }),
+      fetchFulfulled: (_state, todos: Todo[]) => ({ todos, status: <span class="ts">"idle"</span> }),
+      fetchRejected: (state) => ({ ...state, status: <span class="ts">"failed"</span> }),
+    },</span>
+    methods: (store) => ({
+      <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
+<span class="ks-block d12-disp">        store.dispatch.<span class="tf">fetchStart</span>()</span>        <span class="tk">try</span> {
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchFulfulled</span>(todos)</span>        } <span class="tk">catch</span> {
+<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchRejected</span>()</span>        }
+      },
+    }),
+  })
+
+<span id="d12-usage-r" class="ks-block">todoStore.dispatch.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 13 — Step 4: derive ════════════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="13"
+        data-steps="6"
+        style="justify-content: flex-start; padding-top: 44px; gap: 16px"
+      >
+        <div>
+          <div class="label">Part 2 - Kin Store - Third primitive</div>
+          <h2><span class="accent">derive</span> — reactive composition</h2>
+          <p class="sub" style="margin-top: 10px">
+            Read from any store. The derived store tracks its sources.
+          </p>
+        </div>
+        <div
+          class="cols cols-half"
+          style="flex: 1; min-height: 0; align-items: start"
+        >
+          <pre
+            id="s4-left"
+          ><code><span id="s4-stores" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">const</span> userStore = <span class="tf">createStore</span>({ name: <span class="ts">"Ada"</span>, role: <span class="ts">"admin"</span> })
+<span class="tk">const</span> cartStore = <span class="tf">createStore</span>({ items: [] <span class="tk">as</span> string[], total: <span class="tp">0</span> })</span><span id="s4-summary" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Reads from both. Recomputes only when either changes.</span>
+<span class="tk">const</span> summary = <span class="tf">derive</span>((get) => ({
+  greeting: <span class="ts">`Hello, ${</span><span class="tf">get</span>(userStore).name<span class="ts">}`</span>,
+  itemCount: <span class="tf">get</span>(cartStore).items.length,
+  total: <span class="tf">get</span>(cartStore).total,
+}))</span><span id="s4-cond" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Conditional — only subscribes to adminStore when role === "admin"</span>
+<span class="tk">const</span> view = <span class="tf">derive</span>((get) =>
+  <span class="tf">get</span>(userStore).role === <span class="ts">"admin"</span>
+    ? <span class="tf">get</span>(adminStore).dashboard
+    : <span class="tf">get</span>(publicStore).feed
+)</span><span id="s4-destroy" class="ks-block" style="display:none">view.<span class="tf">destroy</span>() <span class="tc">// unsubscribes from all sources</span></span></code></pre>
+
+          <div>
+            <div class="flist" style="margin-top: 0">
+              <div class="fitem" id="d1">
+                <span class="icon">✦</span
+                ><span
+                  ><span class="fkey">Auto-tracked</span
+                  ><span class="fsep">—</span
+                  ><span class="fval"
+                    >get() registers the dependency. No selector arrays.</span
+                  ></span
+                >
+              </div>
+              <div class="fitem" id="d2">
+                <span class="icon">✦</span
+                ><span
+                  ><span class="fkey">Lazy</span><span class="fsep">—</span
+                  ><span class="fval"
+                    >cold when no subscribers. Zero cost until something
+                    listens.</span
+                  ></span
+                >
+              </div>
+              <div class="fitem" id="d3">
+                <span class="icon">✦</span
+                ><span
+                  ><span class="fkey">Conditional</span
+                  ><span class="fsep">—</span
+                  ><span class="fval"
+                    >branches only subscribe to stores they actually read.</span
+                  ></span
+                >
+              </div>
+              <div class="fitem" id="d4">
+                <span class="icon">✦</span
+                ><span
+                  ><span class="fkey">Clean up when done</span
+                  ><span class="fsep">—</span
+                  ><span class="fval"
+                    ><code>destroy()</code> unsubscribes from all sources. No
+                    leaks.</span
+                  ></span
+                >
+              </div>
+            </div>
+            <div
+              id="d-note"
+              style="
+                margin-top: 20px;
+                font-size: clamp(15px, 1.6vw, 18px);
+                color: var(--muted);
+                font-style: italic;
+                opacity: 0;
+                transform: translateY(6px);
+                transition:
+                  opacity 0.3s,
+                  transform 0.3s;
+              "
+            >
+              No new paradigm. Just stores that talk to each other.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 14 — Summary ══════════════════════════════════════════ -->
+      <div
+        class="slide"
+        data-slide="14"
+        data-steps="1"
+        style="justify-content: center; gap: 36px"
+      >
+        <div style="text-align: center">
+          <div class="label">Summary</div>
+          <h2>One library. <span class="accent">Every style.</span></h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%">
+          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">SIMPLE</div>
+            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">createStore</div>
+            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">244 B · gzip</div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">A value and three methods. Plain functions for logic.</div>
+          </div>
+          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">ZUSTAND-STYLE</div>
+            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">withPlugins<span style="color: var(--muted); font-weight: 400"> + methods</span></div>
+            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">1.07 KB · gzip</div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Methods live in the store. Call them directly on the store object.</div>
+          </div>
+          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">REDUX-STYLE</div>
+            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">withPlugins<span style="color: var(--muted); font-weight: 400"> + reducers</span></div>
+            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">1.07 KB · gzip</div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Reducers for state changes. Methods for the flow. Middleware to intercept.</div>
+          </div>
+          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
+            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">JOTAI-STYLE</div>
+            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">derive</div>
+            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">465 B · gzip</div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Reactive composition. With auto dependency tracking.</div>
+          </div>
+        </div>
+        
+        <div
+        id="sum-props"
+        style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; opacity: 0; transition: opacity 0.4s"
+        >
+          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Tiny footprint</div>
+          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">100% type-safe</div>
+          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">No hidden cost</div>
+          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Opt-in complexity</div>
+          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Minimal boilerplate</div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 15 — Thank you ══════════════════════════════════════════ -->
+      <div class="slide" data-slide="15">
+        <div class="label">Thank you</div>
+        <h1>
+          Kin <span class="accent">Store</span>
+        </h1>
+        <p class="sub" style="margin-top: 18px">
+          A state library built by arguing with itself.
+        </p>
+        <div
+          style="
+            margin-top: 52px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 16px">
+            <span
+              style="
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--muted);
+                width: 88px;
+              "
+              >GitHub</span
+            >
+            <span
+              style="
+                font-size: clamp(18px, 2vw, 24px);
+                font-weight: 600;
+                color: var(--text);
+              "
+              >jolleekin</span
+            >
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px">
+            <span
+              style="
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--muted);
+                width: 88px;
+              "
+              >X</span
+            >
+            <span
+              style="
+                font-size: clamp(18px, 2vw, 24px);
+                font-weight: 600;
+                color: var(--text);
+              "
+              >@jolleekin</span
+            >
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px">
+            <span
+              style="
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--muted);
+                width: 88px;
+              "
+              >LinkedIn</span
+            >
+            <span
+              style="
+                font-size: clamp(18px, 2vw, 24px);
+                font-weight: 600;
+                color: var(--text);
+              "
+              >linkedin.com/in/man-hoang</span
+            >
+          </div>
+        </div>
+        <div
+          class="bignumber"
+          style="font-size: clamp(160px, 18vw, 280px); opacity: 0.04"
+        >
+          ✦
+        </div>
+      </div>
+    </div>
+    <!-- /deck -->
+
+    <div id="progress"></div>
+    <div id="counter"></div>
+    <div id="nav-hint">
+      ← → to navigate &nbsp;·&nbsp; space / click to advance
+    </div>
+
+    <button id="thumb-btn" title="Slide overview (T)">⊞</button>
+    <div id="thumb-panel" class="open"></div>
+
+    <script>
+      const slides = [...document.querySelectorAll(".slide")];
+      const total = slides.length;
+      const stepMap = {};
+      slides.forEach((s) => {
+        stepMap[+s.dataset.slide] = 0;
+      });
+
+      let cur = 0;
+
+      // ── RTK step logic ──────────────────────────────────────────────────
+      const RTK_SLIDE = 2;
+      const JM_SLIDE = 5;
+      const rtkBlocks = [1, 2, 3, 4].map((i) =>
+        document.getElementById("rb" + i),
+      );
+
+      function applyRtkStep(step) {
+        rtkBlocks.forEach((b, i) => {
+          if (!b) return;
+          b.classList.toggle("on", i < step);
+        });
+        const verdict = document.getElementById("rtk-verdict");
+        verdict.style.opacity = step >= 5 ? "1" : "0";
+        verdict.style.pointerEvents = step >= 5 ? "all" : "none";
+      }
+
+      // ── Jotai / MobX overlay ────────────────────────────────────────────
+      function applyJMStep(step) {
+        const el = document.getElementById("jm-tagline");
+        el.style.opacity = step >= 1 ? "1" : "0";
+        el.style.pointerEvents = step >= 1 ? "all" : "none";
+      }
+
+      // ── Zustand step logic ──────────────────────────────────────────────
+      const Z_SLIDE = 4;
+      // zw-all is handled separately — it wraps the others, so it must not be dimmed
+      // alongside its children (parent opacity overrides child highlight)
+      const zCodeIds = ["zw-mw", "zw-set", "zs-todos", "zs-addtodo"];
+      const zStateIds = ["zs1", "zs2", "zs3", "zs4", "zs5", "zs6"];
+      const zWavyIds = ["zs1", "zs4", "zs6"]; // 1st, 4th, 6th occurrences of "state"
+      const pCards = ["p1", "p2", "p3", "p4", "p5"].map((id) =>
+        document.getElementById(id),
+      );
+
+      // codeHl: IDs to highlight; dimCode: whether non-highlighted codeIds get dimmed
+      const zSteps = [
+        { wavy: true, lineHl: false, codeHl: [], dimCode: false, cards: 1 },
+        {
+          wavy: false,
+          lineHl: false,
+          codeHl: ["zs-todos", "zs-addtodo"],
+          dimCode: false,
+          cards: 2,
+        },
+        { wavy: false, lineHl: true, codeHl: [], dimCode: false, cards: 3 },
+        {
+          wavy: false,
+          lineHl: false,
+          codeHl: ["zw-mw"],
+          dimCode: false,
+          cards: 4,
+        },
+        {
+          wavy: false,
+          lineHl: false,
+          codeHl: ["zw-all"],
+          dimCode: false,
+          cards: 5,
+        },
+      ];
+
+      function applyZustandStep(step) {
+        const cfg = step > 0 ? zSteps[step - 1] : null;
+
+        // Reset all code decorations
+        zStateIds.forEach((id) =>
+          document.getElementById(id)?.classList.remove("wavy-red"),
+        );
+        zCodeIds.forEach((id) =>
+          document.getElementById(id)?.classList.remove("hl", "dim"),
+        );
+        document.getElementById("zw-all")?.classList.remove("hl", "dim");
+        document.getElementById("zw-action")?.classList.remove("hl-line");
+
+        if (cfg) {
+          if (cfg.wavy)
+            zWavyIds.forEach((id) =>
+              document.getElementById(id)?.classList.add("wavy-red"),
+            );
+          if (cfg.lineHl)
+            document.getElementById("zw-action")?.classList.add("hl-line");
+
+          // Handle zw-all separately (never dimmed — it contains other highlighted spans)
+          if (cfg.codeHl.includes("zw-all"))
+            document.getElementById("zw-all")?.classList.add("hl");
+
+          // Highlight/dim individual code spans (never adds empty string to classList)
+          if (cfg.codeHl.length)
+            zCodeIds.forEach((id) => {
+              const el = document.getElementById(id);
+              if (!el) return;
+              if (cfg.codeHl.includes(id)) el.classList.add("hl");
+              else if (cfg.dimCode) el.classList.add("dim");
+            });
+        }
+
+        // Cards: current one is bright, previous ones are dimmed
+        pCards.forEach((c, i) => {
+          c.classList.remove("on", "current", "dim");
+          if (cfg && i < cfg.cards) {
+            c.classList.add("on");
+            c.classList.add(i === cfg.cards - 1 ? "current" : "dim");
+          }
+        });
+      }
+
+      // ── Navigation ──────────────────────────────────────────────────────
+      function goTo(idx) {
+        slides[cur].classList.remove("active");
+        cur = Math.max(0, Math.min(total - 1, idx));
+        slides[cur].classList.add("active");
+        updateUI();
+        syncThumbActive();
+      }
+
+      // ── Question slide step logic ────────────────────────────────────────
+      const Q_SLIDE = 6;
+      const qItems = [1, 2, 3, 4, 5].map((i) =>
+        document.getElementById("fi" + i),
+      );
+
+      function applyQuestionStep(step) {
+        qItems.forEach((el, i) => el?.classList.toggle("on", i < step));
+      }
+
+      const TRIO_SLIDE = 8;
+      const S1_SLIDE = 9;
+      const WP_SLIDE = 10;
+      const PLUG_SLIDE = 11;
+      const DIFF_SLIDE = 12;
+      const S4_SLIDE = 13;
+      const SUM_SLIDE = 14;
+
+      // ── Trio (three primitives overview) ────────────────────────────────
+      const trioCards = ["t1", "t2", "t3"].map((id) =>
+        document.getElementById(id),
+      );
+
+      function applyTrioStep(step) {
+        trioCards.forEach((c, i) => c?.classList.toggle("on", i < step));
+      }
+
+      // ── Step 1 (createStore) ────────────────────────────────────────────
+      const s9Cards = ["sc1", "sc2", "sc3", "sc4", "sc5"].map((id) =>
+        document.getElementById(id),
+      );
+
+      function applyS1Step(step) {
+        document.getElementById("s9-body").style.display =
+          step >= 1 ? "grid" : "none";
+
+        // progressive reveal — cumulative
+        document.getElementById("s9-create").style.display =
+          step >= 1 ? "" : "none";
+        document.getElementById("s9-fns").style.display =
+          step >= 2 ? "" : "none";
+        document.getElementById("s9-trigger").style.display =
+          step >= 3 ? "" : "none";
+        document.getElementById("s9-getline").style.display =
+          step >= 4 ? "" : "none";
+        document.getElementById("s9-subline").style.display =
+          step >= 5 ? "" : "none";
+
+        // block highlights — only the active step's block
+        document
+          .getElementById("s9-create")
+          ?.classList.toggle("hl", step === 1);
+        document.getElementById("s9-fns")?.classList.toggle("hl", step === 2);
+        document
+          .getElementById("s9-trigger")
+          ?.classList.toggle("hl", step === 3);
+        document
+          .getElementById("s9-getline")
+          ?.classList.toggle("hl", step === 4);
+        document
+          .getElementById("s9-subline")
+          ?.classList.toggle("hl", step >= 5);
+
+        // inline underlines on method names
+        document
+          .querySelectorAll(".s9-set")
+          .forEach((el) => el.classList.toggle("hl", step === 2));
+        document.getElementById("s9-get")?.classList.toggle("hl", step === 4);
+        document.getElementById("s9-sub")?.classList.toggle("hl", step >= 5);
+
+        // explanation cards accumulate
+        s9Cards.forEach((c, i) => c?.classList.toggle("on", i < step));
+      }
+
+      // ── Step 2 (withPlugins + methods) ──────────────────────────────────
+      const s10Cards = ["wc1", "wc2", "wc3", "wc4"].map((id) =>
+        document.getElementById(id),
+      );
+
+      function applyWPStep(step) {
+        document.getElementById("s10-body").style.display =
+          step >= 1 ? "grid" : "none";
+
+        document.getElementById("s10-create").style.display =
+          step >= 1 ? "" : "none";
+        document.getElementById("s10-methods").style.display =
+          step >= 2 ? "" : "none";
+        document.getElementById("s10-call").style.display =
+          step >= 3 ? "" : "none";
+        document.getElementById("s10-react").style.display =
+          step >= 4 ? "" : "none";
+
+        document
+          .getElementById("s10-create")
+          ?.classList.toggle("hl", step === 1);
+        document
+          .getElementById("s10-methods")
+          ?.classList.toggle("hl", step === 2);
+        document.getElementById("s10-call")?.classList.toggle("hl", step === 3);
+        document.getElementById("s10-react")?.classList.toggle("hl", step >= 4);
+
+        document
+          .querySelectorAll(".s10-set")
+          .forEach((el) => el.classList.toggle("hl", step === 2));
+        document.getElementById("s10-add")?.classList.toggle("hl", step === 3);
+        document.getElementById("s10-get")?.classList.toggle("hl", step >= 4);
+        document
+          .getElementById("s10-sub-fn")
+          ?.classList.toggle("hl", step >= 4);
+
+        s10Cards.forEach((c, i) => c?.classList.toggle("on", i < step));
+      }
+
+      // ── Plugins (persist + history) ─────────────────────────────────────
+      const plugCards = ["pa1", "pa2", "pa3"].map((id) => document.getElementById(id));
+
+      function applyPlugStep(step) {
+        document.getElementById("p11-persist").style.display = step >= 1 ? "" : "none";
+        document.getElementById("p11-history").style.display = step >= 2 ? "" : "none";
+        document.getElementById("p11-usage").style.display = step >= 3 ? "" : "none";
+        document.getElementById("p11-persist")?.classList.toggle("hl", step === 1);
+        document.getElementById("p11-history")?.classList.toggle("hl", step === 2);
+        document.getElementById("p11-usage")?.classList.toggle("hl", step >= 3);
+        plugCards.forEach((c, i) => c?.classList.toggle("on", i < step));
+      }
+
+      // ── setState → reducers (before/after) ──────────────────────────────
+      function applyDiffStep(step) {
+        document
+          .querySelectorAll(".d12-set")
+          .forEach((el) => el.classList.toggle("del", step >= 1));
+        document
+          .getElementById("d12-usage-l")
+          ?.classList.toggle("del", step >= 1);
+        document
+          .getElementById("d12-reducers")
+          ?.classList.toggle("add", step >= 1);
+        document
+          .querySelectorAll(".d12-disp")
+          .forEach((el) => el.classList.toggle("add", step >= 1));
+        document
+          .getElementById("d12-usage-r")
+          ?.classList.toggle("add", step >= 1);
+      }
+
+      // ── Step 4 (derive) ─────────────────────────────────────────────────
+      const dItems = ["d1", "d2", "d3", "d4"].map((id) =>
+        document.getElementById(id),
+      );
+
+      function applyS4Step(step) {
+        const s4Left = document.getElementById("s4-left");
+        const s4Stores = document.getElementById("s4-stores");
+        const s4Summary = document.getElementById("s4-summary");
+        const s4Cond = document.getElementById("s4-cond");
+        const s4Destroy = document.getElementById("s4-destroy");
+
+        // code reveals: steps 1, 2, 4, 5 (step 3 = card only)
+        s4Left.style.display = step >= 1 ? "" : "none";
+        s4Stores.style.display = step >= 1 ? "" : "none";
+        s4Summary.style.display = step >= 2 ? "" : "none";
+        s4Cond.style.display = step >= 4 ? "" : "none";
+        s4Destroy.style.display = step >= 5 ? "" : "none";
+
+        s4Stores.classList.toggle("hl", step === 1);
+        s4Summary.classList.toggle("hl", step === 2);
+        s4Cond.classList.toggle("hl", step === 4);
+        s4Destroy.classList.toggle("hl", step === 5);
+
+        // one card per step (steps 2–5)
+        dItems[0]?.classList.toggle("on", step >= 2);
+        dItems[1]?.classList.toggle("on", step >= 3);
+        dItems[2]?.classList.toggle("on", step >= 4);
+        dItems[3]?.classList.toggle("on", step >= 5);
+
+        const note = document.getElementById("d-note");
+        note.style.opacity = step >= 6 ? "1" : "0";
+        note.style.transform = step >= 6 ? "translateY(0)" : "translateY(6px)";
+      }
+
+      // ── Summary ─────────────────────────────────────────────────────────
+      function applySumStep(step) {
+        document.getElementById("sum-props").style.opacity = step >= 1 ? "1" : "0";
+      }
+
+      function advance() {
+        const s = slides[cur];
+        const idx = +s.dataset.slide;
+        const max = +(s.dataset.steps || 0);
+        if (max > 0 && stepMap[idx] < max) {
+          stepMap[idx]++;
+          if (idx === RTK_SLIDE) applyRtkStep(stepMap[idx]);
+          if (idx === JM_SLIDE) applyJMStep(stepMap[idx]);
+          if (idx === Z_SLIDE) applyZustandStep(stepMap[idx]);
+          if (idx === Q_SLIDE) applyQuestionStep(stepMap[idx]);
+          if (idx === S1_SLIDE) applyS1Step(stepMap[idx]);
+          if (idx === WP_SLIDE) applyWPStep(stepMap[idx]);
+          if (idx === TRIO_SLIDE) applyTrioStep(stepMap[idx]);
+          if (idx === PLUG_SLIDE) applyPlugStep(stepMap[idx]);
+          if (idx === DIFF_SLIDE) applyDiffStep(stepMap[idx]);
+          if (idx === S4_SLIDE) applyS4Step(stepMap[idx]);
+          if (idx === SUM_SLIDE) applySumStep(stepMap[idx]);
+        } else if (cur < total - 1) {
+          goTo(cur + 1);
+        }
+      }
+
+      function retreat() {
+        const s = slides[cur];
+        const idx = +s.dataset.slide;
+        const max = +(s.dataset.steps || 0);
+        if (max > 0 && stepMap[idx] > 0) {
+          stepMap[idx]--;
+          if (idx === RTK_SLIDE) applyRtkStep(stepMap[idx]);
+          if (idx === JM_SLIDE) applyJMStep(stepMap[idx]);
+          if (idx === Z_SLIDE) applyZustandStep(stepMap[idx]);
+          if (idx === Q_SLIDE) applyQuestionStep(stepMap[idx]);
+          if (idx === S1_SLIDE) applyS1Step(stepMap[idx]);
+          if (idx === WP_SLIDE) applyWPStep(stepMap[idx]);
+          if (idx === TRIO_SLIDE) applyTrioStep(stepMap[idx]);
+          if (idx === PLUG_SLIDE) applyPlugStep(stepMap[idx]);
+          if (idx === DIFF_SLIDE) applyDiffStep(stepMap[idx]);
+          if (idx === S4_SLIDE) applyS4Step(stepMap[idx]);
+          if (idx === SUM_SLIDE) applySumStep(stepMap[idx]);
+        } else if (cur > 0) {
+          goTo(cur - 1);
+        }
+      }
+
+      function updateUI() {
+        document.getElementById("progress").style.width =
+          `${(cur / (total - 1)) * 100}%`;
+        document.getElementById("counter").textContent =
+          `${cur + 1} / ${total}`;
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (["ArrowRight", "ArrowDown", " "].includes(e.key)) {
+          e.preventDefault();
+          advance();
+        }
+        if (["ArrowLeft", "ArrowUp"].includes(e.key)) {
+          e.preventDefault();
+          retreat();
+        }
+        if (e.key === "t" || e.key === "T") toggleThumbs();
+      });
+      document.getElementById("deck").addEventListener("click", advance);
+
+      // ── Thumbnail panel ──────────────────────────────────────────────────
+      const thumbPanel = document.getElementById("thumb-panel");
+      const thumbBtn = document.getElementById("thumb-btn");
+      const thumbItems = [];
+
+      function buildThumbnails() {
+        slides.forEach((slide, i) => {
+          const item = document.createElement("div");
+          item.className = "thumb-item";
+
+          const viewport = document.createElement("div");
+          viewport.className = "thumb-viewport";
+
+          const cloneWrap = document.createElement("div");
+          cloneWrap.className = "thumb-clone";
+
+          const clone = slide.cloneNode(true);
+          clone.classList.add("active"); // force opacity:1 via existing CSS
+          clone.removeAttribute("id");
+          cloneWrap.appendChild(clone);
+          viewport.appendChild(cloneWrap);
+
+          const num = document.createElement("span");
+          num.className = "thumb-num";
+          num.textContent = i + 1;
+
+          item.appendChild(viewport);
+          item.appendChild(num);
+          item.addEventListener("click", (e) => {
+            e.stopPropagation();
+            goTo(i);
+          });
+
+          thumbPanel.appendChild(item);
+          thumbItems.push(item);
+        });
+      }
+
+      function syncThumbActive() {
+        thumbItems.forEach((item, i) =>
+          item.classList.toggle("t-active", i === cur),
+        );
+        if (thumbPanel.classList.contains("open")) {
+          thumbItems[cur]?.scrollIntoView({
+            block: "nearest",
+            behavior: "smooth",
+          });
+        }
+      }
+
+      function toggleThumbs() {
+        const isOpen = thumbPanel.classList.toggle("open");
+        thumbBtn.classList.toggle("open", isOpen);
+        if (isOpen) thumbItems[cur]?.scrollIntoView({ block: "nearest" });
+      }
+
+      thumbBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleThumbs();
+      });
+
+      // Init
+      applyRtkStep(0);
+      applyJMStep(0);
+      applyZustandStep(0);
+      applyQuestionStep(0);
+      applyS1Step(0);
+      applyWPStep(0);
+      applyTrioStep(0);
+      applyPlugStep(0);
+      applyDiffStep(0);
+      applyS4Step(0);
+      applySumStep(0);
+      buildThumbnails();
+      goTo(0);
+    </script>
+  </body>
+</html>

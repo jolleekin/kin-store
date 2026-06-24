@@ -1,0 +1,11 @@
+{
+  "name": "@kin-store/core",
+  "version": "0.1.0",
+  "license": "MIT",
+  "tasks": {
+    "check-size": "deno run --allow-read --allow-write --allow-run --allow-net scripts/check-size.ts"
+  },
+  "exports": {
+    "./index.ts": "./index.ts"
+  }
+}
