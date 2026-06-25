@@ -2,6 +2,8 @@
 
 ## Install
 
+For vanilla projects:
+
 ::: code-group
 
 ```sh [npm]
@@ -22,22 +24,45 @@ deno add jsr:@kin-store/core
 
 :::
 
-To add React bindings or official plugins:
+For React projects (`@kin-store/core` is included):
 
 ::: code-group
 
 ```sh [npm]
 npx jsr add @kin-store/react
-npx jsr add @kin-store/plugins
 ```
 
 ```sh [pnpm]
 pnpm dlx jsr add @kin-store/react
-pnpm dlx jsr add @kin-store/plugins
+```
+
+```sh [yarn]
+yarn dlx jsr add @kin-store/react
 ```
 
 ```sh [deno]
 deno add jsr:@kin-store/react
+```
+
+:::
+
+To add official plugins:
+
+::: code-group
+
+```sh [npm]
+npx jsr add @kin-store/plugins
+```
+
+```sh [pnpm]
+pnpm dlx jsr add @kin-store/plugins
+```
+
+```sh [yarn]
+yarn dlx jsr add @kin-store/plugins
+```
+
+```sh [deno]
 deno add jsr:@kin-store/plugins
 ```
 
