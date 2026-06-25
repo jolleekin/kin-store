@@ -6,6 +6,21 @@ pageClass: comparison-page
 
 The same todo store — `{ todos, status }` with `addTodo` and `fetchTodos` — implemented in each library. Full, working setup in every example.
 
+## Feature matrix
+
+|                           | Kin Store | Zustand | Redux / RTK | Jotai | MobX |
+| ------------------------- | :-------: | :-----: | :---------: | :---: | :--: |
+| Zero dependencies         |    ✅     |   ✅    |     ❌      |  ✅   |  ❌  |
+| Tiny footprint            |    ✅     |   ✅    |     ❌      |  ✅   |  ❌  |
+| 100% type-safe            |    ✅     |   ⚠️    |     ⚠️      |  ✅   |  ⚠️  |
+| Linear plugin composition |    ✅     |   ❌    |     ❌      |   —   |  —   |
+| Separate state and logic  |    ✅     |   ❌    |     ✅      |   —   |  ✅  |
+| Opt-in complexity         |    ✅     |   ❌    |     ❌      |  ✅   |  ❌  |
+| No hidden magic           |    ✅     |   ✅    |     ✅      |  ⚠️   |  ❌  |
+| Reactive composition      |    ✅     |   ⚠️    |     ❌      |  ✅   |  ✅  |
+
+---
+
 ## vs Redux / RTK
 
 Redux requires an async thunk, a slice, and a configured store before you write a single line of app logic. Async actions are split across two concepts (thunk + extraReducers). TypeScript needs two manual type exports to flow through.
