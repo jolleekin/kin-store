@@ -18,7 +18,7 @@ Framework-agnostic reactive state that grows with you — without locking you in
 Each step is additive — you never undo what you built. Full type safety at every step,
 zero dependencies, zero ceremony.
 
-<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/docs/intro.html" target="_blank">View the introduction slides →</a>
+<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/slides/intro.html" target="_blank">View the introduction slides →</a>
 
 ## Design principles
 
@@ -114,25 +114,31 @@ todoStore.addTodo("Buy groceries");
 await todoStore.fetchTodos();
 ```
 
-Add namespaced plugins with additional `.use()` calls. Each adds one line — never a nesting level:
+## Step 3 — Add plugins
+
+Plugins extend the store with zero nesting. Each `.use()` adds one feature — never wraps the previous one:
 
 ```ts
-import { history, persist } from "@kin-store/plugins/index.ts";
+import { immer, persist, history } from "@kin-store/plugins/index.ts";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
-  .use("persist", persist({ key: "todos" }))
-  .use("history", history())
-  .use({
-    methods: (store) => ({
-      addTodo(text: string): void {
-        store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+  .use(immer({
+    reducers: {
+      addTodo(draft, text: string): void {
+        draft.todos.push(text); // Mutate the draft — Immer handles immutability.
       },
-    }),
-  });
+      fetchFulfilled(draft, todos: string[]): void {
+        draft.todos = todos;
+        draft.status = "idle";
+      },
+    },
+  }))
+  .use("persist", persist({ key: "todos" }))
+  .use("history", history());
 
-todoStore.addTodo("Buy groceries");
+todoStore.dispatch.addTodo("Buy groceries");
+todoStore.persist.hydrate();
 todoStore.history.undo();
-await todoStore.persist.hydrate();
 ```
 
 Compare to Zustand's inside-out middleware nesting:
@@ -162,7 +168,7 @@ const useStore = create<TodoState>()(
 
 ---
 
-## Step 3 — Add structure and traceability (Redux-style)
+## Step 4 — Add structure and traceability (Redux-style)
 
 Reducers for state changes. Methods for the flow. Middleware to intercept.
 
@@ -255,7 +261,7 @@ await todoStore.todos.fetch();
 
 ---
 
-## Step 4 — Compose stores (Jotai / TanStack-style)
+## Step 5 — Compose stores (Jotai / TanStack-style)
 
 Use `derive` to compute values from multiple stores reactively. Dependencies are
 tracked automatically — no selector arrays, no manual wiring, no hidden graph.
