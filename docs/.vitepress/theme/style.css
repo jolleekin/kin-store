@@ -1,0 +1,108 @@
+:root {
+  --vp-c-brand-1: #d4a700;
+  --vp-c-brand-2: #c49800;
+  --vp-c-brand-3: #b48900;
+  --vp-c-brand-soft: rgba(212, 167, 0, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #f5c518;
+  --vp-c-brand-2: #e6b200;
+  --vp-c-brand-3: #d4a300;
+  --vp-c-brand-soft: rgba(245, 197, 24, 0.14);
+}
+
+/* ── Global content width ─────────────────────────────────────────────────── */
+.VPDoc .content-container {
+  max-width: 860px !important;
+}
+
+/* ── Comparison page: comment-only lines ─────────────────────────────────── */
+.comparison-page .comment-line {
+  background-color: rgba(106, 115, 125, 0.13);
+}
+
+.dark .comparison-page .comment-line span {
+  color: #a0aab4 !important;
+}
+
+/* ── Comparison page — wider for side-by-side code ───────────────────────── */
+.comparison-page .container {
+  max-width: 1200px !important;
+}
+
+.comparison-page .content {
+  max-width: 1100px !important;
+}
+
+.comparison-page .content-container {
+  max-width: 1100px !important;
+}
+
+/* ── Side-by-side code comparison (desktop only) ─────────────────────────── */
+@media (min-width: 1280px) {
+  /* Convert the tab bar into two column headers */
+  .side-by-side .vp-code-group .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    overflow: visible;
+    background: transparent;
+    border-bottom: 1px solid var(--vp-c-divider);
+    padding: 0 0 8px;
+    margin-bottom: 8px;
+  }
+
+  /* Remove radio inputs from the grid so only the two labels remain */
+  .side-by-side .vp-code-group .tabs input[type='radio'] {
+    display: none;
+  }
+
+  /* Labels become static column headers */
+  .side-by-side .vp-code-group .tabs label {
+    display: block;
+    padding: 2px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--vp-c-text-2);
+    cursor: default;
+    background: transparent;
+    border-bottom: none;
+    border-radius: 0;
+    transition: none;
+  }
+
+  .side-by-side .vp-code-group .tabs label:hover {
+    color: var(--vp-c-text-2);
+    background: transparent;
+  }
+
+  /* Kill the gold "active tab" underline — input:checked + label still fires on hidden inputs */
+  .side-by-side .vp-code-group .tabs input:checked + label {
+    color: var(--vp-c-text-2) !important;
+    border-bottom: none !important;
+  }
+
+  /* Two-column grid for the code panels */
+  .side-by-side .vp-code-group .blocks {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Show all panels — override VitePress's active/inactive display toggling */
+  .side-by-side .vp-code-group .blocks > div {
+    display: block !important;
+    margin: 0 !important;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* Ensure each panel scrolls independently */
+  .side-by-side .vp-code-group .blocks > div pre {
+    overflow-x: auto;
+    margin: 0;
+  }
+}
