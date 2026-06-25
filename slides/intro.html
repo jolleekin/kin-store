@@ -173,7 +173,7 @@
         color: var(--blue);
       }
       .tc {
-        color: #3a3a5a;
+        color: #67679c;
       }
       .tp {
         color: #fde68a;
@@ -736,10 +736,10 @@
             ><code><span class="tk">export const</span> fetchTodos = <span class="tf">createAsyncThunk</span>(
   <span class="ts">"todos/fetch"</span>,
   <span class="tk">async</span> () => {
-    <span class="tk">const</span> res = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
-    <span class="tk">return</span> (<span class="tk">await</span> res.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
+    <span class="tk">const</span> res = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
+    <span class="tk">return</span> (<span class="tk">await</span> res.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
   }
-)</code></pre>
+);</code></pre>
           </div>
 
           <div class="rtk-block" id="rb2">
@@ -751,18 +751,18 @@
   initialState: { items: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState,
   reducers: {
     <span class="tf">toggle</span>(state, action: PayloadAction&lt;number&gt;) {
-      <span class="tk">const</span> todo = state.items.<span class="tf">find</span>(t => t.id === action.payload)
-      <span class="tk">if</span> (todo) todo.done = !todo.done
+      <span class="tk">const</span> todo = state.items.<span class="tf">find</span>(t => t.id === action.payload);
+      <span class="tk">if</span> (todo) todo.done = !todo.done;
     },
   },
   extraReducers: (builder) => {
     builder
-      .<span class="tf">addCase</span>(fetchTodos.pending,   s => { s.status = <span class="ts">"loading"</span> })
-      .<span class="tf">addCase</span>(fetchTodos.fulfilled, (s, a) => { s.items = a.payload })
-      .<span class="tf">addCase</span>(fetchTodos.rejected,  s => { s.status = <span class="ts">"failed"</span> })
+      .<span class="tf">addCase</span>(fetchTodos.pending,   s => { s.status = <span class="ts">"loading"</span>; })
+      .<span class="tf">addCase</span>(fetchTodos.fulfilled, (s, a) => { s.items = a.payload; })
+      .<span class="tf">addCase</span>(fetchTodos.rejected,  s => { s.status = <span class="ts">"failed"</span>; })
   },
-})
-<span class="tk">export const</span> { toggle } = todoSlice.actions</code></pre>
+});
+<span class="tk">export const</span> { toggle } = todoSlice.actions;</code></pre>
           </div>
 
           <div class="rtk-block" id="rb3">
@@ -771,11 +771,11 @@
               style="font-size: 11.5px; line-height: 1.7; height: 100%"
             ><code><span class="tk">const</span> logger: Middleware =
   (api) => (next) => (action) => {
-    console.<span class="tf">log</span>(<span class="ts">"dispatch"</span>, action)
-    <span class="tk">const</span> result = <span class="tf">next</span>(action)
-    console.<span class="tf">log</span>(<span class="ts">"state"</span>, api.<span class="tf">getState</span>())
-    <span class="tk">return</span> result
-  }</code></pre>
+    console.<span class="tf">log</span>(<span class="ts">"dispatch"</span>, action);
+    <span class="tk">const</span> result = <span class="tf">next</span>(action);
+    console.<span class="tf">log</span>(<span class="ts">"state"</span>, api.<span class="tf">getState</span>());
+    <span class="tk">return</span> result;
+  };</code></pre>
           </div>
 
           <div class="rtk-block" id="rb4">
@@ -785,12 +785,12 @@
             ><code><span class="tk">export const</span> store = <span class="tf">configureStore</span>({
   reducer: { todos: todoSlice.reducer },
   middleware: (m) => <span class="tf">m</span>().<span class="tf">concat</span>(logger),
-})
+});
 
 <span class="tk">export type</span> RootState =
-  ReturnType&lt;<span class="tk">typeof</span> store.getState&gt;
+  ReturnType&lt;<span class="tk">typeof</span> store.getState&gt;;
 <span class="tk">export type</span> AppDispatch =
-  <span class="tk">typeof</span> store.dispatch</code></pre>
+  <span class="tk">typeof</span> store.dispatch;</code></pre>
           </div>
         </div>
 
@@ -847,14 +847,14 @@
       <span class="tf">immer</span>(<span id="zw-set" class="z-line">(<span class="tp">set</span>) => </span>({</span>
         <span id="zs-todos" class="z-line">todos: [] <span class="tk">as</span> string[],</span>
         <span id="zs-addtodo" class="z-line">addTodo: (todo: string) => <span class="tf">set</span>((<span id="zs1">state</span>) => {
-          <span id="zs2">state</span>.todos.<span class="tf">push</span>(todo)
+          <span id="zs2">state</span>.todos.<span class="tf">push</span>(todo);
         }),</span>
       })),
       { name: <span class="ts">'todo-storage'</span> }
     ),
     { name: <span class="ts">'TodoStore'</span> }
   )</span>
-)
+);
 
 <span class="tk">function</span> <span class="tf">TodoApp</span>() {
   <span class="tk">const</span> todos = <span class="tf">useStore</span>(<span id="zs3">state</span> => <span id="zs4">state</span>.todos);
@@ -914,73 +914,110 @@
         </div>
       </div>
 
-      <!-- ══ SLIDE 5 — Jotai / MobX ════════════════════════════════════ -->
-      <div
-        class="slide"
-        data-slide="5"
-        data-steps="1"
-        style="justify-content: flex-start; padding-top: 44px"
-      >
+      <!-- ══ SLIDE 5 — Jotai (step reveals) ══════════════════════════════ -->
+      <div class="slide" data-slide="5" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
         <div class="label">Part 1 — Irritation</div>
-        <h2 style="margin-bottom: 20px">Jotai <span class="accent">&amp;</span> MobX</h2>
+        <h2 style="margin-bottom: 20px">What about <span class="accent">Jotai</span>?</h2>
         <div class="cols cols-half" style="align-items: start">
-          <!-- Left: Jotai -->
-          <div>
-            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">JOTAI — ATOM-BASED</div>
-            <pre><code><span class="tk">import</span> { atom, useAtom, useAtomValue } <span class="tk">from</span> <span class="ts">"jotai"</span>
+          <pre id="jcode"><code><span class="tk">import</span> { atom, useAtomValue, useSetAtom } <span class="tk">from</span> <span class="ts">'jotai'</span>;
 
-<span class="tk">const</span> todosAtom = <span class="tf">atom</span>&lt;string[]&gt;([])
-<span class="tk">const</span> statusAtom = <span class="tf">atom</span>&lt;<span class="ts">"idle"</span> | <span class="ts">"loading"</span>&gt;(<span class="ts">"idle"</span>)
+<span class="tk">const</span> todosAtom  = <span class="tf">atom</span>&lt;Todo[]&gt;([]);
+<span class="tk">const</span> statusAtom = <span class="tf">atom</span>&lt;<span class="ts">'idle'</span> | <span class="ts">'loading'</span> | <span class="ts">'failed'</span>&gt;(<span class="ts">'idle'</span>);
 
-<span class="tk">const</span> countAtom = <span class="tf">atom</span>((get) => <span class="tf">get</span>(todosAtom).length)
-
-<span class="tk">function</span> <span class="tf">useTodos</span>() {
-  <span class="tk">const</span> [todos, setTodos] = <span class="tf">useAtom</span>(todosAtom)
-  <span class="tk">const</span> count = <span class="tf">useAtomValue</span>(countAtom)
-  <span class="tk">return</span> {
-    todos,
-    count,
-    addTodo: (text: string) =>
-      <span class="tf">setTodos</span>((prev) => [...prev, text]),
-  }
-}</code></pre>
+<span class="tc">// App logic must be wrapped in an atom — no plain function allowed.</span>
+<span id="ja-add" class="ks-block"><span class="tk">const</span> addTodoAtom = <span class="tf">atom</span>(null, (get, set, text: string) => {
+  <span class="tf">set</span>(todosAtom, (prev) => [
+    ...prev, { id: <span class="tf">Date.now</span>(), text, done: <span class="tk">false</span> },
+  ]);
+});</span>
+<span id="ja-fetch" class="ks-block"><span class="tk">const</span> fetchTodosAtom = <span class="tf">atom</span>(null, <span class="tk">async</span> (get, set) => {
+  <span class="tf">set</span>(statusAtom, <span class="ts">'loading'</span>);
+  <span class="tk">try</span> {
+    <span class="tk">const</span> todos = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">'/api/todos'</span>).<span class="tf">then</span>(r => r.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+    <span class="tf">set</span>(todosAtom, todos); <span class="tf">set</span>(statusAtom, <span class="ts">'idle'</span>);
+  } <span class="tk">catch</span> { <span class="tf">set</span>(statusAtom, <span class="ts">'failed'</span>); }
+});</span>
+<span class="tc">// Must use hooks to call write atoms — can't call from outside React.</span>
+<span class="tk">function</span> <span class="tf">TodoApp</span>() {
+  <span class="tk">const</span> todos  = <span class="tf">useAtomValue</span>(todosAtom);
+  <span class="tk">const</span> status = <span class="tf">useAtomValue</span>(statusAtom);
+<span id="ja-hooks" class="ks-block">  <span class="tk">const</span> addTodo    = <span class="tf">useSetAtom</span>(addTodoAtom);
+  <span class="tk">const</span> fetchTodos = <span class="tf">useSetAtom</span>(fetchTodosAtom);</span>}</code></pre>
+          <div class="problems">
+            <div class="pcard" id="jp1">
+              <div class="pnum">Problem 01</div>
+              <h4>Actions must be atoms</h4>
+              <p>Even a simple <code>addTodo</code> must be wrapped in <code>atom(null, (get, set, arg) =&gt; ...)</code>. Every piece of logic is a write atom — there is no plain function style.</p>
+            </div>
+            <div class="pcard" id="jp2">
+              <div class="pnum">Problem 02</div>
+              <h4>Logic can't run outside React</h4>
+              <p>Write atoms are activated via <code>useSetAtom</code>. You can't call them from a service layer, a test, or a timeout without reaching for <code>getDefaultStore()</code>.</p>
+            </div>
+            <div class="pcard" id="jp3">
+              <div class="pnum">Problem 03</div>
+              <h4>Hard to debug at scale</h4>
+              <p>Stack traces surface at the <code>useSetAtom</code> call site in your component — not at the atom definition. A chain of atoms triggering other atoms is hard to trace in a debugger.</p>
+            </div>
           </div>
-          <!-- Right: MobX -->
-          <div>
-            <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px">MOBX — OBSERVABLE CLASS</div>
-            <pre><code><span class="tk">import</span> { makeAutoObservable } <span class="tk">from</span> <span class="ts">"mobx"</span>
-<span class="tk">import</span> { observer } <span class="tk">from</span> <span class="ts">"mobx-react-lite"</span>
-
-<span class="tk">class</span> TodoStore {
-  todos: string[] = []
-  status = <span class="ts">"idle"</span>
-
-  <span class="tf">constructor</span>() { <span class="tf">makeAutoObservable</span>(<span class="tk">this</span>) }
-
-  <span class="tk">get</span> <span class="tf">count</span>() { <span class="tk">return this</span>.todos.length }
-
-  <span class="tf">addTodo</span>(text: string) {
-    <span class="tk">this</span>.todos.<span class="tf">push</span>(text)
-  }
-}
-
-<span class="tk">const</span> store = <span class="tk">new</span> <span class="tf">TodoStore</span>()</code></pre>
-          </div>
-        </div>
-
-        <!-- Tagline overlay -->
-        <div
-          id="jm-tagline"
-          style="position: absolute; inset: 0; background: rgba(7,7,15,0.9); display: flex; align-items: center; justify-content: center; text-align: center; padding: 80px; opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 5"
-        >
-          <p style="font-size: clamp(20px,2.2vw,34px); font-weight: 700; line-height: 1.55; color: var(--text); max-width: 900px">
-            Both do their thing well —<br />but built on <span class="accent">hidden magic</span>.
-          </p>
         </div>
       </div>
 
-      <!-- ══ SLIDE 6 — The question ═════════════════════════════════════ -->
-      <div class="slide" data-slide="6" data-steps="5">
+      <!-- ══ SLIDE 6 — MobX (step reveals) ═══════════════════════════════ -->
+      <div class="slide" data-slide="6" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+        <div class="label">Part 1 — Irritation</div>
+        <h2 style="margin-bottom: 20px">What about <span class="accent">MobX</span>?</h2>
+        <div class="cols cols-half" style="align-items: start">
+          <pre id="mxcode"><code><span class="tk">class</span> TodoStore {
+  todos: Todo[] = [];
+  status: <span class="ts">'idle'</span> | <span class="ts">'loading'</span> | <span class="ts">'failed'</span> = <span class="ts">'idle'</span>;
+
+  <span class="tf">constructor</span>() {
+<span id="mx-make" class="ks-block">    <span class="tf">makeAutoObservable</span>(<span class="tk">this</span>);</span>  }
+
+  <span class="tf">addTodo</span>(text: string) {
+    <span class="tk">this</span>.todos.<span class="tf">push</span>({ id: <span class="tf">Date.now</span>(), text, done: <span class="tk">false</span> });
+  }
+
+  <span class="tk">async</span> <span class="tf">fetchTodos</span>() {
+    <span class="tk">this</span>.status = <span class="ts">'loading'</span>;
+    <span class="tk">try</span> {
+      <span class="tk">const</span> todos = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">'/api/todos'</span>).<span class="tf">then</span>(r => r.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+<span id="mx-ri" class="ks-block">      <span class="tf">runInAction</span>(() => {
+        <span class="tk">this</span>.todos = todos;
+        <span class="tk">this</span>.status = <span class="ts">'idle'</span>;
+      });</span>    } <span class="tk">catch</span> {      <span id="mx-ri-2" class="ks-block">      <span class="tf">runInAction</span>(() => { <span class="tk">this</span>.status = <span class="ts">'failed'</span>; });</span>    }
+  }
+}
+
+<span class="tk">const</span> todoStore = <span class="tk">new</span> <span class="tf">TodoStore</span>();
+
+<span id="mx-obs" class="ks-block"><span class="tk">const</span> TodoApp = <span class="tf">observer</span>(() => {
+  <span class="tk">const</span> { todos, status } = todoStore;
+  <span class="tk">return</span> &lt;button onClick={() =&gt; todoStore.<span class="tf">addTodo</span>(<span class="ts">'Buy groceries'</span>)}&gt;Add&lt;/button&gt;;
+});</span></code></pre>
+          <div class="problems">
+            <div class="pcard" id="mx1">
+              <div class="pnum">Problem 01</div>
+              <h4>makeAutoObservable magic</h4>
+              <p>Instruments every field and method invisibly — fields become observables, getters become computeds, methods become actions. No explicit list of what is reactive vs. not.</p>
+            </div>
+            <div class="pcard" id="mx2">
+              <div class="pnum">Problem 02</div>
+              <h4>runInAction required in async</h4>
+              <p>Mutations after an <code>await</code> must be wrapped in <code>runInAction()</code>. Forgetting causes silent stale-data bugs — no error is thrown, the UI just shows wrong data.</p>
+            </div>
+            <div class="pcard" id="mx3">
+              <div class="pnum">Problem 03</div>
+              <h4>observer() on every component</h4>
+              <p>Every component reading observable state must be wrapped in <code>observer()</code>. Forgetting also causes silent stale-data bugs — still no error thrown. Two silent failure modes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SLIDE 7 — The question ═════════════════════════════════════ -->
+      <div class="slide" data-slide="7" data-steps="5">
         <div class="label">The question</div>
         <h1>Can we do <span class="accent">better?</span></h1>
         <div class="flist">
@@ -1030,8 +1067,8 @@
         </div>
       </div>
 
-      <!-- ══ SLIDE 7 — Part 2 section ════════════════════════════════════ -->
-      <div class="slide" data-slide="7" style="overflow: hidden">
+      <!-- ══ SLIDE 8 — Part 2 section ════════════════════════════════════ -->
+      <div class="slide" data-slide="8" style="overflow: hidden">
         <div style="position: relative; z-index: 1">
           <div class="label">Part 2</div>
           <h1>Kin <span class="accent">Store</span></h1>
@@ -1042,8 +1079,8 @@
         <div class="bignumber">02</div>
       </div>
 
-      <!-- ══ SLIDE 8 — Three pillars ══════════════════════════════════════ -->
-      <div class="slide" data-slide="8" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+      <!-- ══ SLIDE 9 — Three pillars ══════════════════════════════════════ -->
+      <div class="slide" data-slide="9" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
         <div class="label">Part 2 — Kin Store</div>
         <h2>Three primitives.</h2>
         <p class="sub" style="margin-top: 10px; max-width: 600px">
@@ -1076,7 +1113,7 @@
       <!-- ══ SLIDE 9 — createStore ══════════════════════════════════════════ -->
       <div
         class="slide"
-        data-slide="9"
+        data-slide="10"
         data-steps="5"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
@@ -1084,7 +1121,7 @@
           <div class="label">Part 2 — Kin Store — First primitive</div>
           <h2><span class="accent">createStore</span></h2>
           <p class="sub" style="margin-top: 10px">
-            A value. 3 methods. Nothing else.
+            <span class="accent">Step 1</span> — A value. 3 methods. Nothing else.
           </p>
         </div>
         <div
@@ -1100,25 +1137,25 @@
         >
           <pre
             style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
-          ><code><span id="s9-create" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">type</span> Todo = string
-<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> }
+          ><code><span id="s9-create" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">type</span> Todo = string;
+<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> };
 
-<span class="tk">const</span> todoStore = <span class="tf">createStore</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)</span><span id="s9-fns" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">function</span> <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
-  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, todos: [...state.todos, text] }))
+<span class="tk">const</span> todoStore = <span class="tf">createStore</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState);</span><span id="s9-fns" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">function</span> <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
+  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, todos: [...state.todos, text] }));
 }
 
 <span class="tk">async</span> <span class="tk">function</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))
+  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
   <span class="tk">try</span> {
-    <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
-    <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
-    todoStore.<span class="tf ks-span s9-set">setState</span>({ todos, status: <span class="ts">"idle"</span> })
+    <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
+    <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+    todoStore.<span class="tf ks-span s9-set">setState</span>({ todos, status: <span class="ts">"idle"</span> });
   } <span class="tk">catch</span> {
-    todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))
+    todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
   }
-}</span><span id="s9-trigger" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tf">addTodo</span>(<span class="ts">'Hello world'</span>)</span><span id="s9-getline" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s9-get">getState</span>() <span class="tc">// { todos: ["Hello world"], status: "idle" }</span></span><span id="s9-subline" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s9-sub">subscribe</span>((getState, prevState) => {
-  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>())
-})</span></code></pre>
+}</span><span id="s9-trigger" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tf">addTodo</span>(<span class="ts">'Hello world'</span>);</span><span id="s9-getline" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s9-get">getState</span>(); <span class="tc">// { todos: ["Hello world"], status: "idle" }</span></span><span id="s9-subline" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s9-sub">subscribe</span>((getState, prevState) => {
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
+});</span></code></pre>
           <div
             style="
               display: flex;
@@ -1168,7 +1205,7 @@
       <!-- ══ SLIDE 10 — Step 2: withPlugins + methods ═══════════════════════ -->
       <div
         class="slide"
-        data-slide="10"
+        data-slide="11"
         data-steps="4"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
@@ -1176,7 +1213,7 @@
           <div class="label">Part 2 — Kin Store — Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 1</span> — Move logic inside the store. Still plain setState.
+            <span class="accent">Step 2</span> — Move logic inside the store. Still plain setState.
           </p>
         </div>
         <div
@@ -1192,8 +1229,8 @@
         >
           <pre
             style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
-          ><code><span id="s10-create" class="ks-block" style="display:none"><span class="tk">type</span> Todo = string
-<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> }
+          ><code><span id="s10-create" class="ks-block" style="display:none"><span class="tk">type</span> Todo = string;
+<span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> };
 
 <span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)</span><span id="s10-methods" class="ks-block" style="display:none;margin-bottom:1.65em">  .<span class="tf">use</span>({
     methods: (store) => ({
@@ -1201,25 +1238,25 @@
         store.<span class="tf ks-span s10-set">setState</span>((state) => ({
           ...state,
           todos: [...state.todos, text],
-        }))
+        }));
       },
 
       <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-        store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))
+        store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
         <span class="tk">try</span> {
-          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
-          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
-          store.<span class="tf ks-span s10-set">setState</span>({ todos, status: <span class="ts">"idle"</span> })
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+          store.<span class="tf ks-span s10-set">setState</span>({ todos, status: <span class="ts">"idle"</span> });
         } <span class="tk">catch</span> {
-          store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))
+          store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
         }
       },
     }),
-  })</span><span id="s10-call" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s10-add">addTodo</span>(<span class="ts">"Hello world"</span>)</span><span id="s10-react" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s10-get">getState</span>()
+  });</span><span id="s10-call" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s10-add">addTodo</span>(<span class="ts">"Hello world"</span>);</span><span id="s10-react" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s10-get">getState</span>();
 
 todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, prevState) => {
-  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>())
-})</span></code></pre>
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
+});</span></code></pre>
           <div
             style="
               display: flex;
@@ -1264,7 +1301,7 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
       <!-- ══ SLIDE 11 — Add plugins ════════════════════════════════════════ -->
       <div
         class="slide"
-        data-slide="11"
+        data-slide="12"
         data-steps="3"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
@@ -1272,45 +1309,42 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
           <div class="label">Part 2 - Kin Store - Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 2</span> — Add features. One <span class="accent">.use( )</span> at a time.
+            <span class="accent">Step 3</span> — Add features. One <span class="accent">.use( )</span> at a time.
           </p>
         </div>
         <div
           class="cols cols-half"
           style="flex: 1; min-height: 0; align-items: start"
         >
-          <pre><code><span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)<span id="p11-persist" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"persist"</span>, <span class="tf">persist</span>({ key: <span class="ts">"todos"</span> }))</span><span id="p11-history" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"history"</span>, <span class="tf">history</span>())</span>
-  .<span class="tf">use</span>({
-    methods: (store) => ({
-      <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
-        store.<span class="tf">setState</span>((s) => ({
-          ...s,
-          todos: [...s.todos, text],
-        }))
+          <pre><code><span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)<span id="p11-immer" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="tf">immer</span>({
+    reducers: {
+      <span class="tf">addTodo</span>(draft, text: string): <span class="tk">void</span> {
+        draft.todos.<span class="tf">push</span>(text);
       },
-    }),
-  })<span id="p11-usage" class="ks-block" style="display:none;margin-top:1.65em">todoStore.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)
-todoStore.persist.<span class="tf">hydrate</span>()
-todoStore.history.<span class="tf">undo</span>()</span></code></pre>
+    },
+  }))</span><span id="p11-persist" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"persist"</span>, <span class="tf">persist</span>({ key: <span class="ts">"todos"</span> }))</span><span id="p11-history" class="ks-block" style="display:none">  .<span class="tf">use</span>(<span class="ts">"history"</span>, <span class="tf">history</span>());</span><span id="p11-usage" class="ks-block" style="display:none;margin-top:1.65em">todoStore.dispatch.<span class="tf">addTodo</span>(<span class="ts">"Buy groceries"</span>);
+todoStore.persist.<span class="tf">hydrate</span>();
+todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <div class="problems" style="gap: 14px">
             <div class="acard" id="pa1">
+              <h4>immer</h4>
+              <p>
+                Write reducers as draft mutations. No spread syntax —
+                Immer handles immutability.
+              </p>
+            </div>
+            <div class="acard" id="pa2">
               <h4>persist</h4>
               <p>
                 Saves to localStorage on every change. Hydrates on startup.
                 Custom storage, partial slices.
               </p>
             </div>
-            <div class="acard" id="pa2">
+            <div class="acard" id="pa3">
               <h4>history</h4>
               <p>
                 <code>history.undo()</code> · <code>history.redo()</code> ·
                 <code>history.reset()</code>. Works with any state change.
-              </p>
-            </div>
-            <div class="acard" id="pa3">
-              <h4>Namespaced calls</h4>
-              <p>
-                Each plugin lives under its key. No conflicts, no surprises.
               </p>
             </div>
           </div>
@@ -1320,7 +1354,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
       <!-- ══ SLIDE 12 — setState → reducers ═══════════════════════════════ -->
       <div
         class="slide"
-        data-slide="12"
+        data-slide="13"
         data-steps="1"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
@@ -1328,7 +1362,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
           <div class="label">Part 2 - Kin Store - Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 3</span> — Extract <span class="accent">setState</span> into
+            <span class="accent">Step 4</span> — Extract <span class="accent">setState</span> into
             <span class="accent">reducers</span>. Pure functions. Full pipeline.
           </p>
         </div>
@@ -1359,22 +1393,22 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
 <span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({
           ...state,
           todos: [...state.todos, text],
-        }))</span>      },
+        }));</span>      },
 
 
 
 
       <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }))</span>        <span class="tk">try</span> {
-          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
-          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
-<span class="ks-block d12-set">          store.<span class="tf">setState</span>({ todos, status: <span class="ts">"idle"</span> })</span>        } <span class="tk">catch</span> {
-<span class="ks-block d12-set">          store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }))</span>        }
+<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));</span>        <span class="tk">try</span> {
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+<span class="ks-block d12-set">          store.<span class="tf">setState</span>({ todos, status: <span class="ts">"idle"</span> });</span>        } <span class="tk">catch</span> {
+<span class="ks-block d12-set">          store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));</span>        }
       },
     }),
-  })
+  });
 
-<span id="d12-usage-l" class="ks-block">todoStore.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)</span></code></pre>
+<span id="d12-usage-l" class="ks-block">todoStore.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>);</span></code></pre>
           </div>
           <div>
             <div
@@ -1405,16 +1439,16 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
     },</span>
     methods: (store) => ({
       <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-<span class="ks-block d12-disp">        store.dispatch.<span class="tf">fetchStart</span>()</span>        <span class="tk">try</span> {
-          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>)
-          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[]
-<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchFulfulled</span>(todos)</span>        } <span class="tk">catch</span> {
-<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchRejected</span>()</span>        }
+<span class="ks-block d12-disp">        store.dispatch.<span class="tf">fetchStart</span>();</span>        <span class="tk">try</span> {
+          <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
+          <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
+<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchFulfulled</span>(todos);</span>        } <span class="tk">catch</span> {
+<span class="ks-block d12-disp">          store.dispatch.<span class="tf">fetchRejected</span>();</span>        }
       },
     }),
-  })
+  });
 
-<span id="d12-usage-r" class="ks-block">todoStore.dispatch.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>)</span></code></pre>
+<span id="d12-usage-r" class="ks-block">todoStore.dispatch.<span class="tf">addTodo</span>(<span class="ts">"Hello world"</span>);</span></code></pre>
           </div>
         </div>
       </div>
@@ -1422,7 +1456,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
       <!-- ══ SLIDE 13 — Step 4: derive ════════════════════════════════════ -->
       <div
         class="slide"
-        data-slide="13"
+        data-slide="14"
         data-steps="6"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
@@ -1430,7 +1464,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
           <div class="label">Part 2 - Kin Store - Third primitive</div>
           <h2><span class="accent">derive</span> — reactive composition</h2>
           <p class="sub" style="margin-top: 10px">
-            Read from any store. The derived store tracks its sources.
+            <span class="accent">Step 5</span> — Read from any store. The derived store tracks its sources.
           </p>
         </div>
         <div
@@ -1439,18 +1473,18 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         >
           <pre
             id="s4-left"
-          ><code><span id="s4-stores" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">const</span> userStore = <span class="tf">createStore</span>({ name: <span class="ts">"Ada"</span>, role: <span class="ts">"admin"</span> })
-<span class="tk">const</span> cartStore = <span class="tf">createStore</span>({ items: [] <span class="tk">as</span> string[], total: <span class="tp">0</span> })</span><span id="s4-summary" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Reads from both. Recomputes only when either changes.</span>
+          ><code><span id="s4-stores" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">const</span> userStore = <span class="tf">createStore</span>({ name: <span class="ts">"Ada"</span>, role: <span class="ts">"admin"</span> });
+<span class="tk">const</span> cartStore = <span class="tf">createStore</span>({ items: [] <span class="tk">as</span> string[], total: <span class="tp">0</span> });</span><span id="s4-summary" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Reads from both. Recomputes only when either changes.</span>
 <span class="tk">const</span> summary = <span class="tf">derive</span>((get) => ({
   greeting: <span class="ts">`Hello, ${</span><span class="tf">get</span>(userStore).name<span class="ts">}`</span>,
   itemCount: <span class="tf">get</span>(cartStore).items.length,
   total: <span class="tf">get</span>(cartStore).total,
-}))</span><span id="s4-cond" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Conditional — only subscribes to adminStore when role === "admin"</span>
+}));</span><span id="s4-cond" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tc">// Conditional — only subscribes to adminStore when role === "admin".</span>
 <span class="tk">const</span> view = <span class="tf">derive</span>((get) =>
   <span class="tf">get</span>(userStore).role === <span class="ts">"admin"</span>
     ? <span class="tf">get</span>(adminStore).dashboard
     : <span class="tf">get</span>(publicStore).feed
-)</span><span id="s4-destroy" class="ks-block" style="display:none">view.<span class="tf">destroy</span>() <span class="tc">// unsubscribes from all sources</span></span></code></pre>
+);</span><span id="s4-destroy" class="ks-block" style="display:none">view.<span class="tf">destroy</span>(); <span class="tc">// Unsubscribes from all sources.</span></span></code></pre>
 
           <div>
             <div class="flist" style="margin-top: 0">
@@ -1519,7 +1553,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
       <!-- ══ SLIDE 14 — Summary ══════════════════════════════════════════ -->
       <div
         class="slide"
-        data-slide="14"
+        data-slide="15"
         data-steps="1"
         style="justify-content: center; gap: 36px"
       >
@@ -1567,8 +1601,8 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         </div>
       </div>
 
-      <!-- ══ SLIDE 15 — Thank you ══════════════════════════════════════════ -->
-      <div class="slide" data-slide="15">
+      <!-- ══ SLIDE 16 — Thank you ══════════════════════════════════════════ -->
+      <div class="slide" data-slide="16">
         <div class="label">Thank you</div>
         <h1>
           Kin <span class="accent">Store</span>
@@ -1682,7 +1716,8 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
 
       // ── RTK step logic ──────────────────────────────────────────────────
       const RTK_SLIDE = 2;
-      const JM_SLIDE = 5;
+      const JOTAI_SLIDE = 5;
+      const MOBX_SLIDE = 6;
       const rtkBlocks = [1, 2, 3, 4].map((i) =>
         document.getElementById("rb" + i),
       );
@@ -1697,11 +1732,35 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         verdict.style.pointerEvents = step >= 5 ? "all" : "none";
       }
 
-      // ── Jotai / MobX overlay ────────────────────────────────────────────
-      function applyJMStep(step) {
-        const el = document.getElementById("jm-tagline");
-        el.style.opacity = step >= 1 ? "1" : "0";
-        el.style.pointerEvents = step >= 1 ? "all" : "none";
+      // ── Jotai step logic ────────────────────────────────────────────────
+      function applyJotaiStep(step) {
+        document.getElementById("ja-add")?.classList.toggle("hl", step === 1);
+        document.getElementById("ja-fetch")?.classList.toggle("hl", step === 1);
+        document.getElementById("ja-hooks")?.classList.toggle("hl", step === 2);
+        const jCards = ["jp1", "jp2", "jp3"].map((id) => document.getElementById(id));
+        jCards.forEach((c, i) => {
+          c?.classList.remove("on", "current", "dim");
+          if (i < step) {
+            c?.classList.add("on");
+            c?.classList.add(i === step - 1 ? "current" : "dim");
+          }
+        });
+      }
+
+      // ── MobX step logic ─────────────────────────────────────────────────
+      function applyMobxStep(step) {
+        document.getElementById("mx-make")?.classList.toggle("hl", step === 1);
+        document.getElementById("mx-ri")?.classList.toggle("hl", step === 2);
+        document.getElementById("mx-ri-2")?.classList.toggle("hl", step === 2);
+        document.getElementById("mx-obs")?.classList.toggle("hl", step === 3);
+        const mxCards = ["mx1", "mx2", "mx3"].map((id) => document.getElementById(id));
+        mxCards.forEach((c, i) => {
+          c?.classList.remove("on", "current", "dim");
+          if (i < step) {
+            c?.classList.add("on");
+            c?.classList.add(i === step - 1 ? "current" : "dim");
+          }
+        });
       }
 
       // ── Zustand step logic ──────────────────────────────────────────────
@@ -1797,7 +1856,7 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
       }
 
       // ── Question slide step logic ────────────────────────────────────────
-      const Q_SLIDE = 6;
+      const Q_SLIDE = 7;
       const qItems = [1, 2, 3, 4, 5].map((i) =>
         document.getElementById("fi" + i),
       );
@@ -1806,13 +1865,13 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         qItems.forEach((el, i) => el?.classList.toggle("on", i < step));
       }
 
-      const TRIO_SLIDE = 8;
-      const S1_SLIDE = 9;
-      const WP_SLIDE = 10;
-      const PLUG_SLIDE = 11;
-      const DIFF_SLIDE = 12;
-      const S4_SLIDE = 13;
-      const SUM_SLIDE = 14;
+      const TRIO_SLIDE = 9;
+      const S1_SLIDE = 10;
+      const WP_SLIDE = 11;
+      const PLUG_SLIDE = 12;
+      const DIFF_SLIDE = 13;
+      const S4_SLIDE = 14;
+      const SUM_SLIDE = 15;
 
       // ── Trio (three primitives overview) ────────────────────────────────
       const trioCards = ["t1", "t2", "t3"].map((id) =>
@@ -1909,15 +1968,17 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         s10Cards.forEach((c, i) => c?.classList.toggle("on", i < step));
       }
 
-      // ── Plugins (persist + history) ─────────────────────────────────────
+      // ── Plugins (immer, persist, history) ───────────────────────────────
       const plugCards = ["pa1", "pa2", "pa3"].map((id) => document.getElementById(id));
 
       function applyPlugStep(step) {
-        document.getElementById("p11-persist").style.display = step >= 1 ? "" : "none";
-        document.getElementById("p11-history").style.display = step >= 2 ? "" : "none";
+        document.getElementById("p11-immer").style.display = step >= 1 ? "" : "none";
+        document.getElementById("p11-persist").style.display = step >= 2 ? "" : "none";
+        document.getElementById("p11-history").style.display = step >= 3 ? "" : "none";
         document.getElementById("p11-usage").style.display = step >= 3 ? "" : "none";
-        document.getElementById("p11-persist")?.classList.toggle("hl", step === 1);
-        document.getElementById("p11-history")?.classList.toggle("hl", step === 2);
+        document.getElementById("p11-immer")?.classList.toggle("hl", step === 1);
+        document.getElementById("p11-persist")?.classList.toggle("hl", step === 2);
+        document.getElementById("p11-history")?.classList.toggle("hl", step === 3);
         document.getElementById("p11-usage")?.classList.toggle("hl", step >= 3);
         plugCards.forEach((c, i) => c?.classList.toggle("on", i < step));
       }
@@ -1988,7 +2049,8 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         if (max > 0 && stepMap[idx] < max) {
           stepMap[idx]++;
           if (idx === RTK_SLIDE) applyRtkStep(stepMap[idx]);
-          if (idx === JM_SLIDE) applyJMStep(stepMap[idx]);
+          if (idx === JOTAI_SLIDE) applyJotaiStep(stepMap[idx]);
+          if (idx === MOBX_SLIDE) applyMobxStep(stepMap[idx]);
           if (idx === Z_SLIDE) applyZustandStep(stepMap[idx]);
           if (idx === Q_SLIDE) applyQuestionStep(stepMap[idx]);
           if (idx === S1_SLIDE) applyS1Step(stepMap[idx]);
@@ -2010,7 +2072,8 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
         if (max > 0 && stepMap[idx] > 0) {
           stepMap[idx]--;
           if (idx === RTK_SLIDE) applyRtkStep(stepMap[idx]);
-          if (idx === JM_SLIDE) applyJMStep(stepMap[idx]);
+          if (idx === JOTAI_SLIDE) applyJotaiStep(stepMap[idx]);
+          if (idx === MOBX_SLIDE) applyMobxStep(stepMap[idx]);
           if (idx === Z_SLIDE) applyZustandStep(stepMap[idx]);
           if (idx === Q_SLIDE) applyQuestionStep(stepMap[idx]);
           if (idx === S1_SLIDE) applyS1Step(stepMap[idx]);
@@ -2108,7 +2171,8 @@ todoStore.history.<span class="tf">undo</span>()</span></code></pre>
 
       // Init
       applyRtkStep(0);
-      applyJMStep(0);
+      applyJotaiStep(0);
+      applyMobxStep(0);
       applyZustandStep(0);
       applyQuestionStep(0);
       applyS1Step(0);
