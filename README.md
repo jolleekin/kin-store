@@ -8,144 +8,35 @@
 
 Framework-agnostic reactive state that grows with you — without locking you into a paradigm.
 
-| Style         | API                                             | Minified + Gzip |
-| ------------- | ----------------------------------------------- | --------------- |
-| Simple        | `createStore` + plain functions                 | 244 B           |
-| Zustand-style | `withPlugins` + methods                         | 1.07 KB         |
-| Redux-style   | `withPlugins` + reducers + middleware + methods | 1.07 KB         |
-| Jotai-style   | `derive`                                        | 465 B           |
+## Docs
 
-Each style is additive — you never undo what you built. Full type safety at every step, zero dependencies.
+[→ Documentation website](https://kin-store.pages.dev)
 
-<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/docs/intro.html" target="_blank">View the introduction slides →</a>
+## Feature matrix
 
-## Install
+|                           | **Kin Store** | Zustand | Redux / RTK | Jotai | MobX |
+| ------------------------- | :-----------: | :-----: | :---------: | :---: | :--: |
+| Zero dependencies         |      ✅       |   ✅    |     ❌      |  ✅   |  ❌  |
+| Tiny footprint            |      ✅       |   ✅    |     ❌      |  ✅   |  ❌  |
+| 100% type-safe            |      ✅       |   ⚠️    |     ⚠️      |  ✅   |  ⚠️  |
+| Linear plugin composition |      ✅       |   ❌    |     ❌      |   —   |  —   |
+| Separate state and logic  |      ✅       |   ❌    |     ✅      |   —   |  ✅  |
+| Opt-in complexity         |      ✅       |   ❌    |     ❌      |  ✅   |  ❌  |
+| No hidden magic           |      ✅       |   ✅    |     ✅      |  ⚠️   |  ❌  |
+| Reactive composition      |      ✅       |   ❌    |     ❌      |  ✅   |  ✅  |
 
-```bash
-# Core
-deno add jsr:@kin-store/core
-pnpm add jsr:@kin-store/core
-yarn add jsr:@kin-store/core
-npx  jsr add @kin-store/core
+## Bundle size
 
-# React bindings
-deno add jsr:@kin-store/react
-pnpm add jsr:@kin-store/react
-yarn add jsr:@kin-store/react
-npx  jsr add @kin-store/react
+| Package                                                    | Minified + gzip |
+| ---------------------------------------------------------- | --------------- |
+| **`@kin-store/core`**                                      | —               |
+| &nbsp;&nbsp;↳ `createStore` alone                          | **244 B**       |
+| &nbsp;&nbsp;↳ `derive` alone                               | **465 B**       |
+| &nbsp;&nbsp;↳ `withPlugins` (full plugin system)           | **1.07 KB**     |
+| `zustand` core                                             | ~1.2 KB         |
+| `jotai` core                                               | ~3.5 KB         |
+| `@reduxjs/toolkit`                                         | ~11 KB          |
+| `mobx`                                                     | ~16 KB          |
 
-# Official plugins
-deno add jsr:@kin-store/plugins
-pnpm add jsr:@kin-store/plugins
-yarn add jsr:@kin-store/plugins
-npx  jsr add @kin-store/plugins
-```
+Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import `withPlugins` and pay 1.07 KB. The plugin bundles (`persist`, `history`, `immer`) add only what you import.
 
-## Taste
-
-Start with a plain store and top-level functions:
-
-```ts
-import { createStore } from "@kin-store/core/index.ts";
-
-type State = { todos: string[]; status: "idle" | "loading" };
-
-const store = createStore({ todos: [], status: "idle" } as State);
-
-function addTodo(text: string): void {
-  store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
-}
-```
-
-Add capability with `.use()` when you need it — flat chaining, never nesting:
-
-```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history, persist } from "@kin-store/plugins/index.ts";
-
-type State = { todos: string[]; status: "idle" | "loading" };
-
-const store = withPlugins({ todos: [], status: "idle" } as State)
-  // Register namespaced plugins.
-  .use("persist", persist({ key: "todos" }))
-  .use("history", history())
-
-  // Register a top-level plugin.
-  .use({
-    reducers: {
-      add: (state, text: string) => ({
-        ...state,
-        todos: [...state.todos, text],
-      }),
-    },
-    methods: (store) => ({
-      async fetch(): Promise<void> {
-        // Call `setState` directly if you don't need the dispatch pipeline.
-        store.setState((s) => ({ ...s, status: "loading" }));
-
-        const todos = await api.getTodos();
-
-        store.setState({ todos, status: "idle" });
-      },
-    }),
-  });
-
-// Dispatch an action.
-store.dispatch.add("Buy groceries");
-
-// Call methods.
-store.history.undo();
-await store.persist.hydrate();
-await store.fetch();
-```
-
-Compare to Zustand's inside-out middleware nesting — each capability wraps the
-previous one and must be read from the inside out:
-
-```ts
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import { immer } from "zustand/middleware/immer";
-
-type State = { todos: string[]; status: "idle" | "loading" };
-
-type Actions = {
-  addTodo(text: string): void;
-  async fetch(): Promise<void>;
-}
-
-const useStore = create(
-  devtools(
-    persist(
-      immer<State & Actions>((set) => ({ // Explicit type annotation required.
-        todos: [],
-        status: "idle",
-        addTodo(text: string) {
-          set((draft) => {
-            draft.todos.push(text);
-          });
-        },
-        async fetch() {
-          set((draft) => { draft.status = "loading"; });
-          const todos = await api.getTodos();
-          set({ todos, status: "idle" });
-        }
-      })),
-      { name: "todos" },
-    ),
-    { name: "TodoStore" },
-  ),
-);
-```
-
-## Packages
-
-| Package                                     | Description                                                  |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| [`@kin-store/core`](./core/README.md)       | `createStore`, `withPlugins`, `derive` — the core primitives |
-| [`@kin-store/plugins`](./plugins/README.md) | `persist`, `history`, `immer` — official plugins             |
-| [`@kin-store/react`](./react/README.md)     | `useSelector`, `useSelectorWithEquality` — React bindings    |
-
-```
-
-```
