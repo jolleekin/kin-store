@@ -25,12 +25,12 @@ const summary = derive((get) => ({
   total: get(cartStore).total,
 }));
 
-console.log(summary.getState());
+console.log(summary.get());
 // { greeting: 'Hello, Ada', itemCount: 0, total: 0 }
 ```
 
-`derive` returns a read-only store with `getState` and `subscribe`. It has no
-`setState`.
+`derive` returns a read-only store with `destroy`, `get`, and `subscribe`. It
+has no `set`.
 
 ## Conditional dependencies
 
@@ -56,9 +56,9 @@ self-referential function:
 const delta = createStore(1);
 const total = derive<number>((get, prev) => (prev() ?? 0) + get(delta));
 
-total.subscribe((getState) => console.log(getState()));
-delta.setState(5); // logs: 6
-delta.setState(3); // logs: 9
+total.subscribe((get) => console.log(get()));
+delta.set(5); // logs: 6
+delta.set(3); // logs: 9
 ```
 
 ## Cleanup with `destroy()`

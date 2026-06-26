@@ -38,10 +38,10 @@ type ImmerStore<
 > =
   & Omit<
     StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
-    "setState"
+    "set"
   >
   & {
-    setState: (recipe: (draft: Draft<TState>) => void) => void;
+    set: (recipe: (draft: Draft<TState>) => void) => void;
   };
 
 type ImmerPlugin<
@@ -117,21 +117,21 @@ function asImmerStore<
   store: StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
 ): ImmerStore<TState, TStoreReducers, TStoreMethods> {
   return {
-    ...(store as Omit<typeof store, "setState">),
-    setState: (recipe: (draft: Draft<TState>) => void) =>
-      store.setState(produce(store.getState(), recipe)),
+    ...(store as Omit<typeof store, "set">),
+    set: (recipe: (draft: Draft<TState>) => void) =>
+      store.set(produce(store.get(), recipe)),
   };
 }
 
 /**
- * Adapter that lets you write reducers (and `setState` calls) using
+ * Adapter that lets you write reducers (and `set` calls) using
  * [Immer](https://immerjs.github.io/immer/) draft mutations instead of
  * returning new state objects.
  *
  * Pass an {@linkcode ImmerPlugin}-shaped object to `immer()` and the returned
  * value is a standard {@linkcode StorePlugin} whose reducers wrap each Immer
  * reducer with `produce`. The `methods`, `onActivated`, and `onDestroy`
- * callbacks receive an `ImmerStore` where `setState` accepts a recipe function
+ * callbacks receive an `ImmerStore` where `set` accepts a recipe function
  * `(draft) => void` instead of a full state replacement.
  *
  * @param plugin An Immer-flavoured plugin definition.
@@ -153,8 +153,8 @@ function asImmerStore<
  *     },
  *     methods: (store) => ({
  *       reset(): void {
- *         // store.setState accepts a recipe too.
- *         store.setState((draft) => {
+ *         // store.set accepts a recipe too.
+ *         store.set((draft) => {
  *           draft.count = 0;
  *           draft.items = [];
  *         });

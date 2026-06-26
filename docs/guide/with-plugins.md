@@ -22,15 +22,15 @@ type TodoState = { todos: string[]; status: "idle" | "loading" | "failed" };
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState).use({
   methods: (store) => ({
     addTodo(text: string): void {
-      store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+      store.set((s) => ({ ...s, todos: [...s.todos, text] }));
     },
     async fetchTodos(): Promise<void> {
-      store.setState((s) => ({ ...s, status: "loading" }));
+      store.set((s) => ({ ...s, status: "loading" }));
       try {
         const todos = await api.getTodos();
-        store.setState({ todos, status: "idle" });
+        store.set({ todos, status: "idle" });
       } catch {
-        store.setState((s) => ({ ...s, status: "failed" }));
+        store.set((s) => ({ ...s, status: "failed" }));
       }
     },
   }),
@@ -42,8 +42,9 @@ await todoStore.fetchTodos();
 
 ## Step 2 — Add plugins
 
-Plugins can be **namespaced** (`.use(namespace, plugin)`) or **top-level** (`.use(plugin)`).
-Namespaced plugins live under their own key — no conflicts, no surprises:
+Plugins can be **namespaced** (`.use(namespace, plugin)`) or **top-level**
+(`.use(plugin)`). Namespaced plugins live under their own key — no conflicts, no
+surprises:
 
 ```ts
 import { history, persist } from "@kin-store/plugins/index.ts";
@@ -54,7 +55,7 @@ const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use({
     methods: (store) => ({
       addTodo(text: string): void {
-        store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+        store.set((s) => ({ ...s, todos: [...s.todos, text] }));
       },
     }),
   });
@@ -120,10 +121,10 @@ todoStore.history.undo();
 | Tier         | How                                    | When to use                                                        |
 | ------------ | -------------------------------------- | ------------------------------------------------------------------ |
 | `dispatch.*` | Routes through the middleware pipeline | State changes you want to log, trace, or cancel                    |
-| `setState`   | Bypasses the pipeline                  | Hard resets, plugin internals, or when you don't need the pipeline |
+| `set`        | Bypasses the pipeline                  | Hard resets, plugin internals, or when you don't need the pipeline |
 
-Methods can use both: `dispatch.*` for traceable changes, `setState` when they
-need to escape the pipeline.
+Methods can use both: `dispatch.*` for traceable changes, `set` when they need
+to escape the pipeline.
 
 ## Canceling a dispatch
 

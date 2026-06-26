@@ -1,7 +1,7 @@
 # Simple Todo — Kin Store
 
 Demonstrates the minimal `createStore` API. Actions are plain functions that
-call `store.setState`; no plugins required.
+call `store.set`; no plugins required.
 
 ## Stack
 

@@ -2,17 +2,17 @@
 
 Official plugins for `@kin-store/core`.
 
-| Plugin    | Export                        | Description                                                  |
-| --------- | ----------------------------- | ------------------------------------------------------------ |
-| `immer`   | `immer` from `./immer.ts`     | Write reducers and `setState` calls as Immer draft mutations |
-| `persist` | `persist` from `./persist.ts` | Persist state to storage                                     |
-| `history` | `history` from `./history.ts` | Undo / redo / reset                                          |
+| Plugin    | Export                        | Description                                             |
+| --------- | ----------------------------- | ------------------------------------------------------- |
+| `immer`   | `immer` from `./immer.ts`     | Write reducers and `set` calls as Immer draft mutations |
+| `persist` | `persist` from `./persist.ts` | Persist state to storage                                |
+| `history` | `history` from `./history.ts` | Undo / redo / reset                                     |
 
 ---
 
 ## `immer`
 
-Lets you write reducers (and `setState` calls) as
+Lets you write reducers (and `set` calls) as
 [Immer](https://immerjs.github.io/immer/) draft mutations instead of returning
 new state objects.
 
@@ -32,7 +32,7 @@ const store = withPlugins({ count: 0, items: [] as string[] }).use(
     },
     methods: (store) => ({
       reset(): void {
-        store.setState((draft) => {
+        store.set((draft) => {
           draft.count = 0;
           draft.items = [];
         });
@@ -48,7 +48,7 @@ store.reset();
 
 The `immer()` wrapper accepts the same `reducers`, `middlewares`, `methods`,
 `onActivated`, and `onDestroy` fields as a standard `StorePlugin`. Inside those
-callbacks, `setState` accepts a recipe `(draft) => void` instead of a full state
+callbacks, `set` accepts a recipe `(draft) => void` instead of a full state
 replacement.
 
 ---
@@ -145,7 +145,7 @@ Once registered under a namespace (e.g. `"persist"`), the plugin exposes:
 ## `history`
 
 Tracks state history and enables undo / redo / reset. Every state change —
-whether dispatched through reducers or made via `setState` — is recorded as a
+whether dispatched through reducers or made via `set` — is recorded as a
 snapshot. Pass `{ limit }` to cap memory use in apps with frequent changes.
 
 ```ts

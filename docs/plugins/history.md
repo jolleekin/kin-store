@@ -1,7 +1,7 @@
 # history
 
 Tracks state history and enables undo / redo / reset. Every state change —
-whether dispatched through reducers or made via `setState` — is recorded as a
+whether dispatched through reducers or made via `set` — is recorded as a
 snapshot.
 
 ## Basic usage

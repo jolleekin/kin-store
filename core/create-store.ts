@@ -3,7 +3,7 @@ import type { Listener } from "./_types.ts";
 
 export type { Listener };
 
-type SetStateCallback<TState> = (prevState: TState) => TState;
+type Updater<TState> = (prev: TState) => TState;
 
 /**
  * A reactive state container that holds a value of type `TState`.
@@ -15,12 +15,12 @@ type SetStateCallback<TState> = (prevState: TState) => TState;
  * ```ts
  * const counter = createStore(0);
  *
- * counter.subscribe((getState, prevState) => {
- *   console.log("changed from", prevState, "to", getState());
+ * counter.subscribe((get, prevState) => {
+ *   console.log("changed from", prevState, "to", get());
  * });
  *
- * counter.setState(1); // logs: changed from 0 to 1
- * counter.setState((n) => n + 1); // logs: changed from 1 to 2
+ * counter.set(1); // logs: changed from 0 to 1
+ * counter.set((n) => n + 1); // logs: changed from 1 to 2
  * ```
  *
  * @template TState The type of the state held by this store.
@@ -30,7 +30,7 @@ export type Store<TState = any> = {
   /**
    * Returns the current state of the store.
    */
-  getState(): TState;
+  get(): TState;
 
   /**
    * Sets the state of the store and notifies listeners.
@@ -39,7 +39,7 @@ export type Store<TState = any> = {
    * **NOTE**:
    * This method completely bypasses the dispatch pipeline (if there is one).
    */
-  setState(next: TState | SetStateCallback<TState>): void;
+  set(next: TState | Updater<TState>): void;
 
   /**
    * Registers a listener that gets called when the state changes.
@@ -50,14 +50,14 @@ export type Store<TState = any> = {
    * ```ts
    * const store = createStore({ count: 0 });
    *
-   * const unsubscribe = store.subscribe((getState, prevState) => {
-   *   console.log("prev:", prevState.count, "next:", getState().count);
+   * const unsubscribe = store.subscribe((get, prevState) => {
+   *   console.log("prev:", prevState.count, "next:", get().count);
    * });
    *
-   * store.setState({ count: 1 }); // logs: prev: 0 next: 1
+   * store.set({ count: 1 }); // logs: prev: 0 next: 1
    *
    * unsubscribe(); // stop listening
-   * store.setState({ count: 2 }); // no log
+   * store.set({ count: 2 }); // no log
    * ```
    */
   subscribe(listener: Listener<TState>): VoidFunction;
@@ -76,35 +76,35 @@ export type Store<TState = any> = {
  * ```ts
  * const store = createStore({ count: 0 });
  *
- * store.setState({ count: 1 });
- * console.log(store.getState()); // { count: 1 }
+ * store.set({ count: 1 });
+ * console.log(store.get()); // { count: 1 }
  * ```
  *
  * @example Functional update
  * ```ts
  * const store = createStore(0);
- * store.setState((n) => n + 1);
- * console.log(store.getState()); // 1
+ * store.set((n) => n + 1);
+ * console.log(store.get()); // 1
  * ```
  */
 export function createStore<TState>(initialState: TState): Store<TState> {
   let state = initialState;
   const listeners = new Set<Listener<TState>>();
 
-  function getState(): TState {
+  function get(): TState {
     return state;
   }
 
-  function setState(next: TState | SetStateCallback<TState>): void {
+  function set(next: TState | Updater<TState>): void {
     const prevState = state;
 
     state = typeof next === "function"
-      ? (next as SetStateCallback<TState>)(prevState)
+      ? (next as Updater<TState>)(prevState)
       : next;
 
     if (Object.is(state, prevState)) return;
 
-    notify(listeners, getState, prevState);
+    notify(listeners, get, prevState);
   }
 
   function subscribe(listener: Listener<TState>): VoidFunction {
@@ -115,8 +115,8 @@ export function createStore<TState>(initialState: TState): Store<TState> {
 
   return {
     [IS_STORE]: true,
-    getState,
-    setState,
+    get,
+    set,
     subscribe,
   } as Store<TState>;
 }

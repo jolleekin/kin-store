@@ -49,9 +49,7 @@ export function useSelector<TState, TSlice = TState>(
   store: Store<TState>,
   selector?: (state: TState) => TSlice,
 ): TState | TSlice {
-  const getSnapshot = selector
-    ? () => selector(store.getState())
-    : store.getState;
+  const getSnapshot = selector ? () => selector(store.get()) : store.get;
 
   return useSyncExternalStore<TState | TSlice>(
     store.subscribe,

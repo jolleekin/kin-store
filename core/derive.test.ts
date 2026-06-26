@@ -5,23 +5,23 @@ import { derive } from "./derive.ts";
 Deno.test("derive - computes initial value", () => {
   const n = createStore(3);
   const doubled = derive((get) => get(n) * 2);
-  assertEquals(doubled.getState(), 6);
+  assertEquals(doubled.get(), 6);
 });
 
 Deno.test("derive - recomputes when source changes", () => {
   const n = createStore(3);
   const doubled = derive((get) => get(n) * 2);
-  n.setState(5);
-  assertEquals(doubled.getState(), 10);
+  n.set(5);
+  assertEquals(doubled.get(), 10);
 });
 
 Deno.test("derive - multiple sources", () => {
   const a = createStore("Hello");
   const b = createStore("World");
   const full = derive((get) => `${get(a)} ${get(b)}`);
-  assertEquals(full.getState(), "Hello World");
-  b.setState("Deno");
-  assertEquals(full.getState(), "Hello Deno");
+  assertEquals(full.get(), "Hello World");
+  b.set("Deno");
+  assertEquals(full.get(), "Hello Deno");
 });
 
 Deno.test("derive - subscriber notified when dependency changes", () => {
@@ -29,18 +29,18 @@ Deno.test("derive - subscriber notified when dependency changes", () => {
   const doubled = derive((get) => get(n) * 2);
   let calls = 0;
   doubled.subscribe(() => calls++);
-  n.setState(2);
+  n.set(2);
   assertEquals(calls, 1);
 });
 
-Deno.test("derive - subscriber receives getState and prevState", () => {
+Deno.test("derive - subscriber receives get and prevState", () => {
   const n = createStore(1);
   const doubled = derive((get) => get(n) * 2);
   let received: { prev: number; next: number } | undefined;
-  doubled.subscribe((getState, prevState) => {
-    received = { prev: prevState, next: getState() };
+  doubled.subscribe((get, prevState) => {
+    received = { prev: prevState, next: get() };
   });
-  n.setState(2);
+  n.set(2);
   assertEquals(received, { prev: 2, next: 4 });
 });
 
@@ -50,7 +50,7 @@ Deno.test("derive - unsubscribe stops notifications", () => {
   let calls = 0;
   const unsub = doubled.subscribe(() => calls++);
   unsub();
-  n.setState(2);
+  n.set(2);
   assertEquals(calls, 0);
 });
 
@@ -70,11 +70,11 @@ Deno.test(
     unsub();
 
     // Source change while cold: derived should not recompute proactively
-    n.setState(5);
+    n.set(5);
     assertEquals(computeCalls, 0);
 
     // On-demand read should still produce the correct value
-    assertEquals(doubled.getState(), 10);
+    assertEquals(doubled.get(), 10);
     assertEquals(computeCalls, 1);
   },
 );
@@ -91,9 +91,9 @@ Deno.test(
     result.subscribe(() => calls++);
 
     // toggle is true → only `toggle` and `a` are deps; `b` is not
-    b.setState("B2");
+    b.set("B2");
     assertEquals(calls, 0);
-    assertEquals(result.getState(), "A");
+    assertEquals(result.get(), "A");
   },
 );
 
@@ -104,19 +104,19 @@ Deno.test("derive - switches tracked deps when branch changes", () => {
   const result = derive((get) => (get(toggle) ? get(a) : get(b)));
 
   const values: string[] = [];
-  result.subscribe((getState) => values.push(getState()));
+  result.subscribe((get) => values.push(get()));
 
-  toggle.setState(false); // now deps are toggle + b
-  a.setState("A2"); // a is no longer tracked → no notification
-  b.setState("B2"); // b is now tracked → notification
+  toggle.set(false); // now deps are toggle + b
+  a.set("A2"); // a is no longer tracked → no notification
+  b.set("B2"); // b is now tracked → notification
   assertEquals(values, ["B", "B2"]);
 });
 
-Deno.test("derive - destroy prevents getState", () => {
+Deno.test("derive - destroy prevents get", () => {
   const n = createStore(1);
   const doubled = derive((get) => get(n) * 2);
   doubled.destroy();
-  assertThrows(() => doubled.getState(), Error, "destroyed");
+  assertThrows(() => doubled.get(), Error, "destroyed");
 });
 
 Deno.test("derive - destroy prevents subscribe", () => {
@@ -143,11 +143,11 @@ Deno.test(
     const total = derive<number>((get, prev) => (prev() ?? 0) + get(delta));
 
     const unsub = total.subscribe(() => {});
-    assertEquals(total.getState(), 1); // 0 + 1
-    delta.setState(5);
-    assertEquals(total.getState(), 6); // 1 + 5
-    delta.setState(3);
-    assertEquals(total.getState(), 9); // 6 + 3
+    assertEquals(total.get(), 1); // 0 + 1
+    delta.set(5);
+    assertEquals(total.get(), 6); // 1 + 5
+    delta.set(3);
+    assertEquals(total.get(), 9); // 6 + 3
     unsub();
   },
 );
@@ -161,14 +161,14 @@ Deno.test(
     const unsub = doubled.subscribe(() => {});
     unsub(); // go cold
 
-    n.setState(7);
+    n.set(7);
 
     let received = 0;
-    doubled.subscribe((getState) => {
-      received = getState();
+    doubled.subscribe((get) => {
+      received = get();
     });
 
-    n.setState(8);
+    n.set(8);
     assertEquals(received, 16);
   },
 );

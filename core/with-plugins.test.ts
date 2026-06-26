@@ -18,7 +18,7 @@ Deno.test("withPlugins - reducer updates state via dispatch", () => {
   });
 
   store.dispatch.increment(3);
-  assertEquals(store.getState().count, 3);
+  assertEquals(store.get().count, 3);
 });
 
 Deno.test("withPlugins - multiple reducers", () => {
@@ -31,7 +31,7 @@ Deno.test("withPlugins - multiple reducers", () => {
 
   store.dispatch.increment(5);
   store.dispatch.reset();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
 });
 
 Deno.test("withPlugins - duplicate top-level reducer name throws", () => {
@@ -62,9 +62,9 @@ Deno.test("withPlugins - namespaced reducer dispatch", () => {
 
   store.dispatch.list.add("hello");
   store.dispatch.list.add("world");
-  assertEquals(store.getState().items, ["hello", "world"]);
+  assertEquals(store.get().items, ["hello", "world"]);
   store.dispatch.list.clear();
-  assertEquals(store.getState().items, []);
+  assertEquals(store.get().items, []);
 });
 
 Deno.test("withPlugins - duplicate namespace throws", () => {
@@ -135,7 +135,7 @@ Deno.test("withPlugins - middleware can cancel dispatch", () => {
   });
 
   store.dispatch.inc();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
 });
 
 Deno.test("withPlugins - middleware can replace next state", () => {
@@ -145,7 +145,7 @@ Deno.test("withPlugins - middleware can replace next state", () => {
   });
 
   store.dispatch.inc();
-  assertEquals(store.getState().count, 99);
+  assertEquals(store.get().count, 99);
 });
 
 Deno.test("withPlugins - calling next() twice throws", () => {
@@ -192,7 +192,7 @@ Deno.test("withPlugins - methods are added to the store", () => {
     reducers: { set: (_, n: number) => ({ count: n }) },
     methods: (s) => ({
       doubled() {
-        return s.getState().count * 2;
+        return s.get().count * 2;
       },
     }),
   });
@@ -206,7 +206,7 @@ Deno.test("withPlugins - namespaced methods", () => {
     reducers: { set: (_, n: number) => ({ count: n }) },
     methods: (s) => ({
       doubled() {
-        return s.getState().count * 2;
+        return s.get().count * 2;
       },
     }),
   });
@@ -237,7 +237,7 @@ Deno.test("withPlugins - onActivated is called after registration", () => {
   withPlugins({ count: 42 }).use({
     onActivated: (store) => {
       activatedCount++;
-      stateAtActivation = store.getState();
+      stateAtActivation = store.get();
     },
   });
 
@@ -268,16 +268,16 @@ Deno.test("withPlugins - destroy is idempotent", () => {
   store.destroy(); // should not throw
 });
 
-Deno.test("withPlugins - getState throws after destroy", () => {
+Deno.test("withPlugins - get throws after destroy", () => {
   const store = withPlugins({ x: 1 });
   store.destroy();
-  assertThrows(() => store.getState(), Error, "destroyed");
+  assertThrows(() => store.get(), Error, "destroyed");
 });
 
-Deno.test("withPlugins - setState throws after destroy", () => {
+Deno.test("withPlugins - set throws after destroy", () => {
   const store = withPlugins({ x: 1 });
   store.destroy();
-  assertThrows(() => store.setState({ x: 2 }), Error, "destroyed");
+  assertThrows(() => store.set({ x: 2 }), Error, "destroyed");
 });
 
 Deno.test("withPlugins - subscribe throws after destroy", () => {
@@ -314,14 +314,14 @@ Deno.test("withPlugins - upgrades an existing createStore", () => {
     reducers: { reset: (s) => ({ ...s, count: 0 }) },
   });
 
-  base.setState({ count: 5 });
-  assertEquals(store.getState().count, 5);
+  base.set({ count: 5 });
+  assertEquals(store.get().count, 5);
   store.dispatch.reset();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
 });
 
 // ---------------------------------------------------------------------------
-// setState bypasses dispatch pipeline
+// set bypasses dispatch pipeline
 // ---------------------------------------------------------------------------
 
 Deno.test(
@@ -365,7 +365,7 @@ Deno.test(
       });
 
     store.dispatch.inc();
-    assertEquals(store.getState().count, 0);
+    assertEquals(store.get().count, 0);
   },
 );
 
@@ -384,11 +384,11 @@ Deno.test(
 
     store.dispatch.inc();
     assertEquals(called, true);
-    assertEquals(store.getState().count, 1);
+    assertEquals(store.get().count, 1);
   },
 );
 
-Deno.test("withPlugins - setState bypasses middleware", () => {
+Deno.test("withPlugins - set bypasses middleware", () => {
   let middlewareCalls = 0;
   const store = withPlugins({ count: 0 }).use({
     reducers: { inc: (s) => ({ ...s, count: s.count + 1 }) },
@@ -400,9 +400,9 @@ Deno.test("withPlugins - setState bypasses middleware", () => {
     ],
   });
 
-  store.setState({ count: 99 });
+  store.set({ count: 99 });
   assertEquals(middlewareCalls, 0);
-  assertEquals(store.getState().count, 99);
+  assertEquals(store.get().count, 99);
 });
 
 // ---------------------------------------------------------------------------
@@ -416,5 +416,5 @@ Deno.test("withPlugins - multiple use() calls accumulate", () => {
 
   store.dispatch.inc();
   store.dispatch.setLabel("hi");
-  assertEquals(store.getState(), { count: 1, label: "hi" });
+  assertEquals(store.get(), { count: 1, label: "hi" });
 });

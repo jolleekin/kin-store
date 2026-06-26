@@ -12,8 +12,8 @@ Deno.test("listenerWithSelector - fires when selected slice changes", () => {
   );
 
   store.subscribe(listener);
-  store.setState({ count: 1, name: "Alice" });
-  store.setState({ count: 2, name: "Alice" });
+  store.set({ count: 1, name: "Alice" });
+  store.set({ count: 2, name: "Alice" });
   assertEquals(calls.length, 2);
   assertEquals(calls, [0, 1]);
 });
@@ -30,7 +30,7 @@ Deno.test(
     );
 
     store.subscribe(listener);
-    store.setState({ count: 0, name: "Bob" });
+    store.set({ count: 0, name: "Bob" });
     assertEquals(calls, 0);
   },
 );
@@ -47,7 +47,7 @@ Deno.test("listenerWithSelector - getSlice returns current slice", () => {
   );
 
   store.subscribe(listener);
-  store.setState({ count: 10 });
+  store.set({ count: 10 });
   assertEquals(sliceFromCallback, 10);
 });
 
@@ -63,11 +63,11 @@ Deno.test("listenerWithSelector - custom equality function", () => {
 
   store.subscribe(listener);
   // Same content, different reference — should NOT fire
-  store.setState({ items: [1, 2, 3] });
+  store.set({ items: [1, 2, 3] });
   assertEquals(calls, 0);
 
   // Different content — should fire
-  store.setState({ items: [1, 2] });
+  store.set({ items: [1, 2] });
   assertEquals(calls, 1);
 });
 
@@ -85,7 +85,7 @@ Deno.test(
     );
 
     store.subscribe(listener);
-    store.setState({ count: 99 });
+    store.set({ count: 99 });
     assertEquals(prevReceived, 42);
   },
 );

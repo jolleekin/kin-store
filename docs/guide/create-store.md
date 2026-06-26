@@ -14,49 +14,49 @@ type TodoState = { todos: string[]; status: "idle" | "loading" | "failed" };
 const store = createStore({ todos: [], status: "idle" } as TodoState);
 ```
 
-`createStore` holds any value and returns an object with three methods:
-`getState`, `setState`, and `subscribe`. Logic lives in plain top-level
-functions — no dispatch, no action types.
+`createStore` holds any value and returns an object with three methods: `get`,
+`set`, and `subscribe`. Logic lives in plain top-level functions — no dispatch,
+no action types.
 
 ```ts
 function addTodo(text: string): void {
-  store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+  store.set((s) => ({ ...s, todos: [...s.todos, text] }));
 }
 
 async function fetchTodos(): Promise<void> {
-  store.setState((s) => ({ ...s, status: "loading" }));
+  store.set((s) => ({ ...s, status: "loading" }));
   try {
     const todos = await api.getTodos();
-    store.setState({ todos, status: "idle" });
+    store.set({ todos, status: "idle" });
   } catch {
-    store.setState((s) => ({ ...s, status: "failed" }));
+    store.set((s) => ({ ...s, status: "failed" }));
   }
 }
 
 addTodo("Hello world");
-console.log(store.getState()); // { todos: ['Hello world'], status: 'idle' }
+console.log(store.get()); // { todos: ['Hello world'], status: 'idle' }
 ```
 
 ## API
 
-### `getState()`
+### `get()`
 
 Reads the current state synchronously. Always returns the latest value.
 
 ```ts
-const { todos } = store.getState();
+const { todos } = store.get();
 ```
 
-### `setState(nextState)`
+### `set(nextState)`
 
 Accepts a new value or an updater function. Notifies all subscribers.
 
 ```ts
 // Replace the whole state.
-store.setState({ todos: [], status: "idle" });
+store.set({ todos: [], status: "idle" });
 
 // Merge via updater (the idiomatic pattern — avoids stale closures).
-store.setState((s) => ({ ...s, todos: [...s.todos, "new item"] }));
+store.set((s) => ({ ...s, todos: [...s.todos, "new item"] }));
 ```
 
 ### `subscribe(listener)`
@@ -64,17 +64,17 @@ store.setState((s) => ({ ...s, todos: [...s.todos, "new item"] }));
 Fires on every state change. Returns an unsubscribe function.
 
 ```ts
-const unsubscribe = store.subscribe((getState, prevState) => {
-  console.log(prevState, "->", getState());
+const unsubscribe = store.subscribe((get, prevState) => {
+  console.log(prevState, "->", get());
 });
 
 // Stop listening.
 unsubscribe();
 ```
 
-The listener receives `getState` (a getter, not the value itself) and
-`prevState` (the state before the change). Using a getter prevents you from
-accidentally closing over a stale snapshot.
+The listener receives `get` (a getter, not the value itself) and `prevState`
+(the state before the change). Using a getter prevents you from accidentally
+closing over a stale snapshot.
 
 ## `listenerWithSelector`
 
@@ -93,8 +93,8 @@ store.subscribe(
   ),
 );
 
-store.setState({ count: 1, name: "Alice" }); // logs: count: 0 -> 1
-store.setState({ count: 1, name: "Bob" }); // no log — count didn't change
+store.set({ count: 1, name: "Alice" }); // logs: count: 0 -> 1
+store.set({ count: 1, name: "Bob" }); // no log — count didn't change
 ```
 
 ## When to use createStore

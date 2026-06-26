@@ -44,8 +44,8 @@ import type {
  *
  * store.subscribe(listener);
  *
- * store.setState({ count: 1, name: "Alice" }); // logs: count changed: 0 -> 1
- * store.setState({ count: 1, name: "Bob" });   // no log (count unchanged)
+ * store.set({ count: 1, name: "Alice" }); // logs: count changed: 0 -> 1
+ * store.set({ count: 1, name: "Bob" });   // no log (count unchanged)
  * ```
  *
  * @example Using a custom equality function for arrays
@@ -70,8 +70,8 @@ export function listenerWithSelector<TState, TSlice>(
     return slice!;
   }
 
-  return (getState, prevState) => {
-    const nextSlice = selector(getState());
+  return (get, prevState) => {
+    const nextSlice = selector(get());
 
     if (slice === undefined) slice = selector(prevState);
 

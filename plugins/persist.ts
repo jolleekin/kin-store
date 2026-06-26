@@ -236,7 +236,7 @@ type PersistMethods<TState> = {
  *   .use("persist", persist({
  *     key: "app",
  *     selector: (s) => ({ token: s.token }),
- *     merge: (slice, current) => ({ ...current, ...slice }),
+ *     merge: (current, slice) => ({ ...current, ...slice }),
  *   }));
  * ```
  *
@@ -323,7 +323,7 @@ export function persist<
     store: TStore,
     dispatch: InferActions<TState, PersistReducers<TState>>,
   ): Promise<void> {
-    onHydrationStartListeners.forEach((cb) => cb(store.getState()));
+    onHydrationStartListeners.forEach((cb) => cb(store.get()));
 
     try {
       let raw = storage.getItem(key);
@@ -348,13 +348,13 @@ export function persist<
           }
 
           if (slice !== undefined) {
-            dispatch._restore(merge(store.getState(), slice));
+            dispatch._restore(merge(store.get(), slice));
           }
         }
       }
 
       _hasHydrated = true;
-      onHydrationCompleteListeners.forEach((cb) => cb(store.getState()));
+      onHydrationCompleteListeners.forEach((cb) => cb(store.get()));
       resolveActive();
     } catch (e) {
       rejectActive(e);
@@ -420,11 +420,11 @@ export function persist<
         await startHydration(store, dispatch);
       }
 
-      store.subscribe((getState) => {
+      store.subscribe((get) => {
         try {
           storage.setItem(
             key,
-            encode({ value: selector(getState()), version: targetVersion }),
+            encode({ value: selector(get()), version: targetVersion }),
           );
         } catch {
           // Storage errors must not crash the app.

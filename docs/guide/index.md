@@ -16,7 +16,7 @@ type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
 // 1. Async thunk.
 const fetchTodos = createAsyncThunk("todos/fetch", async () => {
   const res = await fetch("/api/todos");
-  return (await res.json()) as Todo[];
+  return (await resp.json()) as Todo[];
 });
 
 // 2. Slice.
@@ -229,7 +229,7 @@ That's Kin Store.
 
 | Primitive                            | What it does                                                                          |
 | ------------------------------------ | ------------------------------------------------------------------------------------- |
-| [`createStore`](/guide/create-store) | The irreducible floor. `getState` · `setState` · `subscribe`. Nothing else.           |
+| [`createStore`](/guide/create-store) | The irreducible floor. `get` · `set` · `subscribe`. Nothing else.                     |
 | [`withPlugins`](/guide/with-plugins) | Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins. |
 | [`derive`](/guide/derive)            | Lazy, dependency-tracked, read-only views composed from one or more stores.           |
 

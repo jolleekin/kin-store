@@ -22,13 +22,13 @@ type ComputeFn<TState> = (
 export type DerivedStore<TState> =
   & Pick<
     Store<TState>,
-    "getState" | "subscribe"
+    "get" | "subscribe"
   >
   & {
     /**
      * Destroys the store, removing all listeners and all dependencies.
      *
-     * It's safe to call `destroy() more than once. However, calling other
+     * It's safe to call `destroy()` more than once. However, calling other
      * methods will throw an error after calling `destroy()`.
      */
     destroy(): void;
@@ -37,7 +37,7 @@ export type DerivedStore<TState> =
 /**
  * Creates a read-only store whose value is computed from other stores.
  *
- * Dependencies are discovered automatically the first time `getState` is
+ * Dependencies are discovered automatically the first time `get` is
  * called (or the first subscriber registers). After that, the derived value is
  * kept in sync reactively — it is recomputed lazily only when a dependency
  * actually changes.
@@ -64,7 +64,7 @@ export type DerivedStore<TState> =
  *   > `prev()` is used. Supply an explicit type parameter in that case:
  *   > `derive<number>((get, prev) => ...)`.
  *
- * @returns A {@linkcode DerivedStore} whose `getState` returns the computed
+ * @returns A {@linkcode DerivedStore} whose `get` returns the computed
  * value.
  *
  * @example Deriving from a single store
@@ -72,10 +72,10 @@ export type DerivedStore<TState> =
  * const counter = createStore(2);
  * const doubled = derive((get) => get(counter) * 2);
  *
- * console.log(doubled.getState()); // 4
+ * console.log(doubled.get()); // 4
  *
- * counter.setState(5);
- * console.log(doubled.getState()); // 10
+ * counter.set(5);
+ * console.log(doubled.get()); // 10
  * ```
  *
  * @example Deriving from multiple stores
@@ -87,10 +87,10 @@ export type DerivedStore<TState> =
  *   (get) => `${get(firstName)} ${get(lastName)}`,
  * );
  *
- * console.log(fullName.getState()); // "Ada Lovelace"
+ * console.log(fullName.get()); // "Ada Lovelace"
  *
- * lastName.setState("Byron");
- * console.log(fullName.getState()); // "Ada Byron"
+ * lastName.set("Byron");
+ * console.log(fullName.get()); // "Ada Byron"
  * ```
  *
  * @example Conditional dependencies — only the active branch is tracked
@@ -109,11 +109,11 @@ export type DerivedStore<TState> =
  * const price = createStore(100);
  * const taxed = derive((get) => get(price) * 1.2);
  *
- * const unsubscribe = taxed.subscribe((getState, prevState) => {
- *   console.log("price changed:", prevState, "->", getState());
+ * const unsubscribe = taxed.subscribe((get, prevState) => {
+ *   console.log("price changed:", prevState, "->", get());
  * });
  *
- * price.setState(200); // logs: price changed: 120 -> 240
+ * price.set(200); // logs: price changed: 120 -> 240
  * unsubscribe();
  * ```
  *
@@ -124,10 +124,10 @@ export type DerivedStore<TState> =
  * // Accumulates each delta into a running total.
  * const total = derive<number>((get, prev) => (prev() ?? 0) + get(delta));
  *
- * total.subscribe((getState) => console.log(getState()));
+ * total.subscribe((get) => console.log(get()));
  *
- * delta.setState(5); // logs: 6  (0 + 1 + 5)
- * delta.setState(3); // logs: 9  (6 + 3)
+ * delta.set(5); // logs: 6  (0 + 1 + 5)
+ * delta.set(3); // logs: 9  (6 + 3)
  * ```
  *
  * @see {@link https://github.com/zustandjs/derive-zustand} — original inspiration
@@ -150,18 +150,18 @@ export function derive<TState>(
     if (isInvalidated) return;
 
     isInvalidated = true;
-    notify(listeners, getState, state!);
+    notify(listeners, get, state!);
   }
 
   function anyDependencyChanged(): boolean {
     for (const store of dependencies!.keys()) {
-      if (!Object.is(store.getState(), dependencies!.get(store))) return true;
+      if (!Object.is(store.get(), dependencies!.get(store))) return true;
     }
 
     return false;
   }
 
-  function getState(): TState {
+  function get(): TState {
     checkDestroyed();
 
     if (!isInvalidated) return state!;
@@ -169,13 +169,13 @@ export function derive<TState>(
     if (!dependencies || anyDependencyChanged()) {
       const newDependencies = new Map<Store, unknown>();
 
-      const get: Getter = <T>(store: Store<T>) => {
-        const s = store.getState();
+      const getter: Getter = <T>(store: Store<T>) => {
+        const s = store.get();
         newDependencies.set(store, s);
         return s;
       };
 
-      state = compute(get, () => state);
+      state = compute(getter, () => state);
       dependencies = newDependencies;
     }
 
@@ -207,7 +207,7 @@ export function derive<TState>(
     listeners.add(listener);
 
     // Trigger read to establish dependencies if this is the first subscriber.
-    if (listeners.size === 1) getState();
+    if (listeners.size === 1) get();
 
     return () => {
       listeners.delete(listener);
@@ -231,8 +231,8 @@ export function derive<TState>(
   }
 
   return {
-    getState,
-    subscribe,
     destroy,
+    get,
+    subscribe,
   };
 }

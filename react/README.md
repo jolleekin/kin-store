@@ -55,9 +55,7 @@ function ActiveTodos(): JSX.Element {
 
   return (
     <ul>
-      {active.map((t) => (
-        <li key={t.id}>{t.title}</li>
-      ))}
+      {active.map((t) => <li key={t.id}>{t.title}</li>)}
     </ul>
   );
 }

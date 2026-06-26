@@ -1,8 +1,7 @@
 # immer
 
-Write reducers (and `setState` calls) as
-[Immer](https://immerjs.github.io/immer/) draft mutations instead of returning
-new state objects.
+Write reducers (and `set` calls) as [Immer](https://immerjs.github.io/immer/)
+draft mutations instead of returning new state objects.
 
 ## Basic usage
 
@@ -22,7 +21,7 @@ const store = withPlugins({ count: 0, items: [] as string[] })
     },
     methods: (store) => ({
       reset(): void {
-        store.setState((draft) => {
+        store.set((draft) => {
           draft.count = 0;
           draft.items = [];
         });
@@ -38,8 +37,7 @@ store.reset();
 The `immer()` wrapper accepts the same fields as a standard `StorePlugin`:
 `reducers`, `middleware`, `methods`, `onActivated`, and `onDestroy`. Inside
 those callbacks, reducers mutate a draft instead of returning a new object, and
-`setState` accepts a recipe `(draft) => void` instead of a full state
-replacement.
+`set` accepts a recipe `(draft) => void` instead of a full state replacement.
 
 ## With namespacing
 

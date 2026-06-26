@@ -1071,8 +1071,8 @@
           <div class="trio-card" id="t1">
             <div class="trio-name">createStore</div>
             <div class="trio-desc">
-              The irreducible floor. <code>getState</code> ·
-              <code>setState</code> · <code>subscribe</code>. Nothing else.
+              The irreducible floor. <code>get</code> ·
+              <code>set</code> · <code>subscribe</code>. Nothing else.
             </div>
           </div>
           <div class="trio-card" id="t2">
@@ -1117,20 +1117,20 @@
 <span class="tk">type</span> TodoState = { todos: string[]; status: <span class="ts">"idle"</span> | <span class="ts">"loading"</span> | <span class="ts">"failed"</span> };
 
 <span class="tk">const</span> todoStore = <span class="tf">createStore</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState);</span><span id="s9-fns" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tk">function</span> <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
-  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, todos: [...state.todos, text] }));
+  todoStore.<span class="tf ks-span s9-set">set</span>((state) => ({ ...state, todos: [...state.todos, text] }));
 }
 
 <span class="tk">async</span> <span class="tk">function</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-  todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
+  todoStore.<span class="tf ks-span s9-set">set</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
   <span class="tk">try</span> {
     <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
     <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
-    todoStore.<span class="tf ks-span s9-set">setState</span>({ todos, status: <span class="ts">"idle"</span> });
+    todoStore.<span class="tf ks-span s9-set">set</span>({ todos, status: <span class="ts">"idle"</span> });
   } <span class="tk">catch</span> {
-    todoStore.<span class="tf ks-span s9-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
+    todoStore.<span class="tf ks-span s9-set">set</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
   }
-}</span><span id="s9-trigger" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tf">addTodo</span>(<span class="ts">'Hello world'</span>);</span><span id="s9-getline" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s9-get">getState</span>(); <span class="tc">// { todos: ["Hello world"], status: "idle" }</span></span><span id="s9-subline" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s9-sub">subscribe</span>((getState, prevState) => {
-  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
+}</span><span id="s9-trigger" class="ks-block" style="display:none;margin-bottom:1.65em"><span class="tf">addTodo</span>(<span class="ts">'Hello world'</span>);</span><span id="s9-getline" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s9-get">get</span>(); <span class="tc">// { todos: ["Hello world"], status: "idle" }</span></span><span id="s9-subline" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s9-sub">subscribe</span>((get, prevState) => {
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">get</span>());
 });</span></code></pre>
           <div
             style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px"
@@ -1139,12 +1139,12 @@
               <h4>createStore</h4>
               <p>
                 Holds any value. Returns three methods:
-                <code>getState</code> · <code>setState</code> ·
+                <code>get</code> · <code>set</code> ·
                 <code>subscribe</code>. Nothing else.
               </p>
             </div>
             <div class="acard" id="sc2">
-              <h4>setState</h4>
+              <h4>set</h4>
               <p>
                 Accepts a new value or an updater
                 <code>(state) =&gt; nextState</code>. Notifies all subscribers.
@@ -1157,7 +1157,7 @@
               </p>
             </div>
             <div class="acard" id="sc4">
-              <h4>getState</h4>
+              <h4>get</h4>
               <p>
                 Reads the current state synchronously. Always the latest value.
               </p>
@@ -1165,8 +1165,8 @@
             <div class="acard" id="sc5">
               <h4>subscribe</h4>
               <p>
-                Fires on every change. Receives a <code>getState</code> getter
-                and the previous state.
+                Fires on every change. Receives a <code>get</code> getter and
+                the previous state.
               </p>
             </div>
           </div>
@@ -1185,7 +1185,7 @@
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
             <span class="accent">Step 2</span> — Move logic inside the store.
-            Still plain setState.
+            Still plain <span class="accent">set</span>.
           </p>
         </div>
         <div
@@ -1200,27 +1200,27 @@
 <span class="tk">const</span> todoStore = <span class="tf">withPlugins</span>({ todos: [], status: <span class="ts">"idle"</span> } <span class="tk">as</span> TodoState)</span><span id="s10-methods" class="ks-block" style="display:none;margin-bottom:1.65em">  .<span class="tf">use</span>({
     methods: (store) => ({
       <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
-        store.<span class="tf ks-span s10-set">setState</span>((state) => ({
+        store.<span class="tf ks-span s10-set">set</span>((state) => ({
           ...state,
           todos: [...state.todos, text],
         }));
       },
 
       <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-        store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
+        store.<span class="tf ks-span s10-set">set</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));
         <span class="tk">try</span> {
           <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
           <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
-          store.<span class="tf ks-span s10-set">setState</span>({ todos, status: <span class="ts">"idle"</span> });
+          store.<span class="tf ks-span s10-set">set</span>({ todos, status: <span class="ts">"idle"</span> });
         } <span class="tk">catch</span> {
-          store.<span class="tf ks-span s10-set">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
+          store.<span class="tf ks-span s10-set">set</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));
         }
       },
     }),
-  });</span><span id="s10-call" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s10-add">addTodo</span>(<span class="ts">"Hello world"</span>);</span><span id="s10-react" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s10-get">getState</span>();
+  });</span><span id="s10-call" class="ks-block" style="display:none;margin-bottom:1.65em">todoStore.<span class="tf ks-span" id="s10-add">addTodo</span>(<span class="ts">"Hello world"</span>);</span><span id="s10-react" class="ks-block" style="display:none">todoStore.<span class="tf ks-span" id="s10-get">get</span>();
 
-todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, prevState) => {
-  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
+todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((get, prevState) => {
+  console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">get</span>());
 });</span></code></pre>
           <div
             style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px"
@@ -1236,7 +1236,7 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
             <div class="acard" id="wc2">
               <h4>methods</h4>
               <p>
-                Factory <code>(store) =&gt; ({...})</code> that returns your
+                Factory <code>(store, pluginCtx) =&gt; ({...})</code> that returns your
                 logic as methods. Methods have full access to the store API.
               </p>
             </div>
@@ -1248,10 +1248,10 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
               </p>
             </div>
             <div class="acard" id="wc4">
-              <h4>getState · subscribe</h4>
+              <h4>get · subscribe</h4>
               <p>
-                Identical to createStore — <code>getState</code> reads
-                synchronously, <code>subscribe</code> fires on every change.
+                Identical to createStore — <code>get</code> reads synchronously,
+                <code>subscribe</code> fires on every change.
               </p>
             </div>
           </div>
@@ -1262,7 +1262,7 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
       <div
         class="slide"
         data-slide="12"
-        data-steps="3"
+        data-steps="4"
         style="justify-content: flex-start; padding-top: 44px; gap: 16px"
       >
         <div>
@@ -1313,7 +1313,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
         </div>
       </div>
 
-      <!-- ══ SLIDE 12 — setState → reducers ═══════════════════════════════ -->
+      <!-- ══ SLIDE 12 — set → reducers ═══════════════════════════════════ -->
       <div
         class="slide"
         data-slide="13"
@@ -1325,7 +1325,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
             <span class="accent">Step 4</span> — Extract <span class="accent"
-            >setState</span> into
+            >set</span> into
             <span class="accent">reducers</span>. Pure functions. Full pipeline.
           </p>
         </div>
@@ -1337,7 +1337,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
             <div
               style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px"
             >
-              BEFORE — <span class="accent">setState</span>
+              BEFORE — <span class="accent">set</span>
             </div>
             <pre
               style="font-size: clamp(10px, 1vw, 12px); line-height: 1.7"
@@ -1347,7 +1347,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
   .<span class="tf">use</span>({
     methods: (store) => ({
       <span class="tf">addTodo</span>(text: string): <span class="tk">void</span> {
-<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({
+<span class="ks-block d12-set">        store.<span class="tf">set</span>((state) => ({
           ...state,
           todos: [...state.todos, text],
         }));</span>      },
@@ -1356,11 +1356,11 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
 
       <span class="tk">async</span> <span class="tf">fetchTodos</span>(): Promise&lt;<span class="tk">void</span>&gt; {
-<span class="ks-block d12-set">        store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));</span>        <span class="tk">try</span> {
+<span class="ks-block d12-set">        store.<span class="tf">set</span>((state) => ({ ...state, status: <span class="ts">"loading"</span> }));</span>        <span class="tk">try</span> {
           <span class="tk">const</span> resp = <span class="tk">await</span> <span class="tf">fetch</span>(<span class="ts">"/api/todos"</span>);
           <span class="tk">const</span> todos = (<span class="tk">await</span> resp.<span class="tf">json</span>()) <span class="tk">as</span> Todo[];
-<span class="ks-block d12-set">          store.<span class="tf">setState</span>({ todos, status: <span class="ts">"idle"</span> });</span>        } <span class="tk">catch</span> {
-<span class="ks-block d12-set">          store.<span class="tf">setState</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));</span>        }
+<span class="ks-block d12-set">          store.<span class="tf">set</span>({ todos, status: <span class="ts">"idle"</span> });</span>        } <span class="tk">catch</span> {
+<span class="ks-block d12-set">          store.<span class="tf">set</span>((state) => ({ ...state, status: <span class="ts">"failed"</span> }));</span>        }
       },
     }),
   });
@@ -1625,7 +1625,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           Kin <span class="accent">Store</span>
         </h1>
         <p class="sub" style="margin-top: 18px">
-          A state library built by arguing with itself.
+          Reactive state you want to use.
         </p>
         <div
           style="margin-top: 52px; display: flex; flex-direction: column; gap: 18px"
@@ -1972,7 +1972,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
         document.getElementById("p11-history").style.display = step >= 3
           ? ""
           : "none";
-        document.getElementById("p11-usage").style.display = step >= 3
+        document.getElementById("p11-usage").style.display = step >= 4
           ? ""
           : "none";
         document.getElementById("p11-immer")?.classList.toggle(
@@ -1987,11 +1987,11 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           "hl",
           step === 3,
         );
-        document.getElementById("p11-usage")?.classList.toggle("hl", step >= 3);
+        document.getElementById("p11-usage")?.classList.toggle("hl", step >= 4);
         plugCards.forEach((c, i) => c?.classList.toggle("on", i < step));
       }
 
-      // ── setState → reducers (before/after) ──────────────────────────────
+      // ── set → reducers (before/after) ───────────────────────────────────
       function applyDiffStep(step) {
         document
           .querySelectorAll(".d12-set")

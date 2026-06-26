@@ -33,7 +33,7 @@ Deno.test("useSelector - re-renders when state changes", () => {
   const store = createStore({ count: 0 });
   const { result } = renderHook(() => useSelector(store));
 
-  act(() => store.setState({ count: 5 }));
+  act(() => store.set({ count: 5 }));
   assertEquals(result.current, { count: 5 });
 });
 
@@ -55,7 +55,7 @@ Deno.test(
     });
 
     const initialRenders = renders;
-    act(() => store.setState({ count: 0, name: "Bob" })); // count unchanged
+    act(() => store.set({ count: 0, name: "Bob" })); // count unchanged
     assertEquals(result.current, 0);
     assertEquals(renders, initialRenders); // no extra render
   },
@@ -65,7 +65,7 @@ Deno.test("useSelector - re-renders when selected field changes", () => {
   const store = createStore({ count: 0, name: "Alice" });
   const { result } = renderHook(() => useSelector(store, (s) => s.count));
 
-  act(() => store.setState({ count: 99, name: "Alice" }));
+  act(() => store.set({ count: 99, name: "Alice" }));
   assertEquals(result.current, 99);
 });
 
@@ -89,7 +89,7 @@ Deno.test(
     });
 
     const initialRenders = renders;
-    act(() => store.setState({ items: [1, 2, 3] })); // same content
+    act(() => store.set({ items: [1, 2, 3] })); // same content
     assertEquals(result.current, [1, 2, 3]);
     assertEquals(renders, initialRenders);
   },
@@ -105,7 +105,7 @@ Deno.test("useSelectorWithEquality - re-renders when content differs", () => {
     )
   );
 
-  act(() => store.setState({ items: [1, 2] }));
+  act(() => store.set({ items: [1, 2] }));
   assertEquals(result.current, [1, 2]);
 });
 
@@ -124,7 +124,7 @@ Deno.test(
     });
 
     const ref1 = result.current;
-    act(() => store.setState({ items: [1, 2, 3] }));
+    act(() => store.set({ items: [1, 2, 3] }));
     const ref2 = result.current;
 
     assertEquals(ref1 === ref2, true); // same reference

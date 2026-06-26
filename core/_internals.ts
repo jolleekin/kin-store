@@ -8,10 +8,10 @@ export function throwError(msg: string): never {
 
 export function notify<TState>(
   listeners: Set<Listener<TState>>,
-  getState: () => TState,
+  get: () => TState,
   prevState: TState,
 ): void {
   for (const listener of Array.from(listeners)) {
-    listener(getState, prevState);
+    listener(get, prevState);
   }
 }

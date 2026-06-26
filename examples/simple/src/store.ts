@@ -13,30 +13,30 @@ export const todoStore = createStore({
   filter: "all" as Filter,
 });
 
-const { setState } = todoStore;
+const { set } = todoStore;
 
 export function addTodo(text: string): void {
-  setState((s) => ({
+  set((s) => ({
     ...s,
     items: [...s.items, { id: Date.now(), text, done: false }],
   }));
 }
 
 export function toggleTodo(id: number): void {
-  setState((s) => ({
+  set((s) => ({
     ...s,
     items: s.items.map((it) => (it.id === id ? { ...it, done: !it.done } : it)),
   }));
 }
 
 export function removeTodo(id: number): void {
-  setState((s) => ({ ...s, items: s.items.filter((it) => it.id !== id) }));
+  set((s) => ({ ...s, items: s.items.filter((it) => it.id !== id) }));
 }
 
 export function clearDone(): void {
-  setState((s) => ({ ...s, items: s.items.filter((it) => !it.done) }));
+  set((s) => ({ ...s, items: s.items.filter((it) => !it.done) }));
 }
 
 export function setFilter(filter: Filter): void {
-  setState((s) => ({ ...s, filter }));
+  set((s) => ({ ...s, filter }));
 }

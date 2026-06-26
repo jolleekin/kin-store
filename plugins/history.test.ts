@@ -30,7 +30,7 @@ Deno.test("history - undo restores previous state", () => {
   store.dispatch.increment(1);
   store.dispatch.increment(1);
   store.history.undo();
-  assertEquals(store.getState().count, 1);
+  assertEquals(store.get().count, 1);
 });
 
 Deno.test("history - redo re-applies undone change", () => {
@@ -39,7 +39,7 @@ Deno.test("history - redo re-applies undone change", () => {
   store.dispatch.increment(1);
   store.history.undo();
   store.history.redo();
-  assertEquals(store.getState().count, 2);
+  assertEquals(store.get().count, 2);
 });
 
 Deno.test("history - undo returns true when it moves, false at start", () => {
@@ -47,7 +47,7 @@ Deno.test("history - undo returns true when it moves, false at start", () => {
   assertEquals(store.history.undo(), false);
   store.dispatch.increment(1);
   assertEquals(store.history.undo(), true);
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
   assertEquals(store.history.undo(), false);
 });
 
@@ -57,7 +57,7 @@ Deno.test("history - redo returns true when it moves, false at end", () => {
   assertEquals(store.history.redo(), false);
   store.history.undo();
   assertEquals(store.history.redo(), true);
-  assertEquals(store.getState().count, 1);
+  assertEquals(store.get().count, 1);
   assertEquals(store.history.redo(), false);
 });
 
@@ -66,7 +66,7 @@ Deno.test("history - reset returns to initial state and clears history", () => {
   store.dispatch.increment(1);
   store.dispatch.increment(1);
   store.history.reset();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
   assertEquals(store.history.canUndo(), false);
   assertEquals(store.history.canRedo(), false);
 });
@@ -78,15 +78,15 @@ Deno.test("history - new dispatch after undo clears redo stack", () => {
   store.history.undo(); // count=1
   store.dispatch.set(99); // count=99 → redo stack cleared
   assertEquals(store.history.canRedo(), false);
-  assertEquals(store.getState().count, 99);
+  assertEquals(store.get().count, 99);
 });
 
-Deno.test("history - setState also recorded in history", () => {
+Deno.test("history - set also recorded in history", () => {
   const store = makeStore();
-  store.setState({ count: 42 });
+  store.set({ count: 42 });
   assertEquals(store.history.canUndo(), true);
   store.history.undo();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
 });
 
 Deno.test("history - canRedo false after undo then undo at start", () => {
@@ -106,7 +106,7 @@ Deno.test("history - rebase discards prior history", () => {
 
   store.dispatch.increment(1);
   store.history.reset();
-  assertEquals(store.getState().count, 5);
+  assertEquals(store.get().count, 5);
 });
 
 Deno.test("history - limit caps snapshot count", () => {
@@ -117,14 +117,14 @@ Deno.test("history - limit caps snapshot count", () => {
   store.dispatch.set(1);
   store.dispatch.set(2);
   store.dispatch.set(3); // snapshots: [1, 2, 3] — initial 0 was evicted
-  assertEquals(store.getState().count, 3);
+  assertEquals(store.get().count, 3);
   assertEquals(store.history.canUndo(), true);
 
   store.history.undo(); // → 2
   store.history.undo(); // → 1
   // Oldest remembered state is 1 (initial 0 was dropped), so canUndo is false
   assertEquals(store.history.canUndo(), false);
-  assertEquals(store.getState().count, 1);
+  assertEquals(store.get().count, 1);
 });
 
 Deno.test("history - limit: reset restores earliest remembered state", () => {
@@ -135,7 +135,7 @@ Deno.test("history - limit: reset restores earliest remembered state", () => {
   store.dispatch.set(1);
   store.dispatch.set(2); // snapshots: [1, 2] — initial 0 evicted
   store.history.reset();
-  assertEquals(store.getState().count, 1); // earliest remembered, not original
+  assertEquals(store.get().count, 1); // earliest remembered, not original
 });
 
 Deno.test("history - multiple undos and redos", () => {
@@ -146,11 +146,11 @@ Deno.test("history - multiple undos and redos", () => {
 
   store.history.undo(); // → 2
   store.history.undo(); // → 1
-  assertEquals(store.getState().count, 1);
+  assertEquals(store.get().count, 1);
   assertEquals(store.history.canUndo(), true);
 
   store.history.redo(); // → 2
   store.history.redo(); // → 3
-  assertEquals(store.getState().count, 3);
+  assertEquals(store.get().count, 3);
   assertEquals(store.history.canRedo(), false);
 });

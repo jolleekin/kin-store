@@ -80,11 +80,11 @@ type TodoState = { todos: string[]; status: "idle" | "loading" };
 const store = createStore({ todos: [], status: "idle" } as TodoState);
 
 function addTodo(text: string): void {
-  store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+  store.set((s) => ({ ...s, todos: [...s.todos, text] }));
 }
 
 addTodo("Buy groceries");
-console.log(store.getState());
+console.log(store.get());
 // { todos: ['Buy groceries'], status: 'idle' }
 ```
 
@@ -100,7 +100,7 @@ const store = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use({
     methods: (store) => ({
       addTodo(text: string): void {
-        store.setState((s) => ({ ...s, todos: [...s.todos, text] }));
+        store.set((s) => ({ ...s, todos: [...s.todos, text] }));
       },
     }),
   });

@@ -232,7 +232,7 @@ export type StoreWithPlugins<
      * plugins.
      *
      * Calling `destroy()` more than once is safe and does nothing after the
-     * first call. However, calling any other method (`getState`, `setState`,
+     * first call. However, calling any other method (`get`, `set`,
      * `subscribe`, `use`, `dispatch.*`, methods defined by plugins) after
      * `destroy()` throws.
      */
@@ -268,7 +268,7 @@ export type StoreWithPlugins<
      * Methods are powerful as they can have arbitrary logic with full access to
      * the store API. They can compute and return a derived value from the
      * current state, fetch data, dispatch actions, or call
-     * {@linkcode StoreWithPlugins.setState setState} to bypass the dispatch
+     * {@linkcode StoreWithPlugins.set set} to bypass the dispatch
      * pipeline, and so on.
      *
      * @example Top-level plugin with reducers, middleware, and methods
@@ -454,16 +454,16 @@ type ArrayOr<T> = T[] | T;
  *
  *   methods: (store) => ({
  *     doubleCount(): number {
- *       return store.getState().count * 2;
+ *       return store.get().count * 2;
  *     },
  *   }),
  *
  *   onActivated: (store) => {
- *     console.log("plugin activated, initial state:", store.getState());
+ *     console.log("plugin activated, initial state:", store.get());
  *   },
  *
  *   onDestroy: (store) => {
- *     console.log("store destroyed, final state:", store.getState());
+ *     console.log("store destroyed, final state:", store.get());
  *   },
  * };
  *
@@ -559,7 +559,7 @@ export type StorePlugin<
    * {@linkcode PluginContext options} object.
    *
    * Methods can contain arbitrary logic — including async operations — and have
-   * full access to the store API: `getState`, `setState`, `subscribe`, and all
+   * full access to the store API: `get`, `set`, `subscribe`, and all
    * `dispatch.*` actions.
    *
    * Methods contributed by this plugin are **not** available to `methods`
@@ -595,8 +595,8 @@ export type StorePlugin<
    * @example Subscribing to state changes on activation
    * ```ts
    * onActivated: (store) => {
-   *   store.subscribe((getState) => {
-   *     console.log("state changed:", getState());
+   *   store.subscribe((get) => {
+   *     console.log("state changed:", get());
    *   });
    * }
    * ```
@@ -648,7 +648,7 @@ export type StorePlugin<
  * Exposes the `namespace` the plugin was registered under (if any), which lets
  * the plugin locate its own actions on the dispatch object and its own methods.
  *
- * To access state at registration time, call `store.getState()` inside
+ * To access state at registration time, call `store.get()` inside
  * {@linkcode StorePlugin.onActivated onActivated}.
  *
  * @template TNamespace The namespace under which the plugin was registered, or
@@ -729,7 +729,7 @@ const { keys, hasOwn } = Object;
  * });
  *
  * store.dispatch.increment(1);
- * console.log(store.getState().count); // 1
+ * console.log(store.get().count); // 1
  * ```
  *
  * @example Upgrading an existing store
@@ -786,16 +786,16 @@ export function withPlugins<TState>(
     isDestroyed = true;
   };
 
-  const originalGetState = store.getState;
-  store.getState = () => {
+  const originalGet = store.get;
+  store.get = () => {
     checkDestroyed();
-    return originalGetState();
+    return originalGet();
   };
 
-  const originalSetState = store.setState;
-  store.setState = (next) => {
+  const originalSet = store.set;
+  store.set = (next) => {
     checkDestroyed();
-    originalSetState(next);
+    originalSet(next);
   };
 
   const originalSubscribe = store.subscribe;
@@ -825,7 +825,7 @@ export function withPlugins<TState>(
     isDispatching = true;
 
     try {
-      const state = store.getState();
+      const state = store.get();
 
       const next = () => reducer(state, ...args);
 
@@ -844,7 +844,7 @@ export function withPlugins<TState>(
         nextState = next();
       }
 
-      if (nextState !== CANCELED) store.setState(nextState);
+      if (nextState !== CANCELED) store.set(nextState);
     } finally {
       isDispatching = false;
     }

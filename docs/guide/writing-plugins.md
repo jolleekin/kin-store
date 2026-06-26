@@ -32,19 +32,19 @@ when `store.destroy()` is called:
 ```ts
 const store = withPlugins({ count: 0 }).use({
   onActivated: (store) => {
-    console.log("initial state:", store.getState());
+    console.log("initial state:", store.get());
   },
   onDestroy: (store) => {
-    console.log("final state:", store.getState());
+    console.log("final state:", store.get());
   },
 });
 ```
 
 ## Mutating state from a plugin
 
-All changes to the store's primary state should go through a reducer, not
-`setState`. This keeps them visible to middleware — users can log them, trace
-them, or cancel them.
+All changes to the store's primary state should go through a reducer, not `set`.
+This keeps them visible to middleware — users can log them, trace them, or
+cancel them.
 
 The official `persist` and `history` plugins follow this: their internal
 `_restore` reducer travels through the full pipeline, so a logging middleware
@@ -64,8 +64,8 @@ middleware: (store, pluginCtx) => (ctx, next) => {
 },
 ```
 
-Use `setState` only for plugin-internal bookkeeping or as an intentional escape
-hatch that must bypass the pipeline.
+Use `set` only for plugin-internal bookkeeping or as an intentional escape hatch
+that must bypass the pipeline.
 
 ## Using `getPluginDispatch`
 

@@ -14,7 +14,7 @@ Deno.test("immer - reducer mutates draft to produce new state", () => {
   );
 
   store.dispatch.increment(3);
-  assertEquals(store.getState().count, 3);
+  assertEquals(store.get().count, 3);
 });
 
 Deno.test("immer - multiple reducers", () => {
@@ -33,7 +33,7 @@ Deno.test("immer - multiple reducers", () => {
 
   store.dispatch.increment(2);
   store.dispatch.addItem("hello");
-  assertEquals(store.getState(), { count: 2, items: ["hello"] });
+  assertEquals(store.get(), { count: 2, items: ["hello"] });
 });
 
 Deno.test("immer - original state is not mutated", () => {
@@ -52,7 +52,7 @@ Deno.test("immer - original state is not mutated", () => {
   assertEquals(initial.count, 0); // untouched
 });
 
-Deno.test("immer - setState in methods accepts a recipe", () => {
+Deno.test("immer - set in methods accepts a recipe", () => {
   const store = withPlugins({ count: 0, items: [] as string[] }).use(
     immer({
       reducers: {
@@ -62,7 +62,7 @@ Deno.test("immer - setState in methods accepts a recipe", () => {
       },
       methods: (s) => ({
         reset() {
-          s.setState((draft) => {
+          s.set((draft) => {
             draft.count = 0;
             draft.items = [];
           });
@@ -73,7 +73,7 @@ Deno.test("immer - setState in methods accepts a recipe", () => {
 
   store.dispatch.increment(5);
   (store as unknown as { reset(): void }).reset();
-  assertEquals(store.getState(), { count: 0, items: [] });
+  assertEquals(store.get(), { count: 0, items: [] });
 });
 
 Deno.test("immer - namespaced immer plugin", () => {
@@ -94,7 +94,7 @@ Deno.test("immer - namespaced immer plugin", () => {
 
   store.dispatch.todos.add("Buy milk");
   store.dispatch.todos.complete(0);
-  assertEquals(store.getState().todos[0], { title: "Buy milk", done: true });
+  assertEquals(store.get().todos[0], { title: "Buy milk", done: true });
 });
 
 Deno.test("immer - middlewares still run for immer reducers", () => {
@@ -125,7 +125,7 @@ Deno.test("immer - onActivated receives immer-wrapped store", () => {
     immer({
       reducers: {},
       onActivated: (store) => {
-        stateAtActivation = store.getState();
+        stateAtActivation = store.get();
       },
     }),
   );
@@ -145,9 +145,9 @@ Deno.test("immer - array push via draft does not share refs across dispatches", 
   );
 
   store.dispatch.push(1);
-  const snap1 = store.getState().items;
+  const snap1 = store.get().items;
   store.dispatch.push(2);
-  const snap2 = store.getState().items;
+  const snap2 = store.get().items;
 
   assertEquals(snap1, [1]);
   assertEquals(snap2, [1, 2]);

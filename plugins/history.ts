@@ -64,7 +64,7 @@ export type HistoryOptions = {
  * Plugin that tracks state history and enables undo / redo / reset.
  *
  * Every state change that goes through the dispatch pipeline is recorded.
- * Changes made via {@linkcode import("@kin-store/core/index.ts").StoreWithPlugins.setState setState}
+ * Changes made via {@linkcode import("@kin-store/core/index.ts").StoreWithPlugins.set set}
  * (which bypasses the pipeline) are **also** recorded because the plugin
  * subscribes to all state changes via `store.subscribe`.
  *
@@ -76,7 +76,7 @@ export type HistoryOptions = {
  * you do not need to pass it to the plugin factory itself.
  *
  * The plugin works by saving state snapshots rather than reducer actions so it
- * can support both reducer-based and `setState`-based mutations.
+ * can support both reducer-based and `set`-based mutations.
  *
  * Pass `{ limit }` to cap memory use in apps with frequent state changes.
  * Once the limit is reached, the oldest snapshot is dropped on each new change.
@@ -172,7 +172,7 @@ export function history<
           isRestoring = false;
         },
         rebase() {
-          snapshots[0] = store.getState();
+          snapshots[0] = store.get();
           snapshots.length = 1;
           index = 0;
         },
@@ -188,13 +188,13 @@ export function history<
     },
 
     onActivated: (store) => {
-      snapshots.push(store.getState());
+      snapshots.push(store.get());
 
-      store.subscribe((getState) => {
+      store.subscribe((get) => {
         if (isRestoring) return;
 
         snapshots.length = index + 1;
-        snapshots.push(getState());
+        snapshots.push(get());
         if (snapshots.length > limit) {
           snapshots.shift();
         }

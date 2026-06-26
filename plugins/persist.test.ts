@@ -32,7 +32,7 @@ Deno.test("persist - hydrates state from storage on activation", async () => {
 
   const store = makeStore(storage);
   await store.persist.hydrationComplete();
-  assertEquals(store.getState().count, 42);
+  assertEquals(store.get().count, 42);
 });
 
 Deno.test("persist - persists state changes to storage", async () => {
@@ -78,11 +78,11 @@ Deno.test("persist - skipHydration skips auto-hydration", async () => {
     );
 
   // Not hydrated yet
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
   assertEquals(store.persist.hasHydrated(), false);
 
   await store.persist.hydrate();
-  assertEquals(store.getState().count, 99);
+  assertEquals(store.get().count, 99);
   assertEquals(store.persist.hasHydrated(), true);
 });
 
@@ -100,7 +100,7 @@ Deno.test("persist - selector persists only a slice", async () => {
     );
 
   await store.persist.hydrationComplete();
-  store.setState({ count: 7, label: "world" });
+  store.set({ count: 7, label: "world" });
 
   const raw = storage.getItem("slice-test") as string;
   const stored = JSON.parse(raw);
@@ -120,7 +120,7 @@ Deno.test("persist - version mismatch without migrate discards stored value", as
     .use("persist", persist({ key: "v-test", storage, version: 1 }));
 
   await store.persist.hydrationComplete();
-  assertEquals(store.getState().count, 0); // discarded
+  assertEquals(store.get().count, 0); // discarded
 });
 
 Deno.test("persist - migrate is called on version mismatch", async () => {
@@ -144,7 +144,7 @@ Deno.test("persist - migrate is called on version mismatch", async () => {
     );
 
   await store.persist.hydrationComplete();
-  assertEquals(store.getState().count, 110);
+  assertEquals(store.get().count, 110);
 });
 
 Deno.test("persist - corrupted storage is silently ignored", async () => {
@@ -155,7 +155,7 @@ Deno.test("persist - corrupted storage is silently ignored", async () => {
     .use("persist", persist({ key: "bad-test", storage }));
 
   await store.persist.hydrationComplete();
-  assertEquals(store.getState().count, 0);
+  assertEquals(store.get().count, 0);
 });
 
 Deno.test("persist - onHydrationStart fires before hydration", async () => {
@@ -237,5 +237,5 @@ Deno.test("persist - async storage is supported", async () => {
     .use("persist", persist({ key: "async-test", storage: asyncStorage }));
 
   await store.persist.hydrationComplete();
-  assertEquals(store.getState().count, 33);
+  assertEquals(store.get().count, 33);
 });
