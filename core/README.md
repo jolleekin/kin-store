@@ -1,10 +1,11 @@
 # @kin-store/core
 
 [![JSR @kin-store/core](https://jsr.io/badges/@kin-store/core)](https://jsr.io/@kin-store/core)
-![License: MIT](https://img.shields.io/badge/License-MIT-166534?style=flat-square)
-![Tiny footprint](https://img.shields.io/badge/Tiny%20footprint-166534?style=flat-square)
-![100% type-safe](https://img.shields.io/badge/100%25%20type--safe-166534?style=flat-square)
-![Zero dependencies](https://img.shields.io/badge/Zero%20dependencies-166534?style=flat-square)
+![License: MIT](https://img.shields.io/badge/License-MIT-166534?style=flat)
+![Framework-agnostic](https://img.shields.io/badge/Framework--agnostic-166534?style=flat)
+![Tiny footprint](https://img.shields.io/badge/Tiny%20footprint-166534?style=flat)
+![100% type-safe](https://img.shields.io/badge/100%25%20type--safe-166534?style=flat)
+![Zero dependencies](https://img.shields.io/badge/Zero%20dependencies-166534?style=flat)
 
 Reactive state you want to use.
 
