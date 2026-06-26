@@ -28,7 +28,7 @@ function toggle(): void {
   position: absolute;
   top: 7px;
   right: 8px;
-  z-index: 100;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
