@@ -24,7 +24,7 @@ Reactive state you want to use.
 | Low boilerplate           |                                                       ✅                                                       |   ⚠️    |     ❌      |   ⚠️    |   ⚠️   |
 | Linear plugin composition |                                                       ✅                                                       |   ❌    |     ❌      |    —    |   —    |
 | Separate state and logic  |                                                       ✅                                                       |   ❌    |     ✅      |    —    |   ✅   |
-| Opt-in complexity         |                                                       ✅                                                       |   ⚠️    |     ❌      |   ⚠️    |   ❌   |
+| Opt-in complexity         |                                                       ✅                                                       |   ✅    |     ❌      |   ⚠️    |   ❌   |
 | No hidden magic           |                                                       ✅                                                       |   ✅    |     ✅      |   ⚠️    |   ❌   |
 | Reactive composition      |                                                       ✅                                                       |   ⚠️    |     ❌      |   ✅    |   ✅   |
 
