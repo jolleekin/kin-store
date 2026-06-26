@@ -1,4 +1,4 @@
-# kin-store
+# Kin Store
 
 [![JSR @kin-store](https://jsr.io/badges/@kin-store)](https://jsr.io/@kin-store)
 ![License: MIT](https://img.shields.io/badge/License-MIT-166534?style=flat)
@@ -29,3 +29,11 @@ Reactive state you want to use.
 | Reactive composition      |                                  ✅                                  |   ⚠️    |     ❌      |   ✅    |   ✅   |
 
 Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import `withPlugins` and pay 1.07 KB. The plugin bundles (`persist`, `history`, `immer`) add only what you import.
+
+## Packages
+
+| Package                                     | Description                                                  |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| [`@kin-store/core`](./core/README.md)       | `createStore`, `withPlugins`, `derive` — the core primitives |
+| [`@kin-store/plugins`](./plugins/README.md) | `persist`, `history`, `immer` — official plugins             |
+| [`@kin-store/react`](./react/README.md)     | `useSelector`, `useSelectorWithEquality` — React bindings    |
