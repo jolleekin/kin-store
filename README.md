@@ -11,33 +11,21 @@ Reactive state you want to use.
 
 ## Docs
 
-[→ Documentation website](https://kin-store.pages.dev)
+[→ Documentation website](https://kinstore.dev)
 
 ## Feature matrix
 
-|                           | **Kin Store** | Zustand | Redux / RTK | Jotai | MobX |
-| ------------------------- | :-----------: | :-----: | :---------: | :---: | :--: |
-| Zero dependencies         |      ✅       |   ✅    |     ❌      |  ✅   |  ❌  |
-| Tiny footprint            |      ✅       |   ✅    |     ❌      |  ✅   |  ❌  |
-| 100% type-safe            |      ✅       |   ⚠️    |     ⚠️      |  ✅   |  ⚠️  |
-| Linear plugin composition |      ✅       |   ❌    |     ❌      |   —   |  —   |
-| Separate state and logic  |      ✅       |   ❌    |     ✅      |   —   |  ✅  |
-| Opt-in complexity         |      ✅       |   ❌    |     ❌      |  ✅   |  ❌  |
-| No hidden magic           |      ✅       |   ✅    |     ✅      |  ⚠️   |  ❌  |
-| Reactive composition      |      ✅       |   ❌    |     ❌      |  ✅   |  ✅  |
-
-## Bundle size
-
-| Package                                                    | Minified + gzip |
-| ---------------------------------------------------------- | --------------- |
-| **`@kin-store/core`**                                      | —               |
-| &nbsp;&nbsp;↳ `createStore` alone                          | **244 B**       |
-| &nbsp;&nbsp;↳ `derive` alone                               | **465 B**       |
-| &nbsp;&nbsp;↳ `withPlugins` (full plugin system)           | **1.07 KB**     |
-| `zustand` core                                             | ~1.2 KB         |
-| `jotai` core                                               | ~3.5 KB         |
-| `@reduxjs/toolkit`                                         | ~11 KB          |
-| `mobx`                                                     | ~16 KB          |
+|                           |                            **Kin Store**                             | Zustand | Redux / RTK |  Jotai  |  MobX  |
+| ------------------------- | :------------------------------------------------------------------: | :-----: | :---------: | :-----: | :----: |
+| Bundle size               | 244 B (minimal)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>465 B (composition)<br/>1.07 KB (plugin support) | ~1.1 KB |   ~10 KB    | ~3.5 KB | ~16 KB |
+| Zero dependencies         |                                  ✅                                  |   ✅    |     ❌      |   ✅    |   ✅   |
+| Tiny footprint            |                                  ✅                                  |   ✅    |     ❌      |   ✅    |   ❌   |
+| 100% type-safe            |                                  ✅                                  |   ⚠️    |     ⚠️      |   ✅    |   ✅   |
+| Low boilerplate           |                                  ✅                                  |   ⚠️    |     ❌      |   ⚠️    |   ⚠️   |
+| Linear plugin composition |                                  ✅                                  |   ❌    |     ❌      |    —    |   —    |
+| Separate state and logic  |                                  ✅                                  |   ❌    |     ✅      |    —    |   ✅   |
+| Opt-in complexity         |                                  ✅                                  |   ⚠️    |     ❌      |   ⚠️    |   ❌   |
+| No hidden magic           |                                  ✅                                  |   ✅    |     ✅      |   ⚠️    |   ❌   |
+| Reactive composition      |                                  ✅                                  |   ⚠️    |     ❌      |   ✅    |   ✅   |
 
 Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import `withPlugins` and pay 1.07 KB. The plugin bundles (`persist`, `history`, `immer`) add only what you import.
-

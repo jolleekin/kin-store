@@ -12,7 +12,7 @@ const rows = [
   },
   { label: 'Zero dependencies',         kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '✅', trimmed: true },
   { label: 'Tiny footprint',            kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '❌' },
-  { label: '100% type-safe',            kin: '✅', zustand: '⚠️', redux: '⚠️', jotai: '✅', mobx: '⚠️', trimmed: true },
+  { label: '100% type-safe',            kin: '✅', zustand: '⚠️', redux: '⚠️', jotai: '✅', mobx: '✅', trimmed: true },
   { label: 'Low boilerplate',           kin: '✅', zustand: '⚠️', redux: '❌', jotai: '⚠️', mobx: '⚠️', trimmed: true },
   { label: 'Linear plugin composition', kin: '✅', zustand: '❌', redux: '❌', jotai: '—',  mobx: '—' },
   { label: 'Separate state and logic',  kin: '✅', zustand: '❌', redux: '✅', jotai: '—',  mobx: '✅' },
