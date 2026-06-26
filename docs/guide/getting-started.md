@@ -73,7 +73,7 @@ deno add jsr:@kin-store/plugins
 Create a store, write plain functions, done:
 
 ```ts
-import { createStore } from '@kin-store/core';
+import { createStore } from '@kin-store/core/index.ts';
 
 type TodoState = { todos: string[]; status: 'idle' | 'loading' };
 
@@ -91,8 +91,8 @@ console.log(store.getState());
 When your app grows, move logic into the store with `.use()`:
 
 ```ts
-import { withPlugins } from '@kin-store/core';
-import { persist, history } from '@kin-store/plugins';
+import { withPlugins } from '@kin-store/core/index.ts';
+import { persist, history } from '@kin-store/plugins/index.ts';
 
 const store = withPlugins({ todos: [], status: 'idle' } as TodoState)
   .use('persist', persist({ key: 'todos' }))

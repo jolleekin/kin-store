@@ -3,7 +3,7 @@
 The irreducible floor. A value and three methods.
 
 ```ts
-import { createStore } from '@kin-store/core';
+import { createStore } from '@kin-store/core/index.ts';
 ```
 
 ## Basic usage
@@ -77,7 +77,7 @@ The listener receives `getState` (a getter, not the value itself) and `prevState
 Wraps a listener so it only fires when a selected slice of the state changes. Useful for subscribing to a store outside of React without unnecessary re-runs.
 
 ```ts
-import { listenerWithSelector } from '@kin-store/core';
+import { listenerWithSelector } from '@kin-store/core/index.ts';
 
 const store = createStore({ count: 0, name: 'Alice' });
 

@@ -5,8 +5,8 @@ Write reducers (and `setState` calls) as [Immer](https://immerjs.github.io/immer
 ## Basic usage
 
 ```ts
-import { withPlugins } from '@kin-store/core';
-import { immer } from '@kin-store/plugins';
+import { withPlugins } from '@kin-store/core/index.ts';
+import { immer } from '@kin-store/plugins/index.ts';
 
 const store = withPlugins({ count: 0, items: [] as string[] })
   .use(immer({

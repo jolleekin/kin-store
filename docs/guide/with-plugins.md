@@ -3,7 +3,7 @@
 Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins.
 
 ```ts
-import { withPlugins } from '@kin-store/core';
+import { withPlugins } from '@kin-store/core/index.ts';
 ```
 
 `withPlugins` upgrades a store with a plugin system. Each `.use()` call adds capability — not a nesting level. The store's type is updated at each step, so TypeScript always knows exactly what's available.
@@ -42,7 +42,7 @@ await todoStore.fetchTodos();
 Plugins are added with `.use(namespace, plugin)`. Each sits under its own key — no conflicts, no surprises:
 
 ```ts
-import { history, persist } from '@kin-store/plugins';
+import { history, persist } from '@kin-store/plugins/index.ts';
 
 const todoStore = withPlugins({ todos: [], status: 'idle' } as TodoState)
   .use('persist', persist({ key: 'todos' }))
@@ -65,8 +65,8 @@ await todoStore.persist.hydrate();
 When you want auditability, extract state mutations into `reducers`. Each reducer is a pure function `(state, ...args) => nextState`. Reducers are called through `store.dispatch.*` — they travel through the full middleware pipeline, making every state change observable and traceable.
 
 ```ts
-import { withPlugins, CANCELED } from '@kin-store/core';
-import { history, persist } from '@kin-store/plugins';
+import { withPlugins, CANCELED } from '@kin-store/core/index.ts';
+import { history, persist } from '@kin-store/plugins/index.ts';
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
@@ -122,7 +122,7 @@ Methods can use both: `dispatch.*` for traceable changes, `setState` when they n
 Return `CANCELED` from a middleware to abort a dispatch without updating state:
 
 ```ts
-import { CANCELED } from '@kin-store/core';
+import { CANCELED } from '@kin-store/core/index.ts';
 
 middleware: (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;

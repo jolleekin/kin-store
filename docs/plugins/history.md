@@ -5,8 +5,8 @@ Tracks state history and enables undo / redo / reset. Every state change — whe
 ## Basic usage
 
 ```ts
-import { withPlugins } from '@kin-store/core';
-import { history } from '@kin-store/plugins';
+import { withPlugins } from '@kin-store/core/index.ts';
+import { history } from '@kin-store/plugins/index.ts';
 
 const store = withPlugins({ count: 0 })
   .use({

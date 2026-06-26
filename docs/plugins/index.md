@@ -33,8 +33,8 @@ deno add jsr:@kin-store/plugins
 All plugins are applied with `.use()`. Namespaced plugins (like `persist` and `history`) expose their methods under their namespace key:
 
 ```ts
-import { withPlugins } from '@kin-store/core'
-import { persist, history, immer } from '@kin-store/plugins'
+import { withPlugins } from '@kin-store/core/index.ts'
+import { persist, history, immer } from '@kin-store/plugins/index.ts'
 
 const store = withPlugins({ todos: [] as string[], count: 0 })
   .use('persist', persist({ key: 'my-store' }))

@@ -25,7 +25,7 @@ deno add jsr:@kin-store/react
 Subscribes a component to a store and re-renders when the selected slice changes. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
-import { useSelector } from '@kin-store/react';
+import { useSelector } from '@kin-store/react/index.ts';
 
 // Subscribe to the whole state.
 function Counter(): JSX.Element {
@@ -59,7 +59,7 @@ function Header() {
 Like `useSelector`, but accepts a custom equality function. Use this when the selector returns a new object or array reference on every call (e.g. `.filter()`, `.map()`, object literals):
 
 ```tsx
-import { useSelectorWithEquality } from '@kin-store/react';
+import { useSelectorWithEquality } from '@kin-store/react/index.ts';
 
 function ActiveTodos(): JSX.Element {
   const active = useSelectorWithEquality(
@@ -79,8 +79,8 @@ Without a custom equality function, a selector returning a new array on every ca
 Inject a store via React context — useful for testing or SSR where you want to avoid module-level singletons:
 
 ```tsx
-import { StoreProvider, useStoreContext, useSelector } from '@kin-store/react';
-import { withPlugins } from '@kin-store/core';
+import { StoreProvider, useStoreContext, useSelector } from '@kin-store/react/index.ts';
+import { withPlugins } from '@kin-store/core/index.ts';
 
 const store = withPlugins({ count: 0 }).use({
   reducers: {

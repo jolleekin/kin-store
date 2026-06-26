@@ -5,8 +5,8 @@ Persists and hydrates store state using a storage backend. Defaults to `localSto
 ## Basic usage
 
 ```ts
-import { withPlugins } from '@kin-store/core';
-import { persist } from '@kin-store/plugins';
+import { withPlugins } from '@kin-store/core/index.ts';
+import { persist } from '@kin-store/plugins/index.ts';
 
 const store = withPlugins({ count: 0 })
   .use({

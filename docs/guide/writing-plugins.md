@@ -5,8 +5,8 @@ A `StorePlugin` is a plain object with any combination of `reducers`, `middlewar
 ## A simple logging plugin
 
 ```ts
-import { withPlugins } from '@kin-store/core';
-import type { StorePlugin } from '@kin-store/core';
+import { withPlugins } from '@kin-store/core/index.ts';
+import type { StorePlugin } from '@kin-store/core/index.ts';
 
 type State = { count: number };
 
@@ -64,7 +64,7 @@ Use `setState` only for plugin-internal bookkeeping or as an intentional escape 
 When a plugin needs to dispatch its own reducers, use `getPluginDispatch` to resolve the correctly-typed dispatch target regardless of whether the plugin is namespaced:
 
 ```ts
-import { getPluginDispatch } from '@kin-store/core';
+import { getPluginDispatch } from '@kin-store/core/index.ts';
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);
@@ -79,7 +79,7 @@ methods: (store, { namespace }) => {
 To write a shareable plugin (like the official `persist` and `history`), wrap it in a generic factory function. The four type parameters mirror the store's accumulated shape at the point the plugin is applied:
 
 ```ts
-import type { NestedMethods, NestedReducers, StorePlugin } from '@kin-store/core';
+import type { NestedMethods, NestedReducers, StorePlugin } from '@kin-store/core/index.ts';
 
 type LoggerOptions = { prefix?: string };
 type LoggerMethods = { getLogs(): string[] };
