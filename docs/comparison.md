@@ -4,7 +4,8 @@ pageClass: comparison-page
 
 # Comparison
 
-The same todo store — `{ todos, status }` with `addTodo` and `fetchTodos` — implemented in each library. Full, working setup in every example.
+The same todo store — `{ todos, status }` with `addTodo` and `fetchTodos` —
+implemented in each library. Full, working setup in every example.
 
 ## Feature matrix
 
@@ -12,28 +13,34 @@ The same todo store — `{ todos, status }` with `addTodo` and `fetchTodos` — 
 
 ## vs Redux / RTK
 
-Redux requires an async thunk, a slice, and a configured store before you write a single line of app logic. Async actions are split across two concepts (thunk + extraReducers). TypeScript needs two manual type exports to flow through.
+Redux requires an async thunk, a slice, and a configured store before you write
+a single line of app logic. Async actions are split across two concepts (thunk +
+extraReducers). TypeScript needs two manual type exports to flow through.
 
 <SideBySide>
 
 ::: code-group
 
-```txt [Redux / RTK]
-import { createAsyncThunk, createSlice, configureStore } from '@reduxjs/toolkit';
-import type { Middleware, PayloadAction } from '@reduxjs/toolkit';
+```ts [Redux / RTK]
+import {
+  createAsyncThunk,
+  createSlice,
+  configureStore,
+} from "@reduxjs/toolkit";
+import type { Middleware, PayloadAction } from "@reduxjs/toolkit";
 
 type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
+type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
 
 // Async action must be defined separately from the slice that handles it.
-const fetchTodos = createAsyncThunk('todos/fetch', async () => {
-  const res = await fetch('/api/todos');
+const fetchTodos = createAsyncThunk("todos/fetch", async () => {
+  const res = await fetch("/api/todos");
   return (await res.json()) as Todo[];
 });
 
 const todosSlice = createSlice({
-  name: 'todos',
-  initialState: { todos: [], status: 'idle' } as TodoState,
+  name: "todos",
+  initialState: { todos: [], status: "idle" } as TodoState,
   reducers: {
     addTodo: (state, action: PayloadAction<string>) => {
       state.todos.push({ id: Date.now(), text: action.payload, done: false });
@@ -42,15 +49,22 @@ const todosSlice = createSlice({
   // Async results are handled in a separate block from sync reducers.
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTodos.pending,   (s) => { s.status = 'loading'; })
-      .addCase(fetchTodos.fulfilled, (s, a) => { s.todos = a.payload; s.status = 'idle'; })
-      .addCase(fetchTodos.rejected,  (s) => { s.status = 'failed'; });
+      .addCase(fetchTodos.pending, (s) => {
+        s.status = "loading";
+      })
+      .addCase(fetchTodos.fulfilled, (s, a) => {
+        s.todos = a.payload;
+        s.status = "idle";
+      })
+      .addCase(fetchTodos.rejected, (s) => {
+        s.status = "failed";
+      });
   },
 });
 
 // Middleware is a curried function — three layers of arrow functions.
 const logger: Middleware = (api) => (next) => (action) => {
-  console.log('dispatching', action);
+  console.log("dispatching", action);
   return next(action);
 };
 
@@ -64,48 +78,48 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 // Actions must be accessed through the slice object, not the store.
-store.dispatch(todosSlice.actions.addTodo('Buy groceries'));
+store.dispatch(todosSlice.actions.addTodo("Buy groceries"));
 store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 ```
 
-```txt [Kin Store]
-import { withPlugins } from '@kin-store/core/index.ts';
+```ts [Kin Store]
+import { withPlugins } from "@kin-store/core/index.ts";
 
 type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
+type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
 
 // Sync and async live side-by-side — reducers for state changes,
 // methods for orchestration. No separate thunk concept.
-const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
-  .use({
-    reducers: {
-      addTodo: (state, text: string) => ({
-        ...state,
-        todos: [...state.todos, { id: Date.now(), text, done: false }],
-      }),
-      fetchStart:     (state) => ({ ...state, status: 'loading' }),
-      fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: 'idle' }),
-      fetchRejected:  (state) => ({ ...state, status: 'failed' }),
-    },
-    middleware: () => (ctx, next) => {
-      console.log('dispatching', ctx.reducer.name, ctx.reducer.args);
-      return next();
-    },
-    methods: (store) => ({
-      async fetchTodos(): Promise<void> {
-        store.dispatch.fetchStart();
-        try {
-          const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
-          store.dispatch.fetchFulfilled(todos);
-        } catch {
-          store.dispatch.fetchRejected();
-        }
-      },
+const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" }).use({
+  reducers: {
+    addTodo: (state, text: string) => ({
+      ...state,
+      todos: [...state.todos, { id: Date.now(), text, done: false }],
     }),
-  });
+    fetchStart: (state) => ({ ...state, status: "loading" }),
+    fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: "idle" }),
+    fetchRejected: (state) => ({ ...state, status: "failed" }),
+  },
+  middleware: () => (ctx, next) => {
+    console.log("dispatching", ctx.reducer.name, ctx.reducer.args);
+    return next();
+  },
+  methods: (store) => ({
+    async fetchTodos(): Promise<void> {
+      store.dispatch.fetchStart();
+      try {
+        const resp = await fetch("/api/todos");
+        const todos = (await resp.json()) as Todo[];
+        store.dispatch.fetchFulfilled(todos);
+      } catch {
+        store.dispatch.fetchRejected();
+      }
+    },
+  }),
+});
 
 // Fully typed — no manual type exports needed.
-todoStore.dispatch.addTodo('Buy groceries');
+todoStore.dispatch.addTodo("Buy groceries");
 await todoStore.fetchTodos();
 ```
 
@@ -124,23 +138,26 @@ await todoStore.fetchTodos();
 
 ## vs Zustand
 
-Zustand's middleware model nests each capability around the previous one — read right-to-left, outer wraps inner. State and actions live in the same object. Adding `persist` and `devtools` means three levels of nesting before you write any app logic.
+Zustand's middleware model nests each capability around the previous one — read
+right-to-left, outer wraps inner. State and actions live in the same object.
+Adding `persist` and `devtools` means three levels of nesting before you write
+any app logic.
 
 <SideBySide>
 
 ::: code-group
 
-```txt [Zustand]
-import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { immer } from 'zustand/middleware/immer';
+```ts [Zustand]
+import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
 
 type Todo = { id: number; text: string; done: boolean };
 
 // State and actions must share one type — no structural separation.
 type TodoStore = {
   todos: Todo[];
-  status: 'idle' | 'loading' | 'failed';
+  status: "idle" | "loading" | "failed";
   addTodo: (text: string) => void;
   fetchTodos: () => Promise<void>;
 };
@@ -150,9 +167,9 @@ type TodoStore = {
 const useStore = create<TodoStore>()(
   devtools(
     persist(
-      immer((set) => ({
+      immer<TodoStore>((set) => ({
         todos: [],
-        status: 'idle' as const,
+        status: "idle" as const,
 
         addTodo: (text: string) =>
           set((draft) => {
@@ -162,32 +179,40 @@ const useStore = create<TodoStore>()(
           }),
 
         fetchTodos: async () => {
-          set((draft) => { draft.status = 'loading'; });
+          set((draft) => {
+            draft.status = "loading";
+          });
           try {
-            const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
-            set((draft) => { draft.todos = todos; draft.status = 'idle'; });
+            const resp = await fetch("/api/todos");
+            const todos = (await res.json()) as Todo[];
+            set((draft) => {
+              draft.todos = todos;
+              draft.status = "idle";
+            });
           } catch {
-            set((draft) => { draft.status = 'failed'; });
+            set((draft) => {
+              draft.status = "failed";
+            });
           }
         },
       })),
-      { name: 'todos-storage' }, // persist config — nested here, not at the call site.
+      { name: "todos-storage" }, // persist config — nested here, not at the call site.
     ),
-    { name: 'TodoStore' }, // devtools config — outermost wrapper.
+    { name: "TodoStore" }, // devtools config — outermost wrapper.
   ),
 );
 
 // In React — subscribing to addTodo registers a watcher that fires on every
 // state change, even though addTodo is a stable ref that never changes.
 function TodoApp() {
-  const todos      = useStore((s) => s.todos);
-  const addTodo    = useStore((s) => s.addTodo);    // unnecessary subscription.
+  const todos = useStore((s) => s.todos);
+  const addTodo = useStore((s) => s.addTodo); // unnecessary subscription.
   const fetchTodos = useStore((s) => s.fetchTodos); // unnecessary subscription.
   // ...
 }
 ```
 
-```txt [Kin Store]
+```ts [Kin Store]
 import { withPlugins } from '@kin-store/core/index.ts';
 import { persist, history, immer } from '@kin-store/plugins/index.ts';
 import { useSelector } from '@kin-store/react/index.ts';
@@ -195,8 +220,8 @@ import { useSelector } from '@kin-store/react/index.ts';
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
 
-// Read top-to-bottom — each .use() adds one line, not one nesting level.
-const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
+// Read top-to-bottom — each .use() adds one plugin, not one nesting level.
+const todoStore = withPlugins({ todos: [], status: 'idle' } as TodoState)
   .use('persist', persist({ key: 'todos-storage' }))
   .use('history', history())
   .use('immer', immer())
@@ -212,7 +237,8 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
       async fetchTodos(): Promise<void> {
         store.setState((s) => ({ ...s, status: 'loading' }));
         try {
-          const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
+          const resp = await fetch("/api/todos");
+          const todos = (await res.json()) as Todo[];
           store.setState({ todos, status: 'idle' });
         } catch {
           store.setState((s) => ({ ...s, status: 'failed' }));
@@ -221,7 +247,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
     }),
   });
 
-// Plugins are namespaced — no conflicts, no configuration buried in wrappers.
+// Plugins can be namespaced — no conflicts, no configuration buried in wrappers.
 await todoStore.persist.hydrate();
 todoStore.history.undo();
 
@@ -250,60 +276,66 @@ function TodoApp() {
 
 ## vs Jotai
 
-Jotai is atom-based — each piece of state is its own atom, and derived atoms compose them. It's a different model rather than a worse one, but it means thinking in atoms rather than in domains. Surprisingly, even actions are atoms — `atom(null, (get, set, arg) => ...)` is Jotai's way of expressing a write-only operation. Both reading (`useAtomValue`) and writing (`useSetAtom`) are hook-bound — there is no way to read or call atoms outside React without reaching for the global store directly. When a write atom throws, the stack trace surfaces at the `useSetAtom` call site in your component, not at the atom definition — a chain of atoms triggering other atoms can be hard to follow in a debugger. For a simple app this trade-off may be acceptable; for a complex one, it gets messy fast and becomes a nightmare to debug.
+Jotai is atom-based — each piece of state is its own atom, and derived atoms
+compose them. It's a different model rather than a worse one, but it means
+thinking in atoms rather than in domains. Surprisingly, even actions are atoms —
+`atom(null, (get, set, arg) => ...)` is Jotai's way of expressing a write-only
+operation. Both reading (`useAtomValue`) and writing (`useSetAtom`) are
+hook-bound — there is no way to read or call atoms outside React without
+reaching for the global store directly. When a write atom throws, the stack
+trace surfaces at the `useSetAtom` call site in your component, not at the atom
+definition — a chain of atoms triggering other atoms can be hard to follow in a
+debugger. For a simple app this trade-off may be acceptable; for a complex one,
+it gets messy fast and becomes a nightmare to debug.
 
 <SideBySide>
 
 ::: code-group
 
-```txt [Jotai]
-import { atom, useAtomValue, useSetAtom } from 'jotai';
-
+```ts [Jotai]
+import { atom, useAtomValue, useSetAtom } from "jotai";
 
 type Todo = { id: number; text: string; done: boolean };
 
 // Each field is its own atom — no single "store" concept.
-const todosAtom  = atom<Todo[]>([]);
-const statusAtom = atom<'idle' | 'loading' | 'failed'>('idle');
+const todosAtom = atom<Todo[]>([]);
+const statusAtom = atom<"idle" | "loading" | "failed">("idle");
 
 // App logic must be wrapped in an atom.
 const addTodoAtom = atom(null, (get, set, text: string) => {
-  set(todosAtom, (prev) => [
-    ...prev,
-    { id: Date.now(), text, done: false },
-  ]);
+  set(todosAtom, (prev) => [...prev, { id: Date.now(), text, done: false }]);
 });
 
 const fetchTodosAtom = atom(null, async (get, set) => {
-  set(statusAtom, 'loading');
+  set(statusAtom, "loading");
   try {
-    const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
+    const todos = (await fetch("/api/todos").then((r) => r.json())) as Todo[];
     set(todosAtom, todos);
-    set(statusAtom, 'idle');
+    set(statusAtom, "idle");
   } catch {
-    set(statusAtom, 'failed');
+    set(statusAtom, "failed");
   }
 });
 
 // Must use hooks to read/write atoms — can't call them outside React.
 function TodoApp() {
-  const todos      = useAtomValue(todosAtom);
-  const status     = useAtomValue(statusAtom);
-  const addTodo    = useSetAtom(addTodoAtom);
+  const todos = useAtomValue(todosAtom);
+  const status = useAtomValue(statusAtom);
+  const addTodo = useSetAtom(addTodoAtom);
   const fetchTodos = useSetAtom(fetchTodosAtom);
   // ...
 }
 ```
 
-```txt [Kin Store]
-import { createStore } from '@kin-store/core/index.ts';
-import { useSelector } from '@kin-store/react/index.ts';
+```ts [Kin Store]
+import { createStore } from "@kin-store/core/index.ts";
+import { useSelector } from "@kin-store/react/index.ts";
 
 type Todo = { id: number; text: string; done: boolean };
 
 // One store per field — mirrors Jotai's atom-per-field model.
-const todosStore  = createStore<Todo[]>([]);
-const statusStore = createStore<'idle' | 'loading' | 'failed'>('idle');
+const todosStore = createStore<Todo[]>([]);
+const statusStore = createStore<"idle" | "loading" | "failed">("idle");
 
 // App logic can just be top-level functions.
 function addTodo(text: string): void {
@@ -314,23 +346,23 @@ function addTodo(text: string): void {
 }
 
 async function fetchTodos(): Promise<void> {
-  statusStore.setState('loading');
+  statusStore.setState("loading");
   try {
-    const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
+    const todos = (await fetch("/api/todos").then((r) => r.json())) as Todo[];
     todosStore.setState(todos);
-    statusStore.setState('idle');
+    statusStore.setState("idle");
   } catch {
-    statusStore.setState('failed');
+    statusStore.setState("failed");
   }
 }
 
 // Logic works outside React — no hook required.
 await fetchTodos();
-addTodo('Buy groceries');
+addTodo("Buy groceries");
 
 // React subscription is opt-in via useSelector.
 function TodoApp() {
-  const todos  = useSelector(todosStore,  (s) => s);
+  const todos = useSelector(todosStore, (s) => s);
   const status = useSelector(statusStore, (s) => s);
   // ...
 }
@@ -352,13 +384,22 @@ function TodoApp() {
 
 ## vs MobX
 
-MobX uses a proxy-based reactive system: `makeAutoObservable` silently instruments every property and method on your class, turning fields into observables, getters into computeds, and methods into actions. This feels magical at first — mutations just work. The cost shows up later: async methods require `runInAction` to keep the reactive graph consistent (forgetting it causes silent stale-data bugs), every React component that reads observable state must be wrapped in `observer()` (forgetting it also causes silent stale-data bugs with no error thrown), and when a computed unexpectedly re-runs you have to reverse-engineer the reactive graph to find out why. At 16 KB gzipped, it is also the heaviest option in this list.
+MobX uses a proxy-based reactive system: `makeAutoObservable` silently
+instruments every property and method on your class, turning fields into
+observables, getters into computeds, and methods into actions. This feels
+magical at first — mutations just work. The cost shows up later: async methods
+require `runInAction` to keep the reactive graph consistent (forgetting it
+causes silent stale-data bugs), every React component that reads observable
+state must be wrapped in `observer()` (forgetting it also causes silent
+stale-data bugs with no error thrown), and when a computed unexpectedly re-runs
+you have to reverse-engineer the reactive graph to find out why. At 16 KB
+gzipped, it is also the heaviest option in this list.
 
 <SideBySide>
 
 ::: code-group
 
-```txt [MobX]
+```ts [MobX]
 import { makeAutoObservable, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
@@ -405,7 +446,7 @@ const TodoApp = observer(() => {
 });
 ```
 
-```txt [Kin Store]
+```ts [Kin Store]
 import { withPlugins } from '@kin-store/core/index.ts';
 import { useSelector } from '@kin-store/react/index.ts';
 

@@ -55,9 +55,7 @@ export function TodoList() {
 
   return (
     <ul className="flex flex-col gap-2 p-0 list-none m-0">
-      {visible.map((item) => (
-        <TodoItem key={item.id} item={item} />
-      ))}
+      {visible.map((item) => <TodoItem key={item.id} item={item} />)}
     </ul>
   );
 }

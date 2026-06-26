@@ -1,12 +1,14 @@
 # immer
 
-Write reducers (and `setState` calls) as [Immer](https://immerjs.github.io/immer/) draft mutations instead of returning new state objects.
+Write reducers (and `setState` calls) as
+[Immer](https://immerjs.github.io/immer/) draft mutations instead of returning
+new state objects.
 
 ## Basic usage
 
 ```ts
-import { withPlugins } from '@kin-store/core/index.ts';
-import { immer } from '@kin-store/plugins/index.ts';
+import { withPlugins } from "@kin-store/core/index.ts";
+import { immer } from "@kin-store/plugins/index.ts";
 
 const store = withPlugins({ count: 0, items: [] as string[] })
   .use(immer({
@@ -29,11 +31,15 @@ const store = withPlugins({ count: 0, items: [] as string[] })
   }));
 
 store.dispatch.increment(5);
-store.dispatch.addItem('hello');
+store.dispatch.addItem("hello");
 store.reset();
 ```
 
-The `immer()` wrapper accepts the same fields as a standard `StorePlugin`: `reducers`, `middleware`, `methods`, `onActivated`, and `onDestroy`. Inside those callbacks, reducers mutate a draft instead of returning a new object, and `setState` accepts a recipe `(draft) => void` instead of a full state replacement.
+The `immer()` wrapper accepts the same fields as a standard `StorePlugin`:
+`reducers`, `middleware`, `methods`, `onActivated`, and `onDestroy`. Inside
+those callbacks, reducers mutate a draft instead of returning a new object, and
+`setState` accepts a recipe `(draft) => void` instead of a full state
+replacement.
 
 ## With namespacing
 
@@ -41,17 +47,26 @@ The `immer()` wrapper accepts the same fields as a standard `StorePlugin`: `redu
 
 ```ts
 const store = withPlugins({ todos: [] as string[] })
-  .use('todos', immer({
-    reducers: {
-      add: (draft, text: string) => { draft.todos.push(text); },
-      clear: (draft) => { draft.todos = []; },
-    },
-  }));
+  .use(
+    "todos",
+    immer({
+      reducers: {
+        add: (draft, text: string) => {
+          draft.todos.push(text);
+        },
+        clear: (draft) => {
+          draft.todos = [];
+        },
+      },
+    }),
+  );
 
-store.dispatch.todos.add('hello');
+store.dispatch.todos.add("hello");
 store.dispatch.todos.clear();
 ```
 
 ## Note on type inference
 
-Because Immer mutates a draft in-place (void return), reducers written with `immer` do not need to return a value. TypeScript fully infers argument types from the reducer signature.
+Because Immer mutates a draft in-place (void return), reducers written with
+`immer` do not need to return a value. TypeScript fully infers argument types
+from the reducer signature.

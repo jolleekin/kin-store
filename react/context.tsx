@@ -38,9 +38,8 @@ export function StoreProvider({
   store: Store;
   children: ReactNode;
 }): JSX.Element {
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={store}>{children}
+  </StoreContext.Provider>;
 }
 
 /**

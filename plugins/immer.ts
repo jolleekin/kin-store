@@ -35,12 +35,14 @@ type ImmerStore<
   TState,
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
-> = Omit<
-  StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
-  "setState"
-> & {
-  setState: (recipe: (draft: Draft<TState>) => void) => void;
-};
+> =
+  & Omit<
+    StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
+    "setState"
+  >
+  & {
+    setState: (recipe: (draft: Draft<TState>) => void) => void;
+  };
 
 type ImmerPlugin<
   TState,
@@ -49,61 +51,63 @@ type ImmerPlugin<
   TNamespace extends string | undefined,
   TPluginReducers extends ImmerReducers<TState>,
   TPluginMethods extends Methods,
-> = Pick<
-  StorePlugin<
-    TState,
-    TStoreReducers,
-    TStoreMethods,
-    TNamespace,
-    ToStandardReducers<TState, TPluginReducers>
-  >,
-  "middleware"
-> & {
-  /** @see {StorePlugin.onDestroy} */
-  reducers?: { [K in keyof TPluginReducers]: TPluginReducers[K] };
-
-  /** @see {StorePlugin.onDestroy} */
-  methods?: (
-    store: ImmerStore<
+> =
+  & Pick<
+    StorePlugin<
       TState,
-      MergeReducers<
-        TStoreReducers,
-        TNamespace,
-        ToStandardReducers<TState, TPluginReducers>
-      >,
-      TStoreMethods
+      TStoreReducers,
+      TStoreMethods,
+      TNamespace,
+      ToStandardReducers<TState, TPluginReducers>
     >,
-    options: PluginContext<TNamespace>,
-  ) => TPluginMethods;
+    "middleware"
+  >
+  & {
+    /** @see {StorePlugin.onDestroy} */
+    reducers?: { [K in keyof TPluginReducers]: TPluginReducers[K] };
 
-  /** @see {StorePlugin.onDestroy} */
-  onActivated?: (
-    store: ImmerStore<
-      TState,
-      MergeReducers<
-        TStoreReducers,
-        TNamespace,
-        ToStandardReducers<TState, TPluginReducers>
+    /** @see {StorePlugin.onDestroy} */
+    methods?: (
+      store: ImmerStore<
+        TState,
+        MergeReducers<
+          TStoreReducers,
+          TNamespace,
+          ToStandardReducers<TState, TPluginReducers>
+        >,
+        TStoreMethods
       >,
-      TStoreMethods
-    >,
-    ctx: PluginContext<TNamespace>,
-  ) => void;
+      options: PluginContext<TNamespace>,
+    ) => TPluginMethods;
 
-  /** @see {StorePlugin.onDestroy} */
-  onDestroy?: (
-    store: ImmerStore<
-      TState,
-      MergeReducers<
-        TStoreReducers,
-        TNamespace,
-        ToStandardReducers<TState, TPluginReducers>
+    /** @see {StorePlugin.onDestroy} */
+    onActivated?: (
+      store: ImmerStore<
+        TState,
+        MergeReducers<
+          TStoreReducers,
+          TNamespace,
+          ToStandardReducers<TState, TPluginReducers>
+        >,
+        TStoreMethods
       >,
-      TStoreMethods
-    >,
-    ctx: PluginContext<TNamespace>,
-  ) => void;
-};
+      ctx: PluginContext<TNamespace>,
+    ) => void;
+
+    /** @see {StorePlugin.onDestroy} */
+    onDestroy?: (
+      store: ImmerStore<
+        TState,
+        MergeReducers<
+          TStoreReducers,
+          TNamespace,
+          ToStandardReducers<TState, TPluginReducers>
+        >,
+        TStoreMethods
+      >,
+      ctx: PluginContext<TNamespace>,
+    ) => void;
+  };
 
 function asImmerStore<
   TState,

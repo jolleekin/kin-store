@@ -102,7 +102,7 @@ Deno.test("useSelectorWithEquality - re-renders when content differs", () => {
       store,
       (s) => s.items,
       (a, b) => JSON.stringify(a) === JSON.stringify(b),
-    ),
+    )
   );
 
   act(() => store.setState({ items: [1, 2] }));

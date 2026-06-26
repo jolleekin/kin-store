@@ -11,21 +11,25 @@ npx jsr add @kin-store/react
 ```
 
 ```sh [pnpm]
-pnpm dlx jsr add @kin-store/react
+pnpm add jsr:@kin-store/react
 ```
 
 ```sh [deno]
 deno add jsr:@kin-store/react
 ```
 
+`@kin-store/react` depends on and re-exports everything from `@kin-store/core`,
+so no need to install it separately.
+
 :::
 
 ## `useSelector`
 
-Subscribes a component to a store and re-renders when the selected slice changes. Backed by `useSyncExternalStore` — safe for concurrent mode.
+Subscribes a component to a store and re-renders when the selected slice
+changes. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
-import { useSelector } from '@kin-store/react/index.ts';
+import { useSelector } from "@kin-store/react/index.ts";
 
 // Subscribe to the whole state.
 function Counter(): JSX.Element {
@@ -50,16 +54,22 @@ const summary = derive((get) => ({
 
 function Header() {
   const { greeting, itemCount } = useSelector(summary);
-  return <header>{greeting} — {itemCount} items</header>;
+  return (
+    <header>
+      {greeting} — {itemCount} items
+    </header>
+  );
 }
 ```
 
 ## `useSelectorWithEquality`
 
-Like `useSelector`, but accepts a custom equality function. Use this when the selector returns a new object or array reference on every call (e.g. `.filter()`, `.map()`, object literals):
+Like `useSelector`, but accepts a custom equality function. Use this when the
+selector returns a new object or array reference on every call (e.g.
+`.filter()`, `.map()`, object literals):
 
 ```tsx
-import { useSelectorWithEquality } from '@kin-store/react/index.ts';
+import { useSelectorWithEquality } from "@kin-store/react/index.ts";
 
 function ActiveTodos(): JSX.Element {
   const active = useSelectorWithEquality(
@@ -68,25 +78,37 @@ function ActiveTodos(): JSX.Element {
     (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
   );
 
-  return <ul>{active.map((t) => <li key={t.id}>{t.title}</li>)}</ul>;
+  return (
+    <ul>
+      {active.map((t) => <li key={t.id}>{t.title}</li>)}
+    </ul>
+  );
 }
 ```
 
-Without a custom equality function, a selector returning a new array on every call would cause a re-render on every state change, even unrelated ones.
+Without a custom equality function, a selector returning a new array on every
+call would cause a re-render on every state change, even unrelated ones.
 
 ## `StoreProvider` and `useStoreContext`
 
-Inject a store via React context — useful for testing or SSR where you want to avoid module-level singletons:
+Inject a store via React context — useful for testing or SSR where you want to
+avoid module-level singletons:
 
 ```tsx
-import { StoreProvider, useStoreContext, useSelector } from '@kin-store/react/index.ts';
-import { withPlugins } from '@kin-store/core/index.ts';
+import {
+  StoreProvider,
+  useSelector,
+  useStoreContext,
+  withPlugins,
+} from "@kin-store/react/index.ts";
 
-const store = withPlugins({ count: 0 }).use({
+const store = withPlugins(0).use({
   reducers: {
-    increment: (state, n: number) => ({ ...state, count: state.count + n }),
+    increment: (state, n: number) => state + n,
   },
 });
+
+type Store = typeof store;
 
 function App(): JSX.Element {
   return (
@@ -97,14 +119,10 @@ function App(): JSX.Element {
 }
 
 function Counter(): JSX.Element {
-  const store = useStoreContext<typeof store>();
-  const count = useSelector(store, (s) => s.count);
+  const store = useStoreContext<Store>();
+  const count = useSelector(store);
 
-  return (
-    <button onClick={() => store.dispatch.increment(1)}>
-      {count}
-    </button>
-  );
+  return <button onClick={() => store.dispatch.increment(1)}>{count}</button>;
 }
 ```
 
@@ -112,13 +130,16 @@ function Counter(): JSX.Element {
 
 ## Actions are stable refs
 
-Methods and dispatch functions on a `withPlugins` store are stable references — they don't change between renders. You can call them directly without subscribing:
+Methods and dispatch functions on a `withPlugins` store are stable references —
+they don't change between renders. You can call them directly without
+subscribing:
 
 ```tsx
 function AddButton() {
   // No useSelector needed — just call the method directly.
-  return <button onClick={() => todoStore.addTodo('new item')}>Add</button>;
+  return <button onClick={() => todoStore.addTodo("new item")}>Add</button>;
 }
 ```
 
-This avoids the Zustand pattern of `useStore(s => s.addTodo)` which registers a subscription for a value that never changes.
+This avoids the Zustand pattern of `useStore(s => s.addTodo)` which registers a
+subscription for a value that never changes.

@@ -4,15 +4,22 @@ React bindings for `@kin-store/core`.
 
 ## Install
 
-```ts
-// Deno / JSR
-import { useSelector, useStoreContext, StoreProvider } from "jsr:@kin-store/react";
+```sh [npm]
+npx jsr add @kin-store/react
+```
+
+```sh [pnpm]
+pnpm add jsr:@kin-store/react
+```
+
+```sh [deno]
+deno add jsr:@kin-store/react
 ```
 
 ## `useSelector`
 
-Subscribes a component to a store and re-renders when the selected slice changes.
-Backed by `useSyncExternalStore` — safe for concurrent mode.
+Subscribes a component to a store and re-renders when the selected slice
+changes. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
 import { useSelector } from "@kin-store/react/index.ts";
@@ -33,8 +40,8 @@ function UserName(): JSX.Element {
 ## `useSelectorWithEquality`
 
 Like `useSelector`, but accepts a custom equality function. Use this when the
-selector returns a new object or array reference on every call (e.g. `.filter()`,
-`.map()`, object literals).
+selector returns a new object or array reference on every call (e.g.
+`.filter()`, `.map()`, object literals).
 
 ```tsx
 import { useSelectorWithEquality } from "@kin-store/react/index.ts";
@@ -46,7 +53,13 @@ function ActiveTodos(): JSX.Element {
     (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
   );
 
-  return <ul>{active.map((t) => <li key={t.id}>{t.title}</li>)}</ul>;
+  return (
+    <ul>
+      {active.map((t) => (
+        <li key={t.id}>{t.title}</li>
+      ))}
+    </ul>
+  );
 }
 ```
 
@@ -56,7 +69,11 @@ Inject a store via React context — useful for testing or server-side rendering
 where you want to avoid module-level singletons.
 
 ```tsx
-import { StoreProvider, useStoreContext, useSelector } from "@kin-store/react/index.ts";
+import {
+  StoreProvider,
+  useSelector,
+  useStoreContext,
+} from "@kin-store/react/index.ts";
 import { withPlugins } from "@kin-store/core/index.ts";
 
 const store = withPlugins({ count: 0 }).use({
@@ -77,11 +94,7 @@ function Counter(): JSX.Element {
   const store = useStoreContext<typeof store>();
   const count = useSelector(store, (s) => s.count);
 
-  return (
-    <button onClick={() => store.dispatch.increment(1)}>
-      {count}
-    </button>
-  );
+  return <button onClick={() => store.dispatch.increment(1)}>{count}</button>;
 }
 ```
 

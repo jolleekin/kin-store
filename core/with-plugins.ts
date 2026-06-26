@@ -176,12 +176,10 @@ export type Middleware<TState, TReducers extends Reducers<TState>> = (
   next: () => TState | Canceled,
 ) => TState | Canceled;
 
-type InferActionsHelper<TState, TFn> =
-  TFn extends Reducer<TState>
-    ? (...args: ReducerArgs<TState, TFn>) => void
-    : TFn extends Reducers<TState>
-      ? InferActions<TState, TFn>
-      : never;
+type InferActionsHelper<TState, TFn> = TFn extends Reducer<TState>
+  ? (...args: ReducerArgs<TState, TFn>) => void
+  : TFn extends Reducers<TState> ? InferActions<TState, TFn>
+  : never;
 
 /**
  * Maps a {@linkcode NestedReducers} map to a callable dispatch object.
@@ -203,8 +201,7 @@ export type InferActions<
 type InferDispatch<
   TState,
   TNestedReducers extends NestedReducers<TState>,
-> = keyof TNestedReducers extends never
-  ? {}
+> = keyof TNestedReducers extends never ? {}
   : { dispatch: InferActions<TState, TNestedReducers> };
 
 // deno-lint-ignore no-explicit-any
@@ -226,154 +223,161 @@ export type StoreWithPlugins<
   TState = {},
   TStoreReducers extends NestedReducers<TState> = {},
   TStoreMethods extends NestedMethods = {},
-> = Store<TState> & {
-  /**
-   * Destroys the store, removing all registered listeners and invoking
-   * {@linkcode StorePlugin.onDestroy onDestroy} callbacks registered by
-   * plugins.
-   *
-   * Calling `destroy()` more than once is safe and does nothing after the
-   * first call. However, calling any other method (`getState`, `setState`,
-   * `subscribe`, `use`, `dispatch.*`, methods defined by plugins) after
-   * `destroy()` throws.
-   */
-  destroy(): void;
+> =
+  & Store<TState>
+  & {
+    /**
+     * Destroys the store, removing all registered listeners and invoking
+     * {@linkcode StorePlugin.onDestroy onDestroy} callbacks registered by
+     * plugins.
+     *
+     * Calling `destroy()` more than once is safe and does nothing after the
+     * first call. However, calling any other method (`getState`, `setState`,
+     * `subscribe`, `use`, `dispatch.*`, methods defined by plugins) after
+     * `destroy()` throws.
+     */
+    destroy(): void;
 
-  /**
-   * Registers a top-level plugin.
-   *
-   * A plugin can provide reducers, middleware, methods, and lifecycle hooks.
-   *
-   * ## Middleware
-   *
-   * Middleware intercepts the dispatch pipeline and can modify the returned
-   * state or cancel the dispatch by returning {@linkcode CANCELED}.
-   *
-   * Middleware is synchronous. For asynchronous logic, use methods or
-   * top-level functions.
-   *
-   * ## Reducers
-   *
-   * Reducers are pure functions that transform the current state.
-   *
-   * An action is automatically added to the store's `dispatch` property.
-   * An error is thrown if an existing action with the same name already exists.
-   *
-   * This approach is much more ergonomic and performant compared to Redux.
-   * Actions can be accessed and called directly without any hook required.
-   *
-   * ## Methods
-   *
-   * Methods are added to the store to extend its capability.
-   *
-   * Methods are powerful as they can have arbitrary logic with full access to
-   * the store API. They can compute and return a derived value from the
-   * current state, fetch data, dispatch actions, or call
-   * {@linkcode StoreWithPlugins.setState setState} to bypass the dispatch
-   * pipeline, and so on.
-   *
-   * @example Top-level plugin with reducers, middleware, and methods
-   * ```ts
-   * const store = withPlugins({ count: 0 }).use({
-   *   reducers: {
-   *     increment: (state, amount: number): { count: number } => ({
-   *       ...state,
-   *       count: state.count + amount,
-   *     }),
-   *   },
-   *   middleware: () => [(ctx, next) => {
-   *     console.log("dispatching", ctx.reducer.name);
-   *     return next();
-   *   }],
-   *   methods: (store) => ({
-   *     async fetchCount(): Promise<void> {
-   *       const count = await api.getCount();
-   *       store.dispatch.increment(count);
-   *     },
-   *   }),
-   * });
-   *
-   * store.dispatch.increment(5); // logs: dispatching increment
-   * await store.fetchCount();
-   * ```
-   */
-  use<TPluginReducers extends Reducers<TState>, TPluginMethods extends Methods>(
-    plugin: StorePlugin<
+    /**
+     * Registers a top-level plugin.
+     *
+     * A plugin can provide reducers, middleware, methods, and lifecycle hooks.
+     *
+     * ## Middleware
+     *
+     * Middleware intercepts the dispatch pipeline and can modify the returned
+     * state or cancel the dispatch by returning {@linkcode CANCELED}.
+     *
+     * Middleware is synchronous. For asynchronous logic, use methods or
+     * top-level functions.
+     *
+     * ## Reducers
+     *
+     * Reducers are pure functions that transform the current state.
+     *
+     * An action is automatically added to the store's `dispatch` property.
+     * An error is thrown if an existing action with the same name already exists.
+     *
+     * This approach is much more ergonomic and performant compared to Redux.
+     * Actions can be accessed and called directly without any hook required.
+     *
+     * ## Methods
+     *
+     * Methods are added to the store to extend its capability.
+     *
+     * Methods are powerful as they can have arbitrary logic with full access to
+     * the store API. They can compute and return a derived value from the
+     * current state, fetch data, dispatch actions, or call
+     * {@linkcode StoreWithPlugins.setState setState} to bypass the dispatch
+     * pipeline, and so on.
+     *
+     * @example Top-level plugin with reducers, middleware, and methods
+     * ```ts
+     * const store = withPlugins({ count: 0 }).use({
+     *   reducers: {
+     *     increment: (state, amount: number): { count: number } => ({
+     *       ...state,
+     *       count: state.count + amount,
+     *     }),
+     *   },
+     *   middleware: () => [(ctx, next) => {
+     *     console.log("dispatching", ctx.reducer.name);
+     *     return next();
+     *   }],
+     *   methods: (store) => ({
+     *     async fetchCount(): Promise<void> {
+     *       const count = await api.getCount();
+     *       store.dispatch.increment(count);
+     *     },
+     *   }),
+     * });
+     *
+     * store.dispatch.increment(5); // logs: dispatching increment
+     * await store.fetchCount();
+     * ```
+     */
+    use<
+      TPluginReducers extends Reducers<TState>,
+      TPluginMethods extends Methods,
+    >(
+      plugin: StorePlugin<
+        TState,
+        TStoreReducers,
+        TStoreMethods,
+        undefined,
+        TPluginReducers,
+        TPluginMethods
+      >,
+    ): StoreWithPlugins<
       TState,
-      TStoreReducers,
-      TStoreMethods,
-      undefined,
-      TPluginReducers,
-      TPluginMethods
-    >,
-  ): StoreWithPlugins<
-    TState,
-    TStoreReducers & TPluginReducers,
-    TStoreMethods & TPluginMethods
-  >;
+      TStoreReducers & TPluginReducers,
+      TStoreMethods & TPluginMethods
+    >;
 
-  /**
-   * Registers a plugin under a namespace.
-   *
-   * The plugin's reducers are accessible at `store.dispatch.<namespace>.<name>`.
-   * The plugin's methods are accessible at `store.<namespace>.<name>`.
-   *
-   * An error is thrown if the namespace is already taken by another plugin.
-   *
-   * @example Namespaced plugin
-   * ```ts
-   * const store = withPlugins({ items: [] as string[] })
-   *   .use("list", {
-   *     reducers: {
-   *       add: (state, item: string): { items: string[] } => ({
-   *         ...state,
-   *         items: [...state.items, item],
-   *       }),
-   *       clear: (): { items: string[] } => ({ items: [] }),
-   *     },
-   *     methods: (store) => ({
-   *       async fetchItems(): Promise<void> {
-   *         const items = await api.getItems();
-   *         store.dispatch.list.clear();
-   *         items.forEach((item) => store.dispatch.list.add(item));
-   *       },
-   *     }),
-   *   });
-   *
-   * store.dispatch.list.add("hello");
-   * await store.list.fetchItems();
-   * ```
-   */
-  use<
-    TPluginNamespace extends string,
-    TPluginReducers extends Reducers<TState>,
-    TPluginMethods extends Methods,
-  >(
-    namespace: TPluginNamespace,
-    plugin: StorePlugin<
+    /**
+     * Registers a plugin under a namespace.
+     *
+     * The plugin's reducers are accessible at `store.dispatch.<namespace>.<name>`.
+     * The plugin's methods are accessible at `store.<namespace>.<name>`.
+     *
+     * An error is thrown if the namespace is already taken by another plugin.
+     *
+     * @example Namespaced plugin
+     * ```ts
+     * const store = withPlugins({ items: [] as string[] })
+     *   .use("list", {
+     *     reducers: {
+     *       add: (state, item: string): { items: string[] } => ({
+     *         ...state,
+     *         items: [...state.items, item],
+     *       }),
+     *       clear: (): { items: string[] } => ({ items: [] }),
+     *     },
+     *     methods: (store) => ({
+     *       async fetchItems(): Promise<void> {
+     *         const items = await api.getItems();
+     *         store.dispatch.list.clear();
+     *         items.forEach((item) => store.dispatch.list.add(item));
+     *       },
+     *     }),
+     *   });
+     *
+     * store.dispatch.list.add("hello");
+     * await store.list.fetchItems();
+     * ```
+     */
+    use<
+      TPluginNamespace extends string,
+      TPluginReducers extends Reducers<TState>,
+      TPluginMethods extends Methods,
+    >(
+      namespace: TPluginNamespace,
+      plugin: StorePlugin<
+        TState,
+        TStoreReducers,
+        TStoreMethods,
+        TPluginNamespace,
+        TPluginReducers,
+        TPluginMethods
+      >,
+    ): StoreWithPlugins<
       TState,
-      TStoreReducers,
-      TStoreMethods,
-      TPluginNamespace,
-      TPluginReducers,
-      TPluginMethods
-    >,
-  ): StoreWithPlugins<
-    TState,
-    TStoreReducers & {
-      [K in TPluginNamespace]: TPluginReducers;
-    },
-    TStoreMethods & {
-      [K in TPluginNamespace]: TPluginMethods;
-    }
-  >;
-} & InferDispatch<TState, TStoreReducers> &
-  TStoreMethods;
+      & TStoreReducers
+      & {
+        [K in TPluginNamespace]: TPluginReducers;
+      },
+      & TStoreMethods
+      & {
+        [K in TPluginNamespace]: TPluginMethods;
+      }
+    >;
+  }
+  & InferDispatch<TState, TStoreReducers>
+  & TStoreMethods;
 
 type UnionToIntersection<U> =
   // deno-lint-ignore no-explicit-any
-  (U extends any ? (k: U) => void : never) extends (k: infer I) => void
-    ? I
+  (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I
     : never;
 
 type Flatten<
@@ -384,10 +388,10 @@ type Flatten<
     [K in keyof TNestedReducers]: TNestedReducers[K] extends Reducer<TState>
       ? { [P in K as `${P & string}`]: TNestedReducers[K] }
       : {
-          [P in keyof TNestedReducers[K] as `${K & string}.${P & string}`]: TNestedReducers[K][P] extends Reducer<TState>
-            ? TNestedReducers[K][P]
+        [P in keyof TNestedReducers[K] as `${K & string}.${P & string}`]:
+          TNestedReducers[K][P] extends Reducer<TState> ? TNestedReducers[K][P]
             : never;
-        };
+      };
   }[keyof TNestedReducers]
 >;
 

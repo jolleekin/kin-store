@@ -133,11 +133,11 @@ export function getPluginDispatch<
 ): TNamespace extends keyof TStoreReducers
   ? TStoreReducers[TNamespace] extends Reducers<TState>
     ? InferActions<TState, TStoreReducers[TNamespace]>
-    : InferActions<TState, TStoreReducers>
+  : InferActions<TState, TStoreReducers>
   : InferActions<TState, TStoreReducers> {
   return namespace
-    ? // deno-lint-ignore no-explicit-any
-      (store.dispatch as any)[namespace]
-    : // deno-lint-ignore no-explicit-any
-      (store.dispatch as any);
+    // deno-lint-ignore no-explicit-any
+    ? (store.dispatch as any)[namespace]
+    // deno-lint-ignore no-explicit-any
+    : (store.dispatch as any);
 }

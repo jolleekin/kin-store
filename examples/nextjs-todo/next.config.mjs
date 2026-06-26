@@ -1,9 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@kin-store/core", "@kin-store/react", "@kin-store/plugins"],
+  transpilePackages: [
+    "@kin-store/core",
+    "@kin-store/react",
+    "@kin-store/plugins",
+  ],
   turbopack: {
-     root: '../../'
-  }
+    root: "../../",
+  },
 };
 
 export default nextConfig;

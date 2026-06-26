@@ -1,8 +1,8 @@
 import {
   getPluginDispatch,
-  type NestedMethods,
   type InferActions,
   type MergeReducers,
+  type NestedMethods,
   type NestedReducers,
   type StorePlugin,
   type StoreWithPlugins,

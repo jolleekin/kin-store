@@ -12,8 +12,9 @@ Official plugins for `@kin-store/core`.
 
 ## `immer`
 
-Lets you write reducers (and `setState` calls) as [Immer](https://immerjs.github.io/immer/)
-draft mutations instead of returning new state objects.
+Lets you write reducers (and `setState` calls) as
+[Immer](https://immerjs.github.io/immer/) draft mutations instead of returning
+new state objects.
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -130,14 +131,14 @@ await store.persist.hydrate();
 
 Once registered under a namespace (e.g. `"persist"`), the plugin exposes:
 
-| Method                                  | Description                                                       |
-| --------------------------------------- | ----------------------------------------------------------------- |
-| `store.persist.hydrationComplete()`     | Promise that resolves after the current or next hydration         |
-| `store.persist.hasHydrated()`           | `true` if at least one hydration has completed                    |
-| `store.persist.hydrate()`               | Triggers a hydration; returns in-progress hydration if one exists |
-| `store.persist.clear()`                 | Removes the persisted value from storage                          |
-| `store.persist.onHydrationStart(cb)`    | Called at the start of each hydration                             |
-| `store.persist.onHydrationComplete(cb)` | Called when a hydration completes                                 |
+| Method                    | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `hydrationComplete()`     | Promise that resolves after the current or next hydration         |
+| `hasHydrated()`           | `true` if at least one hydration has completed                    |
+| `hydrate()`               | Triggers a hydration; returns in-progress hydration if one exists |
+| `clear()`                 | Removes the persisted value from storage                          |
+| `onHydrationStart(cb)`    | Called at the start of each hydration                             |
+| `onHydrationComplete(cb)` | Called when a hydration completes                                 |
 
 ---
 
@@ -170,25 +171,25 @@ store.history.reset(); // count = 0
 
 ### Plugin methods
 
-| Method                        | Description                                            |
-| ----------------------------- | ------------------------------------------------------ |
-| `store.history.canUndo()`     | `true` if there is a past state to undo                |
-| `store.history.canRedo()`     | `true` if there is a future state to redo              |
-| `store.history.undo()`        | Move back one step; returns `true` if moved, `false` if already at start |
-| `store.history.redo()`        | Move forward one step; returns `true` if moved, `false` if already at end |
-| `store.history.reset()`       | Restore the baseline state and clear the history (with `limit`, baseline is the earliest remembered state) |
-| `store.history.rebase()`      | Make the current state the new undo floor, discard prior history |
+| Method      | Description                                                                                                |
+| ----------- | ---------------------------------------------------------------------------------------------------------- |
+| `canUndo()` | `true` if there is a past state to undo                                                                    |
+| `canRedo()` | `true` if there is a future state to redo                                                                  |
+| `undo()`    | Move back one step; returns `true` if moved, `false` if already at start                                   |
+| `redo()`    | Move forward one step; returns `true` if moved, `false` if already at end                                  |
+| `reset()`   | Restore the baseline state and clear the history (with `limit`, baseline is the earliest remembered state) |
+| `rebase()`  | Make the current state the new undo floor, discard prior history                                           |
 
 ### Options
 
-| Option  | Type     | Default     | Description                                                              |
-| ------- | -------- | ----------- | ------------------------------------------------------------------------ |
+| Option  | Type     | Default     | Description                                                           |
+| ------- | -------- | ----------- | --------------------------------------------------------------------- |
 | `limit` | `number` | `undefined` | Max snapshots to keep. When exceeded, the oldest snapshot is dropped. |
 
 ### Composing with `persist`
 
-After async hydration, call `rebase()` so `undo` and `reset` do not step
-back to the pre-hydration state.
+After async hydration, call `rebase()` so `undo` and `reset` do not step back to
+the pre-hydration state.
 
 ```ts
 const store = withPlugins({ items: [] as string[] })

@@ -16,24 +16,26 @@ Reactive state you want to use.
 | Redux-style   | `withPlugins` + reducers + middleware + methods | 1.07 KB         |
 | Jotai-style   | `derive`                                        | 465 B           |
 
-Each step is additive — you never undo what you built. Full type safety at every step,
-zero dependencies, zero ceremony.
+Each step is additive — you never undo what you built. Full type safety at every
+step, zero dependencies, zero ceremony.
 
-<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/slides/intro.html" target="_blank">View the introduction slides →</a>
+<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/slides/intro.html" target="_blank">View
+the introduction slides →</a>
 
 ## Design principles
 
 ### **Explicit over implicit**
 
 No hidden merges, no auto-propagating destroy, no magic dependency graphs. If
-something happens, you triggered it. The `CANCELED` sentinel, named reducers, and
-the two-tier mutation model all follow from this.
+something happens, you triggered it. The `CANCELED` sentinel, named reducers,
+and the two-tier mutation model all follow from this.
 
 ### **Opt-in complexity**
 
 `createStore` is the floor. `withPlugins` adds methods, reducers, middleware,
-and lifecycle hooks — only when you import it. `derive` adds reactive composition
-— only when you reach for it. You never pay for capability you haven't opted into.
+and lifecycle hooks — only when you import it. `derive` adds reactive
+composition — only when you reach for it. You never pay for capability you
+haven't opted into.
 
 ### **Type safety by default**
 
@@ -43,11 +45,11 @@ decorative.
 
 ### **Two tiers of mutation**
 
-Reducers are pure functions. `dispatch.*` routes them through the middleware pipeline —
-every state change is observable and traceable. `setState` is the privileged escape
-hatch — it bypasses the pipeline intentionally. Plugin methods sit above both: they
-can dispatch to stay traceable, call `setState` when they need to escape the pipeline,
-or mix both.
+Reducers are pure functions. `dispatch.*` routes them through the middleware
+pipeline — every state change is observable and traceable. `setState` is the
+privileged escape hatch — it bypasses the pipeline intentionally. Plugin methods
+sit above both: they can dispatch to stay traceable, call `setState` when they
+need to escape the pipeline, or mix both.
 
 ---
 
@@ -92,8 +94,8 @@ unsubscribe();
 
 ## Step 2 — Colocate logic (Zustand-style)
 
-When the store grows, move logic inside it using `withPlugins` + `methods`. Each `.use()` call
-adds a plugin — not a new nesting level:
+When the store grows, move logic inside it using `withPlugins` + `methods`. Each
+`.use()` call adds a plugin — not a new nesting level:
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -117,10 +119,11 @@ await todoStore.fetchTodos();
 
 ## Step 3 — Add plugins
 
-Plugins extend the store with zero nesting. Each `.use()` adds one feature — never wraps the previous one:
+Plugins extend the store with zero nesting. Each `.use()` adds one feature —
+never wraps the previous one:
 
 ```ts
-import { immer, persist, history } from "@kin-store/plugins/index.ts";
+import { history, immer, persist } from "@kin-store/plugins/index.ts";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use(immer({
@@ -173,10 +176,10 @@ const useStore = create<TodoState>()(
 
 Reducers for state changes. Methods for the flow. Middleware to intercept.
 
-Move state mutations into `reducers` when you want auditability — every dispatch travels
-through a middleware pipeline you control. Methods orchestrate the flow: calling `dispatch.*`,
-handling async logic, or sequencing multiple reducers. App logic goes last — it can depend
-on any plugin registered before it.
+Move state mutations into `reducers` when you want auditability — every dispatch
+travels through a middleware pipeline you control. Methods orchestrate the flow:
+calling `dispatch.*`, handling async logic, or sequencing multiple reducers. App
+logic goes last — it can depend on any plugin registered before it.
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -286,19 +289,21 @@ console.log(summary.getState());
 // { greeting: "Hello, Ada", itemCount: 0, total: 0 }
 ```
 
-Conditional dependencies — only stores actually read during a recompute are subscribed:
+Conditional dependencies — only stores actually read during a recompute are
+subscribed:
 
 ```ts
 const isAdmin = derive((get) => get(userStore).role === "admin");
 
 // When isAdmin is false, changes to `adminStore` do not trigger a recompute.
 const view = derive((get) =>
-  get(isAdmin) ? get(adminStore).dashboard : get(publicStore).feed,
+  get(isAdmin) ? get(adminStore).dashboard : get(publicStore).feed
 );
 ```
 
 Use `prev()` to fold the previous computed value into the next (explicit type
-required since TypeScript cannot infer `TState` from a self-referential function):
+required since TypeScript cannot infer `TState` from a self-referential
+function):
 
 ```ts
 const delta = createStore(1);
@@ -343,24 +348,26 @@ and composed independently of the store they are applied to.
 ### Mutating state from a plugin
 
 All changes to the store's primary state (`TState`) should go through a reducer,
-not `setState`. This keeps them visible to middleware — users can log them, trace
-them, or cancel them. Both `history` and `persist` follow this: `_restore`
-is a plain reducer that travels through the full pipeline, so a logging middleware
-will see every undo and every hydration, and a guard middleware can cancel either.
+not `setState`. This keeps them visible to middleware — users can log them,
+trace them, or cancel them. Both `history` and `persist` follow this: `_restore`
+is a plain reducer that travels through the full pipeline, so a logging
+middleware will see every undo and every hydration, and a guard middleware can
+cancel either.
 
 ```ts
 // Middleware that logs all plugin-internal actions too:
-(ctx, next) => {
+((ctx, next) => {
   console.log(ctx.reducer.name); // "history._restore", "persist._restore", ...
   return next();
-};
+});
 
 // Middleware that prevents hydration in a specific condition:
-(ctx, next) => {
-  if (ctx.reducer.name === "persist._restore" && !auth.isReady())
+((ctx, next) => {
+  if (ctx.reducer.name === "persist._restore" && !auth.isReady()) {
     return CANCELED;
+  }
   return next();
-};
+});
 ```
 
 Plugin-internal bookkeeping — flags, counters, listener sets — lives in closure
@@ -389,8 +396,8 @@ const loggingPlugin: StorePlugin<State> = {
 const store = withPlugins({ count: 0 }).use(loggingPlugin);
 ```
 
-`onActivated` and `onDestroy` run once, immediately after the plugin is registered
-and when `store.destroy()` is called:
+`onActivated` and `onDestroy` run once, immediately after the plugin is
+registered and when `store.destroy()` is called:
 
 ```ts
 const store = withPlugins({ count: 0 }).use({
@@ -471,7 +478,8 @@ export function logger<
 ```
 
 To constrain which stores the plugin can be applied to, tighten `TStoreMethods`
-or `TStoreReducers`. TypeScript will error if the dependency is not registered first:
+or `TStoreReducers`. TypeScript will error if the dependency is not registered
+first:
 
 ```ts
 // Requires a `history` plugin to already be registered

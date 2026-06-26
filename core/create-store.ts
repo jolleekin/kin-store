@@ -98,10 +98,9 @@ export function createStore<TState>(initialState: TState): Store<TState> {
   function setState(next: TState | SetStateCallback<TState>): void {
     const prevState = state;
 
-    state =
-      typeof next === "function"
-        ? (next as SetStateCallback<TState>)(prevState)
-        : next;
+    state = typeof next === "function"
+      ? (next as SetStateCallback<TState>)(prevState)
+      : next;
 
     if (Object.is(state, prevState)) return;
 

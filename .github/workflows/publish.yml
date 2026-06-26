@@ -3,9 +3,9 @@ name: Publish to JSR
 on:
   push:
     tags:
-      - 'core@*'
-      - 'plugins@*'
-      - 'react@*'
+      - "core@*"
+      - "plugins@*"
+      - "react@*"
 
 jobs:
   lint:

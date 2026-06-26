@@ -19,18 +19,20 @@ type ComputeFn<TState> = (
  *
  * @template TState The type of the derived value.
  */
-export type DerivedStore<TState> = Pick<
-  Store<TState>,
-  "getState" | "subscribe"
-> & {
-  /**
-   * Destroys the store, removing all listeners and all dependencies.
-   *
-   * It's safe to call `destroy() more than once. However, calling other
-   * methods will throw an error after calling `destroy()`.
-   */
-  destroy(): void;
-};
+export type DerivedStore<TState> =
+  & Pick<
+    Store<TState>,
+    "getState" | "subscribe"
+  >
+  & {
+    /**
+     * Destroys the store, removing all listeners and all dependencies.
+     *
+     * It's safe to call `destroy() more than once. However, calling other
+     * methods will throw an error after calling `destroy()`.
+     */
+    destroy(): void;
+  };
 
 /**
  * Creates a read-only store whose value is computed from other stores.

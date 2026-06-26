@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -36,11 +36,7 @@
       body {
         background: var(--bg);
         color: var(--text);
-        font-family:
-          "Space Grotesk",
-          system-ui,
-          -apple-system,
-          sans-serif;
+        font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
         width: 100vw;
         height: 100vh;
         overflow: hidden;
@@ -217,9 +213,7 @@
 
       .z-line {
         display: inline;
-        transition:
-          opacity 0.3s,
-          background 0.3s;
+        transition: opacity 0.3s, background 0.3s;
       }
       .z-line.hl {
         background-color: rgba(245, 197, 24, 0.3);
@@ -258,10 +252,7 @@
         padding: 16px 20px;
         opacity: 0;
         transform: translateY(10px);
-        transition:
-          opacity 0.3s ease,
-          transform 0.3s ease,
-          border-color 0.3s;
+        transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.3s;
       }
       .pcard.on {
         opacity: 1;
@@ -341,9 +332,7 @@
         line-height: 1.4;
         opacity: 0;
         transform: translateY(8px);
-        transition:
-          opacity 0.3s ease,
-          transform 0.3s ease;
+        transition: opacity 0.3s ease, transform 0.3s ease;
       }
       .fitem.on {
         opacity: 1;
@@ -451,9 +440,7 @@
         padding: 16px 20px;
         opacity: 0;
         transform: translateY(10px);
-        transition:
-          opacity 0.3s ease,
-          transform 0.3s ease;
+        transition: opacity 0.3s ease, transform 0.3s ease;
       }
       .acard.on {
         opacity: 1;
@@ -482,9 +469,7 @@
       /* ── Kin Store code highlight spans (Part 2) ─────────────────── */
       .ks-span {
         display: inline;
-        transition:
-          opacity 0.3s,
-          background 0.3s;
+        transition: opacity 0.3s, background 0.3s;
       }
       .ks-span.hl {
         box-shadow: inset 0 -2px 0 var(--accent);
@@ -531,9 +516,7 @@
         text-align: center;
         opacity: 0;
         transform: translateY(10px);
-        transition:
-          opacity 0.35s ease,
-          transform 0.35s ease;
+        transition: opacity 0.35s ease, transform 0.35s ease;
       }
       .trio-card.on {
         opacity: 1;
@@ -572,10 +555,7 @@
         font-size: 16px;
         cursor: pointer;
         z-index: 30;
-        transition:
-          color 0.2s,
-          border-color 0.2s,
-          background 0.2s;
+        transition: color 0.2s, border-color 0.2s, background 0.2s;
       }
       #thumb-btn:hover,
       #thumb-btn.open {
@@ -664,17 +644,12 @@
       <!-- ══ SLIDE 0 — Title ════════════════════════════════════════════ -->
       <div class="slide" data-slide="0">
         <h1>
-          A state library built<br />by <span class="accent">arguing</span
-          ><br />with itself
+          A state library built<br />by <span class="accent"
+          >arguing</span><br />with itself
         </h1>
         <p
           class="sub"
-          style="
-            margin-top: 36px;
-            font-size: clamp(16px, 1.6vw, 20px);
-            letter-spacing: 0.06em;
-            color: var(--muted);
-          "
+          style="margin-top: 36px; font-size: clamp(16px, 1.6vw, 20px); letter-spacing: 0.06em; color: var(--muted)"
         >
           MAN HOANG
         </p>
@@ -718,16 +693,7 @@
 
         <!-- 2-column grid, vertical flow: [1,2] left, [3,4] right -->
         <div
-          style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            grid-auto-flow: column;
-            column-gap: 48px;
-            row-gap: 20px;
-            flex: 1;
-            min-height: 0;
-          "
+          style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; grid-auto-flow: column; column-gap: 48px; row-gap: 20px; flex: 1; min-height: 0"
         >
           <div class="rtk-block" id="rb1">
             <span class="block-label">01 — Async thunk</span>
@@ -797,29 +763,10 @@
         <!-- Step-5 verdict overlay -->
         <div
           id="rtk-verdict"
-          style="
-            position: absolute;
-            inset: 0;
-            background: rgba(7, 7, 15, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 80px;
-            opacity: 0;
-            transition: opacity 0.4s;
-            pointer-events: none;
-            z-index: 5;
-          "
+          style="position: absolute; inset: 0; background: rgba(7, 7, 15, 0.9); display: flex; align-items: center; justify-content: center; text-align: center; padding: 80px; opacity: 0; transition: opacity 0.4s; pointer-events: none; z-index: 5"
         >
           <p
-            style="
-              font-size: clamp(20px, 2.2vw, 34px);
-              font-weight: 700;
-              line-height: 1.55;
-              color: var(--text);
-              max-width: 900px;
-            "
+            style="font-size: clamp(20px, 2.2vw, 34px); font-weight: 700; line-height: 1.55; color: var(--text); max-width: 900px"
           >
             The structure becomes harder to reason about<br />than the problem
             it is <span class="accent">solving</span>.
@@ -906,8 +853,8 @@
               <h4>Unpredictable API shape</h4>
               <p>
                 Each middleware wraps the store itself, and can even alter its
-                API. Two middlewares can make conflicting assumptions —
-                what <code>set</code> does depends on composition order.
+                API. Two middlewares can make conflicting assumptions — what
+                <code>set</code> does depends on composition order.
               </p>
             </div>
           </div>
@@ -915,11 +862,20 @@
       </div>
 
       <!-- ══ SLIDE 5 — Jotai (step reveals) ══════════════════════════════ -->
-      <div class="slide" data-slide="5" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+      <div
+        class="slide"
+        data-slide="5"
+        data-steps="3"
+        style="justify-content: flex-start; padding-top: 44px"
+      >
         <div class="label">Part 1 — Irritation</div>
-        <h2 style="margin-bottom: 20px">What about <span class="accent">Jotai</span>?</h2>
+        <h2 style="margin-bottom: 20px">
+          What about <span class="accent">Jotai</span>?
+        </h2>
         <div class="cols cols-half" style="align-items: start">
-          <pre id="jcode"><code><span class="tk">import</span> { atom, useAtomValue, useSetAtom } <span class="tk">from</span> <span class="ts">'jotai'</span>;
+          <pre
+            id="jcode"
+          ><code><span class="tk">import</span> { atom, useAtomValue, useSetAtom } <span class="tk">from</span> <span class="ts">'jotai'</span>;
 
 <span class="tk">const</span> todosAtom  = <span class="tf">atom</span>&lt;Todo[]&gt;([]);
 <span class="tk">const</span> statusAtom = <span class="tf">atom</span>&lt;<span class="ts">'idle'</span> | <span class="ts">'loading'</span> | <span class="ts">'failed'</span>&gt;(<span class="ts">'idle'</span>);
@@ -947,28 +903,49 @@
             <div class="pcard" id="jp1">
               <div class="pnum">Problem 01</div>
               <h4>Actions must be atoms</h4>
-              <p>Even a simple <code>addTodo</code> must be wrapped in <code>atom(null, (get, set, arg) =&gt; ...)</code>. Every piece of logic is a write atom — there is no plain function style.</p>
+              <p>
+                Even a simple <code>addTodo</code> must be wrapped in <code
+                >atom(null, (get, set, arg) =&gt; ...)</code>. Every piece of
+                logic is a write atom — there is no plain function style.
+              </p>
             </div>
             <div class="pcard" id="jp2">
               <div class="pnum">Problem 02</div>
               <h4>Logic can't run outside React</h4>
-              <p>Write atoms are activated via <code>useSetAtom</code>. You can't call them from a service layer, a test, or a timeout without reaching for <code>getDefaultStore()</code>.</p>
+              <p>
+                Write atoms are activated via <code>useSetAtom</code>. You can't
+                call them from a service layer, a test, or a timeout without
+                reaching for <code>getDefaultStore()</code>.
+              </p>
             </div>
             <div class="pcard" id="jp3">
               <div class="pnum">Problem 03</div>
               <h4>Hard to debug at scale</h4>
-              <p>Stack traces surface at the <code>useSetAtom</code> call site in your component — not at the atom definition. A chain of atoms triggering other atoms is hard to trace in a debugger.</p>
+              <p>
+                Stack traces surface at the <code>useSetAtom</code> call site in
+                your component — not at the atom definition. A chain of atoms
+                triggering other atoms is hard to trace in a debugger.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- ══ SLIDE 6 — MobX (step reveals) ═══════════════════════════════ -->
-      <div class="slide" data-slide="6" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+      <div
+        class="slide"
+        data-slide="6"
+        data-steps="3"
+        style="justify-content: flex-start; padding-top: 44px"
+      >
         <div class="label">Part 1 — Irritation</div>
-        <h2 style="margin-bottom: 20px">What about <span class="accent">MobX</span>?</h2>
+        <h2 style="margin-bottom: 20px">
+          What about <span class="accent">MobX</span>?
+        </h2>
         <div class="cols cols-half" style="align-items: start">
-          <pre id="mxcode"><code><span class="tk">class</span> TodoStore {
+          <pre
+            id="mxcode"
+          ><code><span class="tk">class</span> TodoStore {
   todos: Todo[] = [];
   status: <span class="ts">'idle'</span> | <span class="ts">'loading'</span> | <span class="ts">'failed'</span> = <span class="ts">'idle'</span>;
 
@@ -1000,17 +977,30 @@
             <div class="pcard" id="mx1">
               <div class="pnum">Problem 01</div>
               <h4>makeAutoObservable magic</h4>
-              <p>Instruments every field and method invisibly — fields become observables, getters become computeds, methods become actions. No explicit list of what is reactive vs. not.</p>
+              <p>
+                Instruments every field and method invisibly — fields become
+                observables, getters become computeds, methods become actions.
+                No explicit list of what is reactive vs. not.
+              </p>
             </div>
             <div class="pcard" id="mx2">
               <div class="pnum">Problem 02</div>
               <h4>runInAction required in async</h4>
-              <p>Mutations after an <code>await</code> must be wrapped in <code>runInAction()</code>. Forgetting causes silent stale-data bugs — no error is thrown, the UI just shows wrong data.</p>
+              <p>
+                Mutations after an <code>await</code> must be wrapped in <code
+                >runInAction()</code>. Forgetting causes silent stale-data bugs
+                — no error is thrown, the UI just shows wrong data.
+              </p>
             </div>
             <div class="pcard" id="mx3">
               <div class="pnum">Problem 03</div>
               <h4>observer() on every component</h4>
-              <p>Every component reading observable state must be wrapped in <code>observer()</code>. Forgetting also causes silent stale-data bugs — still no error thrown. Two silent failure modes.</p>
+              <p>
+                Every component reading observable state must be wrapped in
+                <code>observer()</code>. Forgetting also causes silent
+                stale-data bugs — still no error thrown. Two silent failure
+                modes.
+              </p>
             </div>
           </div>
         </div>
@@ -1022,47 +1012,33 @@
         <h1>Can we do <span class="accent">better?</span></h1>
         <div class="flist">
           <div class="fitem" id="fi1">
-            <span class="icon">✦</span
-            ><span
-              ><span class="fkey">Structure</span><span class="fsep">—</span
-              ><span class="fval">without the ceremony</span></span
-            >
+            <span class="icon">✦</span><span><span class="fkey"
+              >Structure</span><span class="fsep">—</span><span class="fval"
+              >without the ceremony</span></span>
           </div>
           <div class="fitem" id="fi2">
-            <span class="icon">✦</span
-            ><span
-              ><span class="fkey">Zero boilerplate</span
-              ><span class="fsep">—</span
-              ><span class="fval">or as close as possible</span></span
-            >
+            <span class="icon">✦</span><span><span class="fkey"
+              >Zero boilerplate</span><span class="fsep">—</span><span
+                class="fval"
+              >or as close as possible</span></span>
           </div>
           <div class="fitem" id="fi3">
-            <span class="icon">✦</span
-            ><span
-              ><span class="fkey">100% type-safe</span
-              ><span class="fsep">—</span
-              ><span class="fval"
-                >by default, not as an afterthought</span
-              ></span
-            >
+            <span class="icon">✦</span><span><span class="fkey"
+              >100% type-safe</span><span class="fsep">—</span><span
+                class="fval"
+              >by default, not as an afterthought</span></span>
           </div>
           <div class="fitem" id="fi4">
-            <span class="icon">✦</span
-            ><span
-              ><span class="fkey">No hidden cost</span
-              ><span class="fsep">—</span
-              ><span class="fval">pay only for what you use</span></span
-            >
+            <span class="icon">✦</span><span><span class="fkey"
+              >No hidden cost</span><span class="fsep">—</span><span
+                class="fval"
+              >pay only for what you use</span></span>
           </div>
           <div class="fitem" id="fi5">
-            <span class="icon">✦</span
-            ><span
-              ><span class="fkey">Opt-in complexity</span
-              ><span class="fsep">—</span
-              ><span class="fval"
-                >that composes linearly, not exponentially</span
-              ></span
-            >
+            <span class="icon">✦</span><span><span class="fkey"
+              >Opt-in complexity</span><span class="fsep">—</span><span
+                class="fval"
+              >that composes linearly, not exponentially</span></span>
           </div>
         </div>
       </div>
@@ -1080,7 +1056,12 @@
       </div>
 
       <!-- ══ SLIDE 9 — Three pillars ══════════════════════════════════════ -->
-      <div class="slide" data-slide="9" data-steps="3" style="justify-content: flex-start; padding-top: 44px">
+      <div
+        class="slide"
+        data-slide="9"
+        data-steps="3"
+        style="justify-content: flex-start; padding-top: 44px"
+      >
         <div class="label">Part 2 — Kin Store</div>
         <h2>Three primitives.</h2>
         <p class="sub" style="margin-top: 10px; max-width: 600px">
@@ -1097,7 +1078,8 @@
           <div class="trio-card" id="t2">
             <div class="trio-name">withPlugins</div>
             <div class="trio-desc">
-              Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins.
+              Opt-in structure: methods, reducers, middleware, lifecycle hooks,
+              namespaced plugins.
             </div>
           </div>
           <div class="trio-card" id="t3">
@@ -1121,19 +1103,13 @@
           <div class="label">Part 2 — Kin Store — First primitive</div>
           <h2><span class="accent">createStore</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 1</span> — A value. 3 methods. Nothing else.
+            <span class="accent">Step 1</span> — A value. 3 methods. Nothing
+            else.
           </p>
         </div>
         <div
           id="s9-body"
-          style="
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            flex: 1;
-            min-height: 0;
-            align-items: start;
-          "
+          style="display: none; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; min-height: 0; align-items: start"
         >
           <pre
             style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
@@ -1157,12 +1133,7 @@
   console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
 });</span></code></pre>
           <div
-            style="
-              display: flex;
-              flex-direction: column;
-              gap: 12px;
-              padding-top: 8px;
-            "
+            style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px"
           >
             <div class="acard" id="sc1">
               <h4>createStore</h4>
@@ -1213,19 +1184,13 @@
           <div class="label">Part 2 — Kin Store — Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 2</span> — Move logic inside the store. Still plain setState.
+            <span class="accent">Step 2</span> — Move logic inside the store.
+            Still plain setState.
           </p>
         </div>
         <div
           id="s10-body"
-          style="
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            flex: 1;
-            min-height: 0;
-            align-items: start;
-          "
+          style="display: none; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; min-height: 0; align-items: start"
         >
           <pre
             style="font-size: clamp(10px, 1vw, 12px); line-height: 1.65"
@@ -1258,12 +1223,7 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
   console.<span class="tf">log</span>(prevState, <span class="ts">"--&gt;"</span>, <span class="tf">getState</span>());
 });</span></code></pre>
           <div
-            style="
-              display: flex;
-              flex-direction: column;
-              gap: 12px;
-              padding-top: 8px;
-            "
+            style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px"
           >
             <div class="acard" id="wc1">
               <h4>withPlugins</h4>
@@ -1309,7 +1269,9 @@ todoStore.<span class="tf ks-span" id="s10-sub-fn">subscribe</span>((getState, p
           <div class="label">Part 2 - Kin Store - Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 3</span> — Add features. One <span class="accent">.use( )</span> at a time.
+            <span class="accent">Step 3</span> — Add plugins, one <span
+              class="accent"
+            >.use( )</span> at a time.
           </p>
         </div>
         <div
@@ -1329,8 +1291,8 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
             <div class="acard" id="pa1">
               <h4>immer</h4>
               <p>
-                Write reducers as draft mutations. No spread syntax —
-                Immer handles immutability.
+                Write reducers as draft mutations. No spread syntax — Immer
+                handles immutability.
               </p>
             </div>
             <div class="acard" id="pa2">
@@ -1362,7 +1324,8 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <div class="label">Part 2 - Kin Store - Second primitive</div>
           <h2><span class="accent">withPlugins</span></h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 4</span> — Extract <span class="accent">setState</span> into
+            <span class="accent">Step 4</span> — Extract <span class="accent"
+            >setState</span> into
             <span class="accent">reducers</span>. Pure functions. Full pipeline.
           </p>
         </div>
@@ -1372,13 +1335,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
         >
           <div>
             <div
-              style="
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 0.12em;
-                color: var(--muted);
-                margin-bottom: 10px;
-              "
+              style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px"
             >
               BEFORE — <span class="accent">setState</span>
             </div>
@@ -1412,13 +1369,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           </div>
           <div>
             <div
-              style="
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 0.12em;
-                color: var(--muted);
-                margin-bottom: 10px;
-              "
+              style="font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px"
             >
               AFTER — REDUCERS + <span class="accent">dispatch.*</span>
             </div>
@@ -1464,7 +1415,8 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <div class="label">Part 2 - Kin Store - Third primitive</div>
           <h2><span class="accent">derive</span> — reactive composition</h2>
           <p class="sub" style="margin-top: 10px">
-            <span class="accent">Step 5</span> — Read from any store. The derived store tracks its sources.
+            <span class="accent">Step 5</span> — Read from any store. The
+            derived store tracks its sources.
           </p>
         </div>
         <div
@@ -1489,60 +1441,36 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <div>
             <div class="flist" style="margin-top: 0">
               <div class="fitem" id="d1">
-                <span class="icon">✦</span
-                ><span
-                  ><span class="fkey">Auto-tracked</span
-                  ><span class="fsep">—</span
-                  ><span class="fval"
-                    >get() registers the dependency. No selector arrays.</span
-                  ></span
-                >
+                <span class="icon">✦</span><span><span class="fkey"
+                  >Auto-tracked</span><span class="fsep">—</span><span
+                    class="fval"
+                  >get() registers the dependency. No selector
+                    arrays.</span></span>
               </div>
               <div class="fitem" id="d2">
-                <span class="icon">✦</span
-                ><span
-                  ><span class="fkey">Lazy</span><span class="fsep">—</span
-                  ><span class="fval"
-                    >cold when no subscribers. Zero cost until something
-                    listens.</span
-                  ></span
-                >
+                <span class="icon">✦</span><span><span class="fkey"
+                  >Lazy</span><span class="fsep">—</span><span class="fval"
+                  >cold when no subscribers. Zero cost until something
+                    listens.</span></span>
               </div>
               <div class="fitem" id="d3">
-                <span class="icon">✦</span
-                ><span
-                  ><span class="fkey">Conditional</span
-                  ><span class="fsep">—</span
-                  ><span class="fval"
-                    >branches only subscribe to stores they actually read.</span
-                  ></span
-                >
+                <span class="icon">✦</span><span><span class="fkey"
+                  >Conditional</span><span class="fsep">—</span><span
+                    class="fval"
+                  >branches only subscribe to stores they actually
+                    read.</span></span>
               </div>
               <div class="fitem" id="d4">
-                <span class="icon">✦</span
-                ><span
-                  ><span class="fkey">Clean up when done</span
-                  ><span class="fsep">—</span
-                  ><span class="fval"
-                    ><code>destroy()</code> unsubscribes from all sources. No
-                    leaks.</span
-                  ></span
-                >
+                <span class="icon">✦</span><span><span class="fkey"
+                  >Clean up when done</span><span class="fsep">—</span><span
+                    class="fval"
+                  ><code>destroy()</code> unsubscribes from all sources. No
+                    leaks.</span></span>
               </div>
             </div>
             <div
               id="d-note"
-              style="
-                margin-top: 20px;
-                font-size: clamp(15px, 1.6vw, 18px);
-                color: var(--muted);
-                font-style: italic;
-                opacity: 0;
-                transform: translateY(6px);
-                transition:
-                  opacity 0.3s,
-                  transform 0.3s;
-              "
+              style="margin-top: 20px; font-size: clamp(15px, 1.6vw, 18px); color: var(--muted); font-style: italic; opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.3s"
             >
               No new paradigm. Just stores that talk to each other.
             </div>
@@ -1562,42 +1490,131 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           <h2>One library. <span class="accent">Every style.</span></h2>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%">
-          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">SIMPLE</div>
-            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">createStore</div>
-            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">244 B · gzip</div>
-            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">A value and three methods. Plain functions for logic.</div>
+        <div
+          style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%"
+        >
+          <div
+            style="background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px"
+          >
+            <div
+              style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px"
+            >
+              SIMPLE
+            </div>
+            <div
+              style="font-size: clamp(15px, 1.5vw, 18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px"
+            >
+              createStore
+            </div>
+            <div
+              style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px"
+            >
+              244 B · gzip
+            </div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">
+              A value and three methods. Plain functions for logic.
+            </div>
           </div>
-          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">ZUSTAND-STYLE</div>
-            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">withPlugins<span style="color: var(--muted); font-weight: 400"> + methods</span></div>
-            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">1.07 KB · gzip</div>
-            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Methods live in the store. Call them directly on the store object.</div>
+          <div
+            style="background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px"
+          >
+            <div
+              style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px"
+            >
+              ZUSTAND-STYLE
+            </div>
+            <div
+              style="font-size: clamp(15px, 1.5vw, 18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px"
+            >
+              withPlugins<span style="color: var(--muted); font-weight: 400">
+                + methods</span>
+            </div>
+            <div
+              style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px"
+            >
+              1.07 KB · gzip
+            </div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">
+              Methods live in the store. Call them directly on the store object.
+            </div>
           </div>
-          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">REDUX-STYLE</div>
-            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">withPlugins<span style="color: var(--muted); font-weight: 400"> + reducers</span></div>
-            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">1.07 KB · gzip</div>
-            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Reducers for state changes. Methods for the flow. Middleware to intercept.</div>
+          <div
+            style="background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px"
+          >
+            <div
+              style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px"
+            >
+              REDUX-STYLE
+            </div>
+            <div
+              style="font-size: clamp(15px, 1.5vw, 18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px"
+            >
+              withPlugins<span style="color: var(--muted); font-weight: 400">
+                + reducers</span>
+            </div>
+            <div
+              style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px"
+            >
+              1.07 KB · gzip
+            </div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">
+              Reducers for state changes. Methods for the flow. Middleware to
+              intercept.
+            </div>
           </div>
-          <div style="background: var(--surface); border: 1px solid rgba(255,255,255,0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px">
-            <div style="font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--accent); margin-bottom: 10px">JOTAI-STYLE</div>
-            <div style="font-size: clamp(15px,1.5vw,18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px">derive</div>
-            <div style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px">465 B · gzip</div>
-            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">Reactive composition. With auto dependency tracking.</div>
+          <div
+            style="background: var(--surface); border: 1px solid rgba(255, 255, 255, 0.07); border-top: 2px solid var(--accent); border-radius: 12px; padding: 22px 20px"
+          >
+            <div
+              style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 10px"
+            >
+              JOTAI-STYLE
+            </div>
+            <div
+              style="font-size: clamp(15px, 1.5vw, 18px); font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px"
+            >
+              derive
+            </div>
+            <div
+              style="font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--green); margin-bottom: 10px"
+            >
+              465 B · gzip
+            </div>
+            <div style="font-size: 14px; color: var(--muted); line-height: 1.6">
+              Reactive composition. With auto dependency tracking.
+            </div>
           </div>
         </div>
-        
+
         <div
-        id="sum-props"
-        style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; opacity: 0; transition: opacity 0.4s"
+          id="sum-props"
+          style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; opacity: 0; transition: opacity 0.4s"
         >
-          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Tiny footprint</div>
-          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">100% type-safe</div>
-          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">No hidden cost</div>
-          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Opt-in complexity</div>
-          <div style="padding: 13px 28px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)">Minimal boilerplate</div>
+          <div
+            style="padding: 13px 28px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)"
+          >
+            Tiny footprint
+          </div>
+          <div
+            style="padding: 13px 28px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)"
+          >
+            100% type-safe
+          </div>
+          <div
+            style="padding: 13px 28px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)"
+          >
+            No hidden cost
+          </div>
+          <div
+            style="padding: 13px 28px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)"
+          >
+            Opt-in complexity
+          </div>
+          <div
+            style="padding: 13px 28px; background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.28); border-radius: 999px; font-size: 17px; font-weight: 700; color: var(--green)"
+          >
+            Minimal boilerplate
+          </div>
         </div>
       </div>
 
@@ -1611,78 +1628,31 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
           A state library built by arguing with itself.
         </p>
         <div
-          style="
-            margin-top: 52px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-          "
+          style="margin-top: 52px; display: flex; flex-direction: column; gap: 18px"
         >
           <div style="display: flex; align-items: center; gap: 16px">
             <span
-              style="
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 13px;
-                font-weight: 700;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: var(--muted);
-                width: 88px;
-              "
-              >GitHub</span
-            >
+              style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); width: 88px"
+            >GitHub</span>
             <span
-              style="
-                font-size: clamp(18px, 2vw, 24px);
-                font-weight: 600;
-                color: var(--text);
-              "
-              >jolleekin</span
-            >
+              style="font-size: clamp(18px, 2vw, 24px); font-weight: 600; color: var(--text)"
+            >jolleekin</span>
           </div>
           <div style="display: flex; align-items: center; gap: 16px">
             <span
-              style="
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 13px;
-                font-weight: 700;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: var(--muted);
-                width: 88px;
-              "
-              >X</span
-            >
+              style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); width: 88px"
+            >X</span>
             <span
-              style="
-                font-size: clamp(18px, 2vw, 24px);
-                font-weight: 600;
-                color: var(--text);
-              "
-              >@jolleekin</span
-            >
+              style="font-size: clamp(18px, 2vw, 24px); font-weight: 600; color: var(--text)"
+            >@jolleekin</span>
           </div>
           <div style="display: flex; align-items: center; gap: 16px">
             <span
-              style="
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 13px;
-                font-weight: 700;
-                letter-spacing: 0.1em;
-                text-transform: uppercase;
-                color: var(--muted);
-                width: 88px;
-              "
-              >LinkedIn</span
-            >
+              style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); width: 88px"
+            >LinkedIn</span>
             <span
-              style="
-                font-size: clamp(18px, 2vw, 24px);
-                font-weight: 600;
-                color: var(--text);
-              "
-              >linkedin.com/in/man-hoang</span
-            >
+              style="font-size: clamp(18px, 2vw, 24px); font-weight: 600; color: var(--text)"
+            >linkedin.com/in/man-hoang</span>
           </div>
         </div>
         <div
@@ -1719,7 +1689,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
       const JOTAI_SLIDE = 5;
       const MOBX_SLIDE = 6;
       const rtkBlocks = [1, 2, 3, 4].map((i) =>
-        document.getElementById("rb" + i),
+        document.getElementById("rb" + i)
       );
 
       function applyRtkStep(step) {
@@ -1737,7 +1707,9 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
         document.getElementById("ja-add")?.classList.toggle("hl", step === 1);
         document.getElementById("ja-fetch")?.classList.toggle("hl", step === 1);
         document.getElementById("ja-hooks")?.classList.toggle("hl", step === 2);
-        const jCards = ["jp1", "jp2", "jp3"].map((id) => document.getElementById(id));
+        const jCards = ["jp1", "jp2", "jp3"].map((id) =>
+          document.getElementById(id)
+        );
         jCards.forEach((c, i) => {
           c?.classList.remove("on", "current", "dim");
           if (i < step) {
@@ -1753,7 +1725,9 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
         document.getElementById("mx-ri")?.classList.toggle("hl", step === 2);
         document.getElementById("mx-ri-2")?.classList.toggle("hl", step === 2);
         document.getElementById("mx-obs")?.classList.toggle("hl", step === 3);
-        const mxCards = ["mx1", "mx2", "mx3"].map((id) => document.getElementById(id));
+        const mxCards = ["mx1", "mx2", "mx3"].map((id) =>
+          document.getElementById(id)
+        );
         mxCards.forEach((c, i) => {
           c?.classList.remove("on", "current", "dim");
           if (i < step) {
@@ -1771,7 +1745,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
       const zStateIds = ["zs1", "zs2", "zs3", "zs4", "zs5", "zs6"];
       const zWavyIds = ["zs1", "zs4", "zs6"]; // 1st, 4th, 6th occurrences of "state"
       const pCards = ["p1", "p2", "p3", "p4", "p5"].map((id) =>
-        document.getElementById(id),
+        document.getElementById(id)
       );
 
       // codeHl: IDs to highlight; dimCode: whether non-highlighted codeIds get dimmed
@@ -1806,34 +1780,38 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
         // Reset all code decorations
         zStateIds.forEach((id) =>
-          document.getElementById(id)?.classList.remove("wavy-red"),
+          document.getElementById(id)?.classList.remove("wavy-red")
         );
         zCodeIds.forEach((id) =>
-          document.getElementById(id)?.classList.remove("hl", "dim"),
+          document.getElementById(id)?.classList.remove("hl", "dim")
         );
         document.getElementById("zw-all")?.classList.remove("hl", "dim");
         document.getElementById("zw-action")?.classList.remove("hl-line");
 
         if (cfg) {
-          if (cfg.wavy)
+          if (cfg.wavy) {
             zWavyIds.forEach((id) =>
-              document.getElementById(id)?.classList.add("wavy-red"),
+              document.getElementById(id)?.classList.add("wavy-red")
             );
-          if (cfg.lineHl)
+          }
+          if (cfg.lineHl) {
             document.getElementById("zw-action")?.classList.add("hl-line");
+          }
 
           // Handle zw-all separately (never dimmed — it contains other highlighted spans)
-          if (cfg.codeHl.includes("zw-all"))
+          if (cfg.codeHl.includes("zw-all")) {
             document.getElementById("zw-all")?.classList.add("hl");
+          }
 
           // Highlight/dim individual code spans (never adds empty string to classList)
-          if (cfg.codeHl.length)
+          if (cfg.codeHl.length) {
             zCodeIds.forEach((id) => {
               const el = document.getElementById(id);
               if (!el) return;
               if (cfg.codeHl.includes(id)) el.classList.add("hl");
               else if (cfg.dimCode) el.classList.add("dim");
             });
+          }
         }
 
         // Cards: current one is bright, previous ones are dimmed
@@ -1858,7 +1836,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
       // ── Question slide step logic ────────────────────────────────────────
       const Q_SLIDE = 7;
       const qItems = [1, 2, 3, 4, 5].map((i) =>
-        document.getElementById("fi" + i),
+        document.getElementById("fi" + i)
       );
 
       function applyQuestionStep(step) {
@@ -1875,7 +1853,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       // ── Trio (three primitives overview) ────────────────────────────────
       const trioCards = ["t1", "t2", "t3"].map((id) =>
-        document.getElementById(id),
+        document.getElementById(id)
       );
 
       function applyTrioStep(step) {
@@ -1884,24 +1862,30 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       // ── Step 1 (createStore) ────────────────────────────────────────────
       const s9Cards = ["sc1", "sc2", "sc3", "sc4", "sc5"].map((id) =>
-        document.getElementById(id),
+        document.getElementById(id)
       );
 
       function applyS1Step(step) {
-        document.getElementById("s9-body").style.display =
-          step >= 1 ? "grid" : "none";
+        document.getElementById("s9-body").style.display = step >= 1
+          ? "grid"
+          : "none";
 
         // progressive reveal — cumulative
-        document.getElementById("s9-create").style.display =
-          step >= 1 ? "" : "none";
-        document.getElementById("s9-fns").style.display =
-          step >= 2 ? "" : "none";
-        document.getElementById("s9-trigger").style.display =
-          step >= 3 ? "" : "none";
-        document.getElementById("s9-getline").style.display =
-          step >= 4 ? "" : "none";
-        document.getElementById("s9-subline").style.display =
-          step >= 5 ? "" : "none";
+        document.getElementById("s9-create").style.display = step >= 1
+          ? ""
+          : "none";
+        document.getElementById("s9-fns").style.display = step >= 2
+          ? ""
+          : "none";
+        document.getElementById("s9-trigger").style.display = step >= 3
+          ? ""
+          : "none";
+        document.getElementById("s9-getline").style.display = step >= 4
+          ? ""
+          : "none";
+        document.getElementById("s9-subline").style.display = step >= 5
+          ? ""
+          : "none";
 
         // block highlights — only the active step's block
         document
@@ -1931,21 +1915,26 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       // ── Step 2 (withPlugins + methods) ──────────────────────────────────
       const s10Cards = ["wc1", "wc2", "wc3", "wc4"].map((id) =>
-        document.getElementById(id),
+        document.getElementById(id)
       );
 
       function applyWPStep(step) {
-        document.getElementById("s10-body").style.display =
-          step >= 1 ? "grid" : "none";
+        document.getElementById("s10-body").style.display = step >= 1
+          ? "grid"
+          : "none";
 
-        document.getElementById("s10-create").style.display =
-          step >= 1 ? "" : "none";
-        document.getElementById("s10-methods").style.display =
-          step >= 2 ? "" : "none";
-        document.getElementById("s10-call").style.display =
-          step >= 3 ? "" : "none";
-        document.getElementById("s10-react").style.display =
-          step >= 4 ? "" : "none";
+        document.getElementById("s10-create").style.display = step >= 1
+          ? ""
+          : "none";
+        document.getElementById("s10-methods").style.display = step >= 2
+          ? ""
+          : "none";
+        document.getElementById("s10-call").style.display = step >= 3
+          ? ""
+          : "none";
+        document.getElementById("s10-react").style.display = step >= 4
+          ? ""
+          : "none";
 
         document
           .getElementById("s10-create")
@@ -1969,16 +1958,35 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
       }
 
       // ── Plugins (immer, persist, history) ───────────────────────────────
-      const plugCards = ["pa1", "pa2", "pa3"].map((id) => document.getElementById(id));
+      const plugCards = ["pa1", "pa2", "pa3"].map((id) =>
+        document.getElementById(id)
+      );
 
       function applyPlugStep(step) {
-        document.getElementById("p11-immer").style.display = step >= 1 ? "" : "none";
-        document.getElementById("p11-persist").style.display = step >= 2 ? "" : "none";
-        document.getElementById("p11-history").style.display = step >= 3 ? "" : "none";
-        document.getElementById("p11-usage").style.display = step >= 3 ? "" : "none";
-        document.getElementById("p11-immer")?.classList.toggle("hl", step === 1);
-        document.getElementById("p11-persist")?.classList.toggle("hl", step === 2);
-        document.getElementById("p11-history")?.classList.toggle("hl", step === 3);
+        document.getElementById("p11-immer").style.display = step >= 1
+          ? ""
+          : "none";
+        document.getElementById("p11-persist").style.display = step >= 2
+          ? ""
+          : "none";
+        document.getElementById("p11-history").style.display = step >= 3
+          ? ""
+          : "none";
+        document.getElementById("p11-usage").style.display = step >= 3
+          ? ""
+          : "none";
+        document.getElementById("p11-immer")?.classList.toggle(
+          "hl",
+          step === 1,
+        );
+        document.getElementById("p11-persist")?.classList.toggle(
+          "hl",
+          step === 2,
+        );
+        document.getElementById("p11-history")?.classList.toggle(
+          "hl",
+          step === 3,
+        );
         document.getElementById("p11-usage")?.classList.toggle("hl", step >= 3);
         plugCards.forEach((c, i) => c?.classList.toggle("on", i < step));
       }
@@ -2004,7 +2012,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       // ── Step 4 (derive) ─────────────────────────────────────────────────
       const dItems = ["d1", "d2", "d3", "d4"].map((id) =>
-        document.getElementById(id),
+        document.getElementById(id)
       );
 
       function applyS4Step(step) {
@@ -2039,7 +2047,9 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       // ── Summary ─────────────────────────────────────────────────────────
       function applySumStep(step) {
-        document.getElementById("sum-props").style.opacity = step >= 1 ? "1" : "0";
+        document.getElementById("sum-props").style.opacity = step >= 1
+          ? "1"
+          : "0";
       }
 
       function advance() {
@@ -2089,10 +2099,12 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
       }
 
       function updateUI() {
-        document.getElementById("progress").style.width =
-          `${(cur / (total - 1)) * 100}%`;
-        document.getElementById("counter").textContent =
-          `${cur + 1} / ${total}`;
+        document.getElementById("progress").style.width = `${
+          (cur / (total - 1)) * 100
+        }%`;
+        document.getElementById("counter").textContent = `${
+          cur + 1
+        } / ${total}`;
       }
 
       document.addEventListener("keydown", (e) => {
@@ -2148,7 +2160,7 @@ todoStore.history.<span class="tf">undo</span>();</span></code></pre>
 
       function syncThumbActive() {
         thumbItems.forEach((item, i) =>
-          item.classList.toggle("t-active", i === cur),
+          item.classList.toggle("t-active", i === cur)
         );
         if (thumbPanel.classList.contains("open")) {
           thumbItems[cur]?.scrollIntoView({
