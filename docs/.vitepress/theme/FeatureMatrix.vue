@@ -15,8 +15,8 @@ const rows = [
   { label: '100% type-safe',            kin: '✅', zustand: '⚠️', redux: '⚠️', jotai: '✅', mobx: '✅', trimmed: true },
   { label: 'Low boilerplate',           kin: '✅', zustand: '⚠️', redux: '❌', jotai: '⚠️', mobx: '⚠️', trimmed: true },
   { label: 'Linear plugin composition', kin: '✅', zustand: '❌', redux: '❌', jotai: '—',  mobx: '—' },
-  { label: 'Separate state and logic',  kin: '✅', zustand: '❌', redux: '✅', jotai: '—',  mobx: '✅' },
-  { label: 'Opt-in complexity',         kin: '✅', zustand: '⚠️', redux: '❌', jotai: '⚠️', mobx: '❌', trimmed: true },
+  { label: 'Separate state and logic',  kin: '✅', zustand: '❌', redux: '✅', jotai: '—',  mobx: '✅', trimmed: true },
+  { label: 'Opt-in complexity',         kin: '✅', zustand: '✅', redux: '❌', jotai: '⚠️', mobx: '❌', trimmed: true },
   { label: 'No hidden magic',           kin: '✅', zustand: '✅', redux: '✅', jotai: '⚠️', mobx: '❌', trimmed: true },
   { label: 'Reactive composition',      kin: '✅', zustand: '⚠️', redux: '❌', jotai: '✅', mobx: '✅' },
 ];
@@ -62,7 +62,7 @@ const visibleRows = computed(() =>
         </table>
       </div>
       <p v-if="!full" class="feature-matrix-cta">
-        <a href="/comparison">See full comparison with code examples →</a>
+        Don't believe it? <a href="/comparison">See full comparison with code examples →</a>
       </p>
     </div>
   </section>
@@ -78,7 +78,7 @@ const visibleRows = computed(() =>
 }
 
 .feature-matrix-inner {
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto;
 }
 
