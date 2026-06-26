@@ -6,7 +6,7 @@
 ![100% type-safe](https://img.shields.io/badge/100%25%20type--safe-166534?style=flat-square)
 ![Zero dependencies](https://img.shields.io/badge/Zero%20dependencies-166534?style=flat-square)
 
-Framework-agnostic reactive state that grows with you — without locking you into a paradigm.
+Reactive state you want to use.
 
 ## Docs
 

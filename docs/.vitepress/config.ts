@@ -16,7 +16,7 @@ const vueRoot = dirname(vpRequire.resolve('vue/package.json'))
 export default defineConfig({
   cleanUrls: true,
   title: 'Kin Store',
-  description: 'Framework-agnostic reactive state that grows with you — without locking you into a paradigm.',
+  description: 'Reactive state you want to use.',
 
   markdown: {
     codeTransformers: [

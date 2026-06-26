@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Kin Store
-  text: Reactive state that<br/>grows with you.
+  text: Reactive state you want to use.
   tagline: "Framework-agnostic. Zero dependencies. 100% type-safe.<br/>Start with 244 B and add only what you need."
   actions:
     - theme: brand
