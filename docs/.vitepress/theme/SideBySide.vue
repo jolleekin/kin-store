@@ -14,13 +14,9 @@ function toggle(): void {
 
 <template>
   <div ref="container" class="side-by-side">
-    <button class="fs-btn" title="Toggle fullscreen" aria-label="Toggle fullscreen" @click="toggle">
-      <svg class="icon-expand" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-      </svg>
-      <svg class="icon-compress" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>
-      </svg>
+    <button class="fs-btn" aria-label="Toggle fullscreen" @click="toggle">
+      <span class="expand">View side by side</span>
+      <span class="compress">Exit</span>
     </button>
     <slot />
   </div>
@@ -36,21 +32,21 @@ function toggle(): void {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
+  /* width: 32px; */
   height: 32px;
-  padding: 0;
+  padding-inline: 8px;
   border: none;
   border-radius: 5px;
-  background: var(--vp-c-brand-3);
+  background: var(--vp-c-brand-5);
   color: var(--vp-button-brand-text, #fff);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, transform 0.15s;
 }
 
-.fs-btn:hover  { background: var(--vp-c-brand-2); }
-.fs-btn:active { transform: scale(0.88); }
+.fs-btn:hover  { background: var(--vp-c-brand-3); }
+.fs-btn:active { transform: scale(0.95); }
 
-.icon-compress { display: none; }
+.compress { display: none }
 
 /* ── Container ────────────────────────────────────────────────────────────── */
 .side-by-side {
@@ -73,8 +69,8 @@ function toggle(): void {
   right: 28px;
 }
 
-.side-by-side:fullscreen .icon-compress { display: block; }
-.side-by-side:fullscreen .icon-expand   { display: none; }
+.side-by-side:fullscreen .compress { display: block; }
+.side-by-side:fullscreen .expand   { display: none; }
 
 /**/
 
@@ -99,10 +95,9 @@ function toggle(): void {
 .side-by-side:fullscreen :deep(.vp-code-group .tabs label) {
   display: block;
   padding: 2px 24px;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
   color: var(--vp-c-text-2);
   cursor: default;
   background: transparent;
@@ -138,5 +133,14 @@ function toggle(): void {
 .side-by-side:fullscreen :deep(.vp-code-group .blocks > div pre) {
   overflow-x: auto;
   margin: 0;
+}
+
+.side-by-side :deep(.comment-line) {
+  background-color: var(--vp-c-brand-soft);
+}
+
+.side-by-side :deep(.comment-line span) {
+  color: var(--vp-c-brand-3);
+  font-style: italic;
 }
 </style>
