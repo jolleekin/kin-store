@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: Kin Store
-  text: Reactive state that grows with you.
-  tagline: Framework-agnostic. Zero dependencies. 100% type-safe. Start with 244 B and add only what you need.
+  text: Reactive state that<br/>grows with you.
+  tagline: "Framework-agnostic. Zero dependencies. 100% type-safe.<br/>Start with 244 B and add only what you need."
   actions:
     - theme: brand
       text: Get Started
@@ -36,3 +36,5 @@ features:
     title: Framework-agnostic
     details: Works in any framework or none. React bindings ship separately, backed by useSyncExternalStore for concurrent mode safety.
 ---
+
+<FeatureMatrix />

@@ -8,18 +8,7 @@ The same todo store — `{ todos, status }` with `addTodo` and `fetchTodos` — 
 
 ## Feature matrix
 
-|                           | Kin Store | Zustand | Redux / RTK | Jotai | MobX |
-| ------------------------- | :-------: | :-----: | :---------: | :---: | :--: |
-| Zero dependencies         |    ✅     |   ✅    |     ❌      |  ✅   |  ❌  |
-| Tiny footprint            |    ✅     |   ✅    |     ❌      |  ✅   |  ❌  |
-| 100% type-safe            |    ✅     |   ⚠️    |     ⚠️      |  ✅   |  ⚠️  |
-| Linear plugin composition |    ✅     |   ❌    |     ❌      |   —   |  —   |
-| Separate state and logic  |    ✅     |   ❌    |     ✅      |   —   |  ✅  |
-| Opt-in complexity         |    ✅     |   ❌    |     ❌      |  ✅   |  ❌  |
-| No hidden magic           |    ✅     |   ✅    |     ✅      |  ⚠️   |  ❌  |
-| Reactive composition      |    ✅     |   ⚠️    |     ❌      |  ✅   |  ✅  |
-
----
+<FeatureMatrix :full="true" />
 
 ## vs Redux / RTK
 
@@ -29,7 +18,7 @@ Redux requires an async thunk, a slice, and a configured store before you write 
 
 ::: code-group
 
-```ts [Redux / RTK]
+```txt [Redux / RTK]
 import { createAsyncThunk, createSlice, configureStore } from '@reduxjs/toolkit';
 import type { Middleware, PayloadAction } from '@reduxjs/toolkit';
 
@@ -79,8 +68,8 @@ store.dispatch(todosSlice.actions.addTodo('Buy groceries'));
 store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 ```
 
-```ts [Kin Store]
-import { withPlugins } from '@kin-store/core';
+```txt [Kin Store]
+import { withPlugins } from '@kin-store/core/index.ts';
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
@@ -98,7 +87,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
       fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: 'idle' }),
       fetchRejected:  (state) => ({ ...state, status: 'failed' }),
     },
-    middleware: (ctx, next) => {
+    middleware: () => (ctx, next) => {
       console.log('dispatching', ctx.reducer.name, ctx.reducer.args);
       return next();
     },
@@ -126,14 +115,12 @@ await todoStore.fetchTodos();
 
 **What's different:**
 
-| | Redux / RTK | Kin Store |
-|---|---|---|
-| Async actions | `createAsyncThunk` + `extraReducers` | Method that calls reducers |
-| Middleware | `(api) => (next) => (action) => ...` | `(ctx, next) => ...` |
-| Type exports | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
-| Access pattern | `slice.actions.addTodo(...)` | `store.dispatch.addTodo(...)` |
-
----
+|                | Redux / RTK                               | Kin Store                     |
+| -------------- | ----------------------------------------- | ----------------------------- |
+| Async actions  | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
+| Middleware     | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
+| Type exports   | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
+| Access pattern | `slice.actions.addTodo(...)`              | `store.dispatch.addTodo(...)` |
 
 ## vs Zustand
 
@@ -143,7 +130,7 @@ Zustand's middleware model nests each capability around the previous one — rea
 
 ::: code-group
 
-```ts [Zustand]
+```txt [Zustand]
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -200,9 +187,10 @@ function TodoApp() {
 }
 ```
 
-```ts [Kin Store]
-import { withPlugins } from '@kin-store/core';
-import { persist, history } from '@kin-store/plugins';
+```txt [Kin Store]
+import { withPlugins } from '@kin-store/core/index.ts';
+import { persist, history, immer } from '@kin-store/plugins/index.ts';
+import { useSelector } from '@kin-store/react/index.ts';
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
@@ -211,24 +199,23 @@ type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
 const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
   .use('persist', persist({ key: 'todos-storage' }))
   .use('history', history())
+  .use('immer', immer())
   .use({
-    reducers: {
-      addTodo: (state, text: string) => ({
-        ...state,
-        todos: [...state.todos, { id: Date.now(), text, done: false }],
-      }),
-      fetchStart:     (state) => ({ ...state, status: 'loading' }),
-      fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: 'idle' }),
-      fetchRejected:  (state) => ({ ...state, status: 'failed' }),
-    },
     methods: (store) => ({
+      addTodo(text: string): void {
+        store.setState((s) => ({
+          ...s,
+          todos: [...s.todos, { id: Date.now(), text, done: false }],
+        }));
+      },
+
       async fetchTodos(): Promise<void> {
-        store.dispatch.fetchStart();
+        store.setState((s) => ({ ...s, status: 'loading' }));
         try {
           const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
-          store.dispatch.fetchFulfilled(todos);
+          store.setState({ todos, status: 'idle' });
         } catch {
-          store.dispatch.fetchRejected();
+          store.setState((s) => ({ ...s, status: 'failed' }));
         }
       },
     }),
@@ -241,8 +228,7 @@ todoStore.history.undo();
 // In React — methods are stable refs, not part of the state subscription.
 function TodoApp() {
   const todos = useSelector(todoStore, (s) => s.todos);
-  // Call methods directly — no subscription, no re-render on action identity change.
-  return <button onClick={() => todoStore.dispatch.addTodo('new')}>Add</button>;
+  return <button onClick={() => todoStore.addTodo('new')}>Add</button>;
 }
 ```
 
@@ -252,27 +238,27 @@ function TodoApp() {
 
 **What's different:**
 
-| | Zustand | Kin Store |
-|---|---|---|
-| Adding persist | Wrap entire store in `persist(...)` | `.use('persist', persist(...))` |
-| Adding devtools | Wrap again in `devtools(...)` | `.use('devtools', devtools(...))` *(planned)* |
-| Reading pipeline order | Inside-out | Top-to-bottom |
-| State vs actions | Same object | Structurally separate |
-| Stable refs in React | Subscribe via selector | Call directly — zero subscriptions |
-| `status` union in Immer | Lost inside `Draft<T>` | Fully preserved |
-
----
+|                         | Zustand                             | Kin Store                                     |
+| ----------------------- | ----------------------------------- | --------------------------------------------- |
+| Adding persist          | Wrap entire store in `persist(...)` | `.use('persist', persist(...))`               |
+| Adding immer            | Wrap again in `immer(...)`          | `.use('immer', immer())`                      |
+| Adding devtools         | Wrap again in `devtools(...)`       | `.use('devtools', devtools(...))` _(planned)_ |
+| Reading pipeline order  | Inside-out                          | Top-to-bottom                                 |
+| State vs actions        | Same object                         | Structurally separate                         |
+| Stable refs in React    | Subscribe via selector              | Call directly — zero subscriptions            |
+| `status` union in Immer | Lost inside `Draft<T>`              | Fully preserved                               |
 
 ## vs Jotai
 
-Jotai is atom-based — each piece of state is its own atom, and derived atoms compose them. It's a different model rather than a worse one, but it means thinking in atoms rather than in domains. Surprisingly, even actions are atoms — `atom(null, (get, set, arg) => ...)` is Jotai's way of expressing a write-only operation. Because every action is an atom, business logic can only be called inside React (via `useSetAtom`) unless you reach for the global store directly. When a write atom throws, the stack trace surfaces at the `useSetAtom` call site in your component, not at the atom definition — a chain of atoms triggering other atoms can be hard to follow in a debugger. For a simple app this trade-off may be acceptable; for a complex one, it gets messy fast and becomes a nightmare to debug.
+Jotai is atom-based — each piece of state is its own atom, and derived atoms compose them. It's a different model rather than a worse one, but it means thinking in atoms rather than in domains. Surprisingly, even actions are atoms — `atom(null, (get, set, arg) => ...)` is Jotai's way of expressing a write-only operation. Both reading (`useAtomValue`) and writing (`useSetAtom`) are hook-bound — there is no way to read or call atoms outside React without reaching for the global store directly. When a write atom throws, the stack trace surfaces at the `useSetAtom` call site in your component, not at the atom definition — a chain of atoms triggering other atoms can be hard to follow in a debugger. For a simple app this trade-off may be acceptable; for a complex one, it gets messy fast and becomes a nightmare to debug.
 
 <SideBySide>
 
 ::: code-group
 
-```ts [Jotai]
+```txt [Jotai]
 import { atom, useAtomValue, useSetAtom } from 'jotai';
+
 
 type Todo = { id: number; text: string; done: boolean };
 
@@ -288,7 +274,6 @@ const addTodoAtom = atom(null, (get, set, text: string) => {
   ]);
 });
 
-// Async logic requires write atoms or jotai-tanstack-query / atomWithQuery.
 const fetchTodosAtom = atom(null, async (get, set) => {
   set(statusAtom, 'loading');
   try {
@@ -300,7 +285,7 @@ const fetchTodosAtom = atom(null, async (get, set) => {
   }
 });
 
-// Must use hooks to call write atoms — can't call them outside React.
+// Must use hooks to read/write atoms — can't call them outside React.
 function TodoApp() {
   const todos      = useAtomValue(todosAtom);
   const status     = useAtomValue(statusAtom);
@@ -310,30 +295,32 @@ function TodoApp() {
 }
 ```
 
-```ts [Kin Store]
-import { createStore } from '@kin-store/core';
-import { useSelector } from '@kin-store/react';
+```txt [Kin Store]
+import { createStore } from '@kin-store/core/index.ts';
+import { useSelector } from '@kin-store/react/index.ts';
 
 type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
 
-// One store, one domain — compose with derive when you need cross-store views.
-const todoStore = createStore<TodoState>({ todos: [], status: 'idle' });
+// One store per field — mirrors Jotai's atom-per-field model.
+const todosStore  = createStore<Todo[]>([]);
+const statusStore = createStore<'idle' | 'loading' | 'failed'>('idle');
 
+// App logic can just be top-level functions.
 function addTodo(text: string): void {
-  todoStore.setState((s) => ({
-    ...s,
-    todos: [...s.todos, { id: Date.now(), text, done: false }],
-  }));
+  todosStore.setState((prev) => [
+    ...prev,
+    { id: Date.now(), text, done: false },
+  ]);
 }
 
 async function fetchTodos(): Promise<void> {
-  todoStore.setState((s) => ({ ...s, status: 'loading' }));
+  statusStore.setState('loading');
   try {
     const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
-    todoStore.setState({ todos, status: 'idle' });
+    todosStore.setState(todos);
+    statusStore.setState('idle');
   } catch {
-    todoStore.setState((s) => ({ ...s, status: 'failed' }));
+    statusStore.setState('failed');
   }
 }
 
@@ -343,8 +330,8 @@ addTodo('Buy groceries');
 
 // React subscription is opt-in via useSelector.
 function TodoApp() {
-  const todos  = useSelector(todoStore, (s) => s.todos);
-  const status = useSelector(todoStore, (s) => s.status);
+  const todos  = useSelector(todosStore,  (s) => s);
+  const status = useSelector(statusStore, (s) => s);
   // ...
 }
 ```
@@ -355,15 +342,13 @@ function TodoApp() {
 
 **What's different:**
 
-| | Jotai | Kin Store |
-|---|---|---|
-| State model | Atoms | Stores (value + subscribers) |
-| Async logic | Write atoms or external library | Plain async methods |
-| Call actions outside React | Not directly | Yes — plain functions or methods |
-| Reactive composition | Derived atoms | `derive((get) => ...)` |
-| Mental model | "think in atoms" | "think in domains" |
-
----
+|                            | Jotai                                     | Kin Store                                        |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------ |
+| State model                | Atoms                                     | Stores (value + subscribers)                     |
+| App logic                  | Wrapped in atoms                          | Plain functions / methods                        |
+| Read / write outside React | Hooks only (`useAtomValue`, `useSetAtom`) | Yes — `getState()` and plain functions / methods |
+| Reactive composition       | Derived atoms                             | `derive((get) => ...)`                           |
+| Mental model               | "think in atoms"                          | "think in domains"                               |
 
 ## vs MobX
 
@@ -373,7 +358,7 @@ MobX uses a proxy-based reactive system: `makeAutoObservable` silently instrumen
 
 ::: code-group
 
-```ts [MobX]
+```txt [MobX]
 import { makeAutoObservable, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
@@ -420,9 +405,9 @@ const TodoApp = observer(() => {
 });
 ```
 
-```ts [Kin Store]
-import { withPlugins } from '@kin-store/core';
-import { useSelector } from '@kin-store/react';
+```txt [Kin Store]
+import { withPlugins } from '@kin-store/core/index.ts';
+import { useSelector } from '@kin-store/react/index.ts';
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
@@ -430,24 +415,21 @@ type TodoState = { todos: Todo[]; status: 'idle' | 'loading' | 'failed' };
 // Plain object — no class, no proxy, no instrumentation.
 const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
   .use({
-    reducers: {
-      addTodo: (state, text: string) => ({
-        ...state,
-        todos: [...state.todos, { id: Date.now(), text, done: false }],
-      }),
-      fetchStart:     (state) => ({ ...state, status: 'loading' }),
-      fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: 'idle' }),
-      fetchRejected:  (state) => ({ ...state, status: 'failed' }),
-    },
     methods: (store) => ({
+      addTodo(text: string): void {
+        store.setState((s) => ({
+          ...s,
+          todos: [...s.todos, { id: Date.now(), text, done: false }],
+        }));
+      },
       async fetchTodos(): Promise<void> {
-        store.dispatch.fetchStart();
+        store.setState((s) => ({ ...s, status: 'loading' }));
         try {
           const todos = await fetch('/api/todos').then(r => r.json()) as Todo[];
-          // No runInAction needed — state updates are always explicit dispatches.
-          store.dispatch.fetchFulfilled(todos);
+          // No runInAction needed — setState is always safe after await.
+          store.setState({ todos, status: 'idle' });
         } catch {
-          store.dispatch.fetchRejected();
+          store.setState((s) => ({ ...s, status: 'failed' }));
         }
       },
     }),
@@ -457,7 +439,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: 'idle' })
 function TodoApp() {
   const todos = useSelector(todoStore, (s) => s.todos);
   return (
-    <button onClick={() => todoStore.dispatch.addTodo('Buy groceries')}>Add</button>
+    <button onClick={() => todoStore.addTodo('Buy groceries')}>Add</button>
   );
 }
 ```
@@ -468,29 +450,11 @@ function TodoApp() {
 
 **What's different:**
 
-| | MobX | Kin Store |
-|---|---|---|
-| State mutations | Mutable (proxy-intercepted) | Immutable reducers |
-| Async updates | Must wrap in `runInAction` | Plain dispatches — no wrapper |
-| React integration | `observer()` on every component | `useSelector` only where needed |
-| Class required | Yes (or `observable({...})`) | No — plain object |
-| Reactive graph | Implicit, auto-tracked | Explicit via `derive` |
-| Silent stale-data bugs | Two sources (`runInAction`, `observer`) | None |
-| Bundle | ~16 KB | 244 B – 1.07 KB |
-
----
-
-## Bundle size
-
-| Package                                                    | Minified + gzip |
-| ---------------------------------------------------------- | --------------- |
-| **`@kin-store/core`**                                      | —               |
-| &nbsp;&nbsp;↳ `createStore` alone                          | **244 B**       |
-| &nbsp;&nbsp;↳ `derive` alone                               | **465 B**       |
-| &nbsp;&nbsp;↳ `withPlugins` (full plugin system)           | **1.07 KB**     |
-| `zustand` core                                             | ~1.2 KB         |
-| `jotai` core                                               | ~3.5 KB         |
-| `@reduxjs/toolkit`                                         | ~11 KB          |
-| `mobx`                                                     | ~16 KB          |
-
-Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import `withPlugins` and pay 1.07 KB. The plugin bundles (`persist`, `history`, `immer`) add only what you import.
+|                        | MobX                                    | Kin Store                         |
+| ---------------------- | --------------------------------------- | --------------------------------- |
+| State mutations        | Mutable (proxy-intercepted)             | setState — no proxy               |
+| Async updates          | Must wrap in `runInAction`              | setState after await — no wrapper |
+| React integration      | `observer()` on every component         | `useSelector` only where needed   |
+| Class required         | Yes (or `observable({...})`)            | No — plain object                 |
+| Reactive graph         | Implicit, auto-tracked                  | Explicit via `derive`             |
+| Silent stale-data bugs | Two sources (`runInAction`, `observer`) | None                              |

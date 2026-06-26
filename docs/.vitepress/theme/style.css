@@ -8,12 +8,18 @@
 }
 
 .dark {
-  --vp-c-brand-1: #f5c518;
+  /* --vp-c-brand-1: #f5c518;
   --vp-c-brand-2: #e6b200;
-  --vp-c-brand-3: #d4a300;
+  --vp-c-brand-3: #d4a300; */
   --vp-c-brand-soft: rgba(245, 197, 24, 0.14);
   --vp-code-bg: #00000014;
   --vp-code-color: var(--vp-c-brand-1);
+}
+
+@media (min-width: 960px) {
+  .tagline[data-v-6ce96ee3] {
+    min-width: 650px;
+  }
 }
 
 /* ── Global content width ─────────────────────────────────────────────────── */
@@ -21,13 +27,14 @@
   max-width: 860px !important;
 }
 
-/* ── Comparison page: comment-only lines ─────────────────────────────────── */
+/* ── Comparison page: elevate comment lines ───────────────────────────────── */
 .comparison-page .comment-line {
-  background-color: rgba(106, 115, 125, 0.13);
+  background-color: var(--vp-c-brand-soft);
 }
 
-.dark .comparison-page .comment-line span {
-  color: #a0aab4 !important;
+.comparison-page .comment-line span {
+  color: var(--vp-c-brand-3);
+  font-style: italic;
 }
 
 /* ── Comparison page — wider for side-by-side code ───────────────────────── */
@@ -78,15 +85,14 @@
     transition: none;
   }
 
-  .side-by-side .vp-code-group .tabs label:hover {
+  /* .side-by-side .vp-code-group .tabs label:hover {
     color: var(--vp-c-text-2);
     background: transparent;
-  }
+  } */
 
   /* Kill the gold "active tab" underline — input:checked + label still fires on hidden inputs */
-  .side-by-side .vp-code-group .tabs input:checked + label {
-    color: var(--vp-c-text-2) !important;
-    border-bottom: none !important;
+  .side-by-side .vp-code-group .tabs input:checked + label::after {
+    background-color: transparent;
   }
 
   /* Two-column grid for the code panels */
