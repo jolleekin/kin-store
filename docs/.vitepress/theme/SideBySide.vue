@@ -134,13 +134,4 @@ function toggle(): void {
   overflow-x: auto;
   margin: 0;
 }
-
-.side-by-side :deep(.comment-line) {
-  background-color: var(--vp-c-brand-soft);
-}
-
-.side-by-side :deep(.comment-line span) {
-  color: var(--vp-c-brand-3);
-  font-style: italic;
-}
 </style>

@@ -18,3 +18,9 @@
   --vp-code-bg: #00000014;
   --vp-code-color: var(--vp-c-brand-1);
 }
+
+.vp-code .comment-line span {
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-style: italic;
+}
