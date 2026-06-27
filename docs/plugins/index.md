@@ -30,8 +30,8 @@ deno add jsr:@kin-store/plugins
 
 ## Usage pattern
 
-All plugins are applied with `.use()`. Namespaced plugins (like `persist` and
-`history`) expose their methods under their namespace key:
+All plugins are registered with `.use()`. Plugins can be top-level or namespaced. Namespaced plugins (like `persist` and
+`history` below) expose their methods under their namespace key:
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -48,7 +48,7 @@ const store = withPlugins({ todos: [] as string[], count: 0 })
     },
   }));
 
-store.dispatch.add("hello");
-store.history.undo();
 await store.persist.hydrate();
+store.history.undo();
+store.dispatch.add("hello"); // From the top-level inline plugin
 ```

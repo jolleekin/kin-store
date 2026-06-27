@@ -79,14 +79,14 @@ await store.persist.hydrate();
 
 Once registered under a namespace (e.g. `'persist'`), the plugin exposes:
 
-| Method                                  | Description                                                           |
-| --------------------------------------- | --------------------------------------------------------------------- |
-| `store.persist.hydrate()`               | Triggers a hydration; returns the in-progress hydration if one exists |
-| `store.persist.hasHydrated()`           | `true` if at least one hydration has completed                        |
-| `store.persist.hydrationComplete()`     | Promise that resolves after the current or next hydration             |
-| `store.persist.clear()`                 | Removes the persisted value from storage                              |
-| `store.persist.onHydrationStart(cb)`    | Called at the start of each hydration                                 |
-| `store.persist.onHydrationComplete(cb)` | Called when a hydration completes                                     |
+| Method                    | Description                                                           |
+| ------------------------- | --------------------------------------------------------------------- |
+| `hydrate()`               | Triggers a hydration; returns the in-progress hydration if one exists |
+| `hasHydrated()`           | Returns `true` if at least one hydration has completed                |
+| `hydrationComplete()`     | Returns a promise that resolves after the current or next hydration   |
+| `clear()`                 | Removes the persisted value from storage                              |
+| `onHydrationStart(cb)`    | Registers a callback that is called at the start of each hydration    |
+| `onHydrationComplete(cb)` | Registers a callback that is called when a hydration completes        |
 
 ## Composing with history
 
@@ -111,5 +111,5 @@ store.history.rebase();
 | `storage`       | `PersistStorage`             | `localStorage` | Storage backend                     |
 | `selector`      | `(state) => partial`         | full state     | Slice to persist                    |
 | `version`       | `number`                     | `0`            | Schema version for migrations       |
-| `migrate`       | `(stored, version) => state` | —              | Migration function                  |
+| `migrate`       | `(stored, version) => state` | `undefined`    | Migration function                  |
 | `skipHydration` | `boolean`                    | `false`        | Skip auto-hydration on registration |

@@ -29,20 +29,20 @@ store.history.reset(); // count = 0
 
 ## Plugin methods
 
-| Method                    | Description                                                               |
-| ------------------------- | ------------------------------------------------------------------------- |
-| `store.history.canUndo()` | `true` if there is a past state to undo to                                |
-| `store.history.canRedo()` | `true` if there is a future state to redo to                              |
-| `store.history.undo()`    | Move back one step; returns `true` if moved, `false` if already at start  |
-| `store.history.redo()`    | Move forward one step; returns `true` if moved, `false` if already at end |
-| `store.history.reset()`   | Restore the baseline state and clear the history                          |
-| `store.history.rebase()`  | Make the current state the new undo floor, discarding prior history       |
+| Method      | Description                                                                |
+| ----------- | -------------------------------------------------------------------------- |
+| `canUndo()` | Returns `true` if there is a past state to undo to                         |
+| `canRedo()` | Returns `true` if there is a future state to redo to                       |
+| `undo()`    | Moves back one step; returns `true` if moved, `false` if already at start  |
+| `redo()`    | Moves forward one step; returns `true` if moved, `false` if already at end |
+| `reset()`   | Restores the baseline state and clear the history                          |
+| `rebase()`  | Makes the current state the new undo floor, discarding prior history       |
 
 ## Options
 
-| Option  | Type     | Default     | Description                                                  |
-| ------- | -------- | ----------- | ------------------------------------------------------------ |
-| `limit` | `number` | `undefined` | Max snapshots to keep. When exceeded, the oldest is dropped. |
+| Option  | Type     | Default    | Description                                                  |
+| ------- | -------- | ---------- | ------------------------------------------------------------ |
+| `limit` | `number` | `Infinity` | Max snapshots to keep. When exceeded, the oldest is dropped. |
 
 ```ts
 .use('history', history({ limit: 50 }))
@@ -71,7 +71,9 @@ middleware will see it:
 
 ```ts
 middleware: (ctx, next) => {
-  console.log(ctx.reducer.name); // includes "history._restore"
+  // Includes "history._restore", assuming the plugin is registered under
+  // the "history" namespace.
+  console.log(ctx.reducer.name);
   return next();
 },
 ```
