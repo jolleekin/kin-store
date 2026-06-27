@@ -1,19 +1,4 @@
 import { defineConfig } from "vitepress";
-import { createRequire } from "module";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { realpathSync } from "fs";
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
-
-// Deno stores packages in node_modules/.deno/<pkg>/node_modules/<pkg>/ — vue
-// is only available as a sibling of the vitepress package there, not at the
-// workspace root. Resolve the symlink so createRequire can find vue.
-const vpPkgPath = realpathSync(
-  resolve(__dirname, "../../node_modules/vitepress/package.json"),
-);
-const vpRequire = createRequire(vpPkgPath);
-const vueRoot = dirname(vpRequire.resolve("vue/package.json"));
 
 export default defineConfig({
   cleanUrls: true,
@@ -25,41 +10,15 @@ export default defineConfig({
       {
         name: "comment-lines",
         line(node, line) {
-          const text = (this.tokens[line - 1] ?? []).map((t) => t.content).join(
-            "",
-          );
+          const text = (this.tokens[line - 1] ?? [])
+            .map((t) => t.content)
+            .join("");
           if (text.trimStart().startsWith("//")) {
             this.addClassToHast(node, "comment-line");
           }
         },
       },
     ],
-  },
-
-  vite: {
-    resolve: {
-      alias: [
-        {
-          find: /^vue\/server-renderer$/,
-          replacement: resolve(vueRoot, "server-renderer/index.js"),
-        },
-        {
-          find: /^vue$/,
-          replacement: resolve(vueRoot, "dist/vue.esm-bundler.js"),
-        },
-      ],
-    },
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            if (id.includes("vitepress") || id.includes("@vue")) {
-              return "framework";
-            }
-          },
-        },
-      },
-    },
   },
 
   themeConfig: {
@@ -104,9 +63,7 @@ export default defineConfig({
       "/react/": [
         {
           text: "React",
-          items: [
-            { text: "Overview", link: "/react/" },
-          ],
+          items: [{ text: "Overview", link: "/react/" }],
         },
       ],
     },
