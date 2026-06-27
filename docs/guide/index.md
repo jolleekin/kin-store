@@ -13,13 +13,13 @@ boilerplate just to wire it up:
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
 
-// 1. Async thunk.
+// 1. Async thunk — dedicated abstraction just to call fetch.
 const fetchTodos = createAsyncThunk("todos/fetch", async () => {
   const res = await fetch("/api/todos");
   return (await resp.json()) as Todo[];
 });
 
-// 2. Slice.
+// 2. Slice — reducers and async cases split across two separate objects.
 const todosSlice = createSlice({
   name: "todos",
   initialState: { todos: [], status: "idle" } as TodoState,
@@ -43,24 +43,45 @@ const todosSlice = createSlice({
   },
 });
 
-// 3. Middleware.
+// 3. Middleware — triple-nested curried function.
 const logger: Middleware = (api) => (next) => (action) => {
   console.log("dispatching", action);
   return next(action);
 };
 
-// 4. Assemble.
+// 4. Manual wiring — every layer assembled by hand.
 const store = configureStore({
   reducer: { todos: todosSlice.reducer },
   middleware: (m) => m().concat(logger),
 });
 
-// TypeScript requires these to be exported manually.
+// 5. Manual TypeScript exports — can't be inferred at the use site.
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+function TodoApp() {
+  // AppDispatch needed so dispatch accepts thunks, not just plain actions.
+  const dispatch = useDispatch<AppDispatch>();
+  // RootState needed so the selector parameter has a type, not `any`.
+  const todos = useSelector((state: RootState) => state.todos.todos);
+}
 ```
 
-The structure becomes harder to reason about than the problem it's solving.
+Five specific problems:
+
+1. **Async thunk** — A dedicated abstraction (`createAsyncThunk`) just to call
+   `fetch`. Async is not first-class in Redux — it requires a separate
+   middleware layer to exist at all.
+2. **Slice** — Related state lives in `reducers` and `extraReducers` separately.
+   The async cases for one thunk are split across two objects.
+3. **Middleware** — A triple-nested curried function
+   `(api) => (next) => (action) => ...` for what is essentially a request
+   interceptor.
+4. **Manual wiring** — `configureStore`, `reducer:`, `middleware:` — every layer
+   must be assembled by hand even for trivial apps.
+5. **Manual TypeScript exports** — `RootState` and `AppDispatch` cannot be
+   inferred at the use site; they must be re-exported from the store file and
+   imported everywhere.
 
 ## The Zustand problem
 
@@ -68,15 +89,19 @@ Zustand is lighter. But mixing state and actions in one object creates real
 issues:
 
 ```ts
+// 4. Inside-out pipeline — reads left-to-right, executes right-to-left.
+// 5. Unpredictable API shape — each wrapper can alter what `set` does.
 const useStore = create(
   devtools(
     persist(
+      // 1. `<State & Actions>` required — without it, `draft` is `any`.
       immer<State & Actions>((set) => ({
+        // 2. State and actions are indistinguishable from the type.
         todos: [],
         status: "idle",
         addTodo: (text: string) =>
           set((draft) => {
-            draft.todos.push(text); // `draft` is `any` — no type safety.
+            draft.todos.push(text);
           }),
         async fetch() {
           set((draft) => {
@@ -91,12 +116,19 @@ const useStore = create(
     { name: "TodoStore" },
   ),
 );
+
+function TodoApp() {
+  const todos = useStore((s) => s.todos);
+
+  // 3. Stable ref — but registers a subscription on every update.
+  const addTodo = useStore((s) => s.addTodo);
+}
 ```
 
 Five specific problems:
 
-1. **No type safety** — `state` inside the immer callback is `any`. TypeScript
-   can't help you here.
+1. **No type safety by default** — without the explicit type annotation
+   `<State & Actions>`, `darft` inside the immer callback is `any`.
 2. **State and actions are indistinguishable** — `todos` (data) and `addTodo` (a
    command) live in the same object. You can't tell from the type alone what's
    state and what's behavior.
@@ -120,7 +152,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 const todosAtom = atom<Todo[]>([]);
 const statusAtom = atom<"idle" | "loading" | "failed">("idle");
 
-// App logic must be wrapped in an atom — no plain function allowed.
+// 1. Logic must be atoms — no plain function allowed.
 const addTodoAtom = atom(null, (get, set, text: string) => {
   set(todosAtom, (prev) => [
     ...prev,
@@ -137,10 +169,13 @@ const fetchTodosAtom = atom(null, async (get, set) => {
     set(statusAtom, "failed");
   }
 });
-// Must use hooks to call write atoms — can't call from outside React.
+
 function TodoApp() {
   const todos = useAtomValue(todosAtom);
   const status = useAtomValue(statusAtom);
+
+  // 2. Hooks required — can't call write atoms from outside React.
+  // 3. Hard to debug — stack traces surface here, not at the atom definition.
   const addTodo = useSetAtom(addTodoAtom);
   const fetchTodos = useSetAtom(fetchTodosAtom);
 }
@@ -148,12 +183,12 @@ function TodoApp() {
 
 Three specific problems:
 
-1. **Actions must be atoms** — Even a simple `addTodo` must be wrapped in
-   `atom(null, (get, set, arg) => ...)`. Every piece of logic is a write atom —
-   there is no plain function style.
-2. **Logic can't run outside React** — Write atoms are activated via
-   `useSetAtom`. You can't call them from a service layer, a test, or a timeout
-   without reaching for `getDefaultStore()`.
+1. **Logic must be atoms** — Even a simple `addTodo` must be wrapped in
+   `atom(null, (get, set, arg) => ...)`. Every piece of logic is an atom — there
+   is no plain function style.
+2. **Hooks required to call your logic** — Write atoms are activated via
+   `useSetAtom` inside React, or `getDefaultStore()` outside. There is no plain
+   function path.
 3. **Hard to debug at scale** — Stack traces surface at the `useSetAtom` call
    site in your component — not at the atom definition. A chain of atoms
    triggering other atoms is hard to trace in a debugger.
@@ -168,6 +203,7 @@ class TodoStore {
   status: "idle" | "loading" | "failed" = "idle";
 
   constructor() {
+    // 1. Instruments every field and method invisibly.
     makeAutoObservable(this);
   }
 
@@ -178,7 +214,10 @@ class TodoStore {
   async fetchTodos() {
     this.status = "loading";
     try {
-      const todos = await fetch("/api/todos").then((r) => r.json()) as Todo[];
+      const resp = await fetch("/api/todos");
+      const todos = (await resp.json()) as Todo[];
+      // 2. Mutations after await must be wrapped in runInAction.
+      // Forgetting it causes silent bugs.
       runInAction(() => {
         this.todos = todos;
         this.status = "idle";
@@ -193,6 +232,7 @@ class TodoStore {
 
 const todoStore = new TodoStore();
 
+// 3. Every component reading state must be wrapped in `observer`.
 const TodoApp = observer(() => {
   const { todos, status } = todoStore;
   return (
