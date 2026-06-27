@@ -902,20 +902,20 @@
           <div class="problems">
             <div class="pcard" id="jp1">
               <div class="pnum">Problem 01</div>
-              <h4>Actions must be atoms</h4>
+              <h4>Logic must be wrapped in atoms</h4>
               <p>
                 Even a simple <code>addTodo</code> must be wrapped in <code
                 >atom(null, (get, set, arg) =&gt; ...)</code>. Every piece of
-                logic is a write atom — there is no plain function style.
+                logic is an atom — there is no plain function style.
               </p>
             </div>
             <div class="pcard" id="jp2">
               <div class="pnum">Problem 02</div>
-              <h4>Logic can't run outside React</h4>
+              <h4>Hooks required to call your logic</h4>
               <p>
-                Write atoms are activated via <code>useSetAtom</code>. You can't
-                call them from a service layer, a test, or a timeout without
-                reaching for <code>getDefaultStore()</code>.
+                Write atoms are activated via <code>useSetAtom</code> inside
+                React, or <code>getDefaultStore()</code> outside. There is no
+                plain function path.
               </p>
             </div>
             <div class="pcard" id="jp3">

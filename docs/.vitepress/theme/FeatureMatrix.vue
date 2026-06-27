@@ -3,7 +3,18 @@ import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{ full?: boolean }>(), { full: false });
 
-const rows = [
+type Notes = Partial<Record<'zustand' | 'redux' | 'jotai' | 'mobx', string>>;
+
+const rows: Array<{
+  label: string;
+  kin: string;
+  zustand: string;
+  redux: string;
+  jotai: string;
+  mobx: string;
+  trimmed?: boolean;
+  notes?: Notes;
+}> = [
   {
     label: 'Bundle size',
     kin: 'bundle',
@@ -12,13 +23,65 @@ const rows = [
   },
   { label: 'Zero dependencies',         kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '✅', trimmed: true },
   { label: 'Tiny footprint',            kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '❌' },
-  { label: '100% type-safe',            kin: '✅', zustand: '⚠️', redux: '⚠️', jotai: '✅', mobx: '✅', trimmed: true },
-  { label: 'Low boilerplate',           kin: '✅', zustand: '⚠️', redux: '❌', jotai: '⚠️', mobx: '⚠️', trimmed: true },
-  { label: 'Linear plugin composition', kin: '✅', zustand: '❌', redux: '❌', jotai: '—',  mobx: '—' },
-  { label: 'Separate state and logic',  kin: '✅', zustand: '❌', redux: '✅', jotai: '—',  mobx: '✅', trimmed: true },
-  { label: 'Opt-in complexity',         kin: '✅', zustand: '✅', redux: '❌', jotai: '⚠️', mobx: '❌', trimmed: true },
-  { label: 'No hidden magic',           kin: '✅', zustand: '✅', redux: '✅', jotai: '⚠️', mobx: '❌', trimmed: true },
-  { label: 'Reactive composition',      kin: '✅', zustand: '⚠️', redux: '❌', jotai: '✅', mobx: '✅' },
+  {
+    label: '100% type-safe',
+    kin: '✅', zustand: '⚠️', redux: '⚠️', jotai: '✅', mobx: '✅',
+    trimmed: true,
+    notes: {
+      zustand: 'Requires an explicit type annotation — omit it and state infers as any.',
+      redux: 'RootState and AppDispatch must be manually exported for types to flow through.',
+    },
+  },
+  {
+    label: 'Low boilerplate',
+    kin: '✅', zustand: '⚠️', redux: '❌', jotai: '⚠️', mobx: '⚠️',
+    trimmed: true,
+    notes: {
+      zustand: 'Requires explicit type annotation.',
+      jotai: 'App logic must be wrapped in atoms rather than plain functions.',
+      mobx: 'Requires classes, makeAutoObservable, runInAction, and observer wrappers.',
+    },
+  },
+  {
+    label: 'Linear plugin composition',
+    kin: '✅', zustand: '❌', redux: '❌', jotai: '—', mobx: '—',
+    notes: {
+      jotai: 'Atom-based — no plugin system concept.',
+      mobx: 'Class-based — no plugin system concept.',
+    },
+  },
+  {
+    label: 'Separate state and logic',
+    kin: '✅', zustand: '❌', redux: '✅', jotai: '—', mobx: '✅',
+    trimmed: true,
+    notes: {
+      zustand: 'State and actions must share one type and one object.',
+      jotai: 'Logic is wrapped in atoms — not structurally separate from state atoms.',
+    },
+  },
+  {
+    label: 'Opt-in complexity',
+    kin: '✅', zustand: '✅', redux: '❌', jotai: '⚠️', mobx: '❌',
+    trimmed: true,
+    notes: {
+      jotai: 'Logic must be wrapped in atoms — there is no plain function style even for simple cases.',
+    },
+  },
+  {
+    label: 'No hidden magic',
+    kin: '✅', zustand: '✅', redux: '✅', jotai: '✅', mobx: '❌',
+    trimmed: true,
+    notes: {
+      mobx: 'makeAutoObservable silently instruments every field and method; async mutations silently break without runInAction.',
+    },
+  },
+  {
+    label: 'Reactive composition',
+    kin: '✅', zustand: '⚠️', redux: '❌', jotai: '✅', mobx: '✅',
+    notes: {
+      zustand: 'No built-in derived state primitive — requires 3rd party library.',
+    },
+  },
 ];
 
 const visibleRows = computed(() =>
@@ -44,7 +107,10 @@ const visibleRows = computed(() =>
           </thead>
           <tbody>
             <tr v-for="row in visibleRows" :key="row.label">
-              <td>{{ row.label }}</td>
+              <td>
+                <a v-if="!full" href="/comparison" class="row-link">{{ row.label }}</a>
+                <template v-else>{{ row.label }}</template>
+              </td>
               <td v-if="row.kin === 'bundle'" class="kin">
                 <div class="size-grid">
                   <span class="size-line">244 B</span><span class="size-label">minimal</span>
@@ -53,14 +119,15 @@ const visibleRows = computed(() =>
                 </div>
               </td>
               <td v-else class="kin">{{ row.kin }}</td>
-              <td :class="{ na: row.zustand === '—' }">{{ row.zustand }}</td>
-              <td :class="{ na: row.redux   === '—' }">{{ row.redux }}</td>
-              <td :class="{ na: row.jotai   === '—' }">{{ row.jotai }}</td>
-              <td :class="{ na: row.mobx    === '—' }">{{ row.mobx }}</td>
+              <td :class="{ na: row.zustand === '—', noted: !!row.notes?.zustand }" :title="row.notes?.zustand">{{ row.zustand }}</td>
+              <td :class="{ na: row.redux   === '—', noted: !!row.notes?.redux   }" :title="row.notes?.redux">{{ row.redux }}</td>
+              <td :class="{ na: row.jotai   === '—', noted: !!row.notes?.jotai   }" :title="row.notes?.jotai">{{ row.jotai }}</td>
+              <td :class="{ na: row.mobx    === '—', noted: !!row.notes?.mobx    }" :title="row.notes?.mobx">{{ row.mobx }}</td>
             </tr>
           </tbody>
         </table>
       </div>
+      <p class="feature-matrix-legend">✅ full support · ⚠️ partial or conditional · — not applicable (different model)</p>
       <p v-if="!full" class="feature-matrix-cta">
         Don't believe it? <a href="/comparison">See full comparison with code examples →</a>
       </p>
@@ -145,6 +212,20 @@ const visibleRows = computed(() =>
   color: var(--vp-c-text-3);
 }
 
+.noted {
+  cursor: help;
+}
+
+.row-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.row-link:hover {
+  color: var(--vp-c-brand-3);
+  text-decoration: underline;
+}
+
 .size-grid {
   display: grid;
   grid-template-columns: auto auto;
@@ -164,9 +245,16 @@ const visibleRows = computed(() =>
   text-align: left;
 }
 
+.feature-matrix-legend {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+}
+
 .feature-matrix-cta {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 8px;
   font-size: 14px;
 }
 

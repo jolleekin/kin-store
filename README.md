@@ -25,8 +25,12 @@ Reactive state you want to use.
 | Linear plugin composition |                                                       ✅                                                       |   ❌    |     ❌      |    —    |   —    |
 | Separate state and logic  |                                                       ✅                                                       |   ❌    |     ✅      |    —    |   ✅   |
 | Opt-in complexity         |                                                       ✅                                                       |   ✅    |     ❌      |   ⚠️    |   ❌   |
-| No hidden magic           |                                                       ✅                                                       |   ✅    |     ✅      |   ⚠️    |   ❌   |
+| No hidden magic           |                                                       ✅                                                       |   ✅    |     ✅      |   ✅    |   ❌   |
 | Reactive composition      |                                                       ✅                                                       |   ⚠️    |     ❌      |   ✅    |   ✅   |
+
+✅ full support · ⚠️ partial or conditional · — not applicable (different model)
+
+Don't believe it? [See full comparison with code examples →](https://kinstore.dev/comparison)
 
 Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import
 `withPlugins` and pay 1.07 KB. The plugin bundles (`persist`, `history`,

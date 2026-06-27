@@ -132,10 +132,11 @@ await todoStore.fetchTodos();
 
 |                | Redux / RTK                               | Kin Store                     |
 | -------------- | ----------------------------------------- | ----------------------------- |
-| Async actions  | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
-| Middleware     | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
-| Type exports   | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
-| Access pattern | `slice.actions.addTodo(...)`              | `store.dispatch.addTodo(...)` |
+| Async actions       | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
+| Middleware          | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
+| Type exports        | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
+| Access pattern      | `slice.actions.addTodo(...)`              | `store.dispatch.addTodo(...)` |
+| Call logic in React | `useDispatch()` hook required             | Call directly — no hook       |
 
 ## vs Zustand
 
@@ -283,7 +284,7 @@ function TodoApp() {
 | Adding devtools        | Wrap again in `devtools(...)`       | `.use('devtools', devtools(...))` _(planned)_ |
 | Reading pipeline order | Inside-out                          | Top-to-bottom                                 |
 | State vs actions       | Same object                         | Structurally separate                         |
-| Action refs in React   | Subscribe via selector              | Call directly — zero subscriptions            |
+| Call logic in React    | Hook required — subscribes even to stable action refs | Call directly — no hook |
 
 ## vs Jotai
 
@@ -292,11 +293,10 @@ compose them. It's a different model rather than a worse one, but it means
 thinking in atoms rather than in domains. App logic must also be wrapped in
 atoms — `atom(null, (get, set, arg) => ...)` — there is no plain function style.
 
-Both reading (`useAtomValue`) and writing (`useSetAtom`) are hook-bound. Calling
-atoms outside React requires `getDefaultStore()` — a `{ get, set, sub }` surface
-that hides a world of internal complexity (epoch tracking, dependency graphs,
-mount/unmount lifecycles, flush queues) that Jotai itself marks as subject to
-change without notice.
+Both reading (`useAtomValue`) and writing (`useSetAtom`) are hook-bound inside
+React. Outside React, `jotai/vanilla` or `getDefaultStore()` provides a
+`{ get, set, sub }` interface — but it is a separate path, not how you write
+most Jotai code.
 
 When a write atom throws, the stack trace surfaces at the `useSetAtom` call site
 in your component, not at the atom definition. A chain of atoms triggering other
@@ -331,7 +331,7 @@ const fetchTodosAtom = atom(null, async (get, set) => {
   }
 });
 
-// Must use hooks to read/write atoms — can't call them outside React.
+// Hooks required inside React — jotai/vanilla or getDefaultStore() outside.
 function TodoApp() {
   const todos = useAtomValue(todosAtom);
   const status = useAtomValue(statusAtom);
@@ -389,7 +389,7 @@ function TodoApp() {
 | -------------------------- | ----------------------------------------- | ---------------------------------------------------- |
 | State model                | Atoms                                     | Stores (value + subscribers)                         |
 | App logic                  | Wrapped in atoms                          | Plain functions / methods                            |
-| Read / write outside React | Hooks only (`useAtomValue`, `useSetAtom`) | Yes — `get()`, `set()` and plain functions / methods |
+| Read / write outside React | `jotai/vanilla` or `getDefaultStore()`    | Yes — `get()`, `set()` and plain functions / methods |
 | Reactive composition       | Derived atoms                             | `derive((get) => ...)`                               |
 | Mental model               | "think in atoms"                          | "think in domains"                                   |
 
@@ -510,9 +510,10 @@ function TodoApp() {
 
 |                        | MobX                                    | Kin Store                        |
 | ---------------------- | --------------------------------------- | -------------------------------- |
-| State mutations        | Mutable (proxy-intercepted)             | `set` — no proxy                 |
-| Async updates          | Must wrap in `runInAction`              | `set` after `await` — no wrapper |
-| React integration      | `observer()` on every component         | `useSelector` only where needed  |
-| Class required         | Yes (or `observable({...})`)            | No — plain object                |
-| Reactive graph         | Implicit, auto-tracked                  | Explicit via `derive`            |
-| Silent stale-data bugs | Two sources (`runInAction`, `observer`) | None                             |
+| State mutations        | Mutable (proxy-intercepted)                           | `set` — no proxy                 |
+| Async updates          | Must wrap in `runInAction`                            | `set` after `await` — no wrapper |
+| Call logic in React    | Direct — no hook needed                               | Direct — no hook needed          |
+| Read state in React    | `observer()` on every component                       | `useSelector` only where needed  |
+| Class required         | Yes (or `observable({...})`)                          | No — plain object                |
+| Reactive graph         | Implicit, auto-tracked                                | Explicit via `derive`            |
+| Silent stale-data bugs | Two sources (`runInAction`, `observer`)               | None                             |
