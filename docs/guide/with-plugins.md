@@ -133,7 +133,7 @@ Return `CANCELED` from a middleware to abort a dispatch without updating state:
 ```ts
 import { CANCELED } from '@kin-store/core/index.ts';
 
-middleware: (ctx, next) => {
+middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;
   return next();
 },

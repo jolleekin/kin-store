@@ -4,7 +4,38 @@ A `StorePlugin` is a plain object with any combination of `reducers`,
 `middleware`, `methods`, `onActivated`, and `onDestroy`. Plugins can be shared
 and composed independently of the store they are applied to.
 
-## A simple logging plugin
+## Reducers and internal state
+
+All changes to the store's primary state (`TState`) should go through a reducer,
+not `set`. Reducers travel through the full middleware pipeline — they can be
+logged, traced, or canceled by any middleware in the chain:
+
+```ts
+// Observe every reducer call, including ones from plugins:
+((ctx, next) => {
+  console.log(ctx.reducer.name); // "history._restore", "persist._restore", ...
+  return next();
+});
+
+// Cancel a specific reducer under a condition:
+((ctx, next) => {
+  if (ctx.reducer.name === "persist._restore" && !auth.isReady()) {
+    return CANCELED;
+  }
+  return next();
+});
+```
+
+`set` bypasses the pipeline by design — use it when you need a hard reset that
+must survive middleware that would otherwise cancel it, or when traceability is
+not a goal.
+
+Plugin-internal bookkeeping — flags, counters, listener sets — lives in closure
+variables, not `TState`.
+
+## Middleware
+
+A plugin can include middleware that runs on every dispatch:
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -14,9 +45,9 @@ type State = { count: number };
 
 const loggingPlugin: StorePlugin<State> = {
   middleware: (ctx, next) => {
-    console.log("→", ctx.reducer.name, ctx.reducer.args);
+    console.log("->", ctx.reducer.name, ctx.reducer.args);
     const result = next();
-    console.log("←", result);
+    console.log("<-", result);
     return result;
   },
 };
@@ -26,7 +57,7 @@ const store = withPlugins({ count: 0 }).use(loggingPlugin);
 
 ## Lifecycle hooks
 
-`onActivated` runs immediately after the plugin is registered. `onDestroy` runs
+`onActivated` runs immediately after the plugin is registered; `onDestroy` runs
 when `store.destroy()` is called:
 
 ```ts
@@ -40,41 +71,13 @@ const store = withPlugins({ count: 0 }).use({
 });
 ```
 
-## Mutating state from a plugin
+## Dispatching from methods
 
-All changes to the store's primary state should go through a reducer, not `set`.
-This keeps them visible to middleware — users can log them, trace them, or
-cancel them.
-
-The official `persist` and `history` plugins follow this: their internal
-`_restore` reducer travels through the full pipeline, so a logging middleware
-sees every undo and every hydration:
+Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
+regardless of whether the plugin is namespaced:
 
 ```ts
-// Middleware that logs all plugin-internal actions too.
-middleware: (store, pluginCtx) => (ctx, next) => {
-  console.log(ctx.reducer.name); // "history._restore", "persist._restore", ...
-  return next();
-},
-
-// Middleware that prevents hydration until auth is ready.
-middleware: (store, pluginCtx) => (ctx, next) => {
-  if (ctx.reducer.name === 'persist._restore' && !auth.isReady()) return CANCELED;
-  return next();
-},
-```
-
-Use `set` only for plugin-internal bookkeeping or as an intentional escape hatch
-that must bypass the pipeline.
-
-## Using `getPluginDispatch`
-
-When a plugin needs to dispatch its own reducers, use `getPluginDispatch` to
-resolve the correctly-typed dispatch target regardless of whether the plugin is
-namespaced:
-
-```ts
-import { getPluginDispatch } from '@kin-store/core/index.ts';
+import { getPluginDispatch } from "@kin-store/core/index.ts";
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);

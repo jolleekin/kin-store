@@ -82,7 +82,7 @@ export type HistoryOptions = {
  * Once the limit is reached, the oldest snapshot is dropped on each new change.
  *
  * @remarks When used together with
- * {@linkcode import("./persis.ts").persist persist} plugin, place this plugin
+ * {@linkcode import("./persist.ts").persist persist} plugin, place this plugin
  * after `persist`. If the `persist` plugin uses an async storage,
  * {@linkcode HistoryMethods.rebase rebase} is needed to set the hydrated state
  * as the new baseline.

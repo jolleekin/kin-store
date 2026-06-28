@@ -70,7 +70,7 @@ every undo and redo travels through the middleware pipeline. A logging
 middleware will see it:
 
 ```ts
-middleware: (ctx, next) => {
+middleware: () => (ctx, next) => {
   // Includes "history._restore", assuming the plugin is registered under
   // the "history" namespace.
   console.log(ctx.reducer.name);
@@ -81,7 +81,7 @@ middleware: (ctx, next) => {
 A guard middleware can cancel it:
 
 ```ts
-middleware: (ctx, next) => {
+middleware: () => (ctx, next) => {
   if (ctx.reducer.name === 'history._restore' && isLocked) return CANCELED;
   return next();
 },

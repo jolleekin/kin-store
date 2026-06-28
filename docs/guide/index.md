@@ -94,8 +94,8 @@ issues:
 const useStore = create(
   devtools(
     persist(
-      // 1. `<State & Actions>` required — without it, `draft` is `any`.
-      immer<State & Actions>((set) => ({
+      // 1. Explicit type annotation required — without it, `draft` is `any`.
+      immer<TodoStore>((set) => ({
         // 2. State and actions are indistinguishable from the type.
         todos: [],
         status: "idle",
@@ -128,7 +128,7 @@ function TodoApp() {
 Five specific problems:
 
 1. **No type safety by default** — without the explicit type annotation
-   `<State & Actions>`, `darft` inside the immer callback is `any`.
+   `<TodoStore>`, `draft` inside the immer callback is `any`.
 2. **State and actions are indistinguishable** — `todos` (data) and `addTodo` (a
    command) live in the same object. You can't tell from the type alone what's
    state and what's behavior.

@@ -16,8 +16,8 @@ Reactive state you want to use.
 | Redux-style   | `withPlugins` + reducers + middleware + methods | 1.07 KB         |
 | Jotai-style   | `derive`                                        | 465 B           |
 
-Each step is additive — you never undo what you built. Full type safety at
-every step, zero dependencies, zero ceremony.
+Each step is additive — you never undo what you built. Full type safety at every
+step, zero dependencies, zero ceremony.
 
 <a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/slides/intro.html" target="_blank">View
 the introduction slides →</a>
@@ -39,17 +39,17 @@ haven't opted into.
 
 ### **Type safety by default**
 
-Every reducer argument, dispatch call, and plugin method is fully inferred —
-no `any`, no manual annotation at call sites. The type system is load-bearing,
-not decorative.
+Every reducer argument, dispatch call, and plugin method is fully inferred — no
+`any` or `unknown`, no manual annotation at call sites. The type system is
+load-bearing, not decorative.
 
 ### **Two tiers of mutation**
 
 Reducers are pure functions. `dispatch.*` routes them through the middleware
-pipeline — every state change is observable and traceable. `set` is the
-privileged escape hatch — it bypasses the pipeline intentionally. Plugin
-methods sit above both: they can dispatch to stay traceable, call `set` when
-they need to escape the pipeline, or mix both.
+pipeline — every state change is traceable and cancellable. This is the pipeline
+tier. `set` bypasses the pipeline by design — use it when traceability is not a
+goal. Plugin methods sit above both: call `dispatch.*` to stay traceable, call
+`set` for a direct state write, or mix both.
 
 ---
 
@@ -108,7 +108,7 @@ const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState).use({
     async fetchTodos(): Promise<void> {
       store.set((s) => ({ ...s, status: "loading" }));
       const todos = await api.fetchTodos();
-      store.set((s) => ({ ...s, todos, status: "idle" }));
+      store.set((s) => ({ todos, status: "idle" }));
     },
   }),
 });
@@ -153,10 +153,10 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-const useStore = create<TodoState>()(
+const useStore = create(
   devtools(
     persist(
-      immer((set) => ({
+      immer<TodoState>((set) => ({
         todos: [],
         status: "idle",
         addTodo: (text: string) =>
@@ -176,11 +176,10 @@ const useStore = create<TodoState>()(
 
 Reducers for state changes. Methods for the flow. Middleware to intercept.
 
-Move state mutations into `reducers` when you want auditability — every
-dispatch travels through a middleware pipeline you control. Methods orchestrate
-the flow: calling `dispatch.*`, handling async logic, or sequencing multiple
-reducers. App logic goes last — it can depend on any plugin registered before
-it.
+Move state mutations into `reducers` when you want traceability — every dispatch
+travels through a middleware pipeline you control. Methods orchestrate the flow:
+calling `dispatch.*`, handling async logic, or sequencing multiple reducers. App
+logic goes last — it can depend on any plugin registered before it.
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -203,7 +202,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
       fetchRejected: (state) => ({ ...state, status: "failed" }),
     },
 
-    middleware: (ctx, next) => {
+    middleware: () => (ctx, next) => {
       console.log("→", ctx.reducer.name, ctx.reducer.args);
       return next();
     },
@@ -231,7 +230,7 @@ Return `CANCELED` from a middleware to abort a dispatch without updating state:
 ```ts
 import { CANCELED } from "@kin-store/core/index.ts";
 
-middleware: (ctx, next) => {
+middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;
   return next();
 },
@@ -346,23 +345,20 @@ A `StorePlugin` is a plain object with any combination of `reducers`,
 `middleware`, `methods`, `onActivated`, and `onDestroy`. Plugins can be shared
 and composed independently of the store they are applied to.
 
-### Mutating state from a plugin
+### Reducers and internal state
 
 All changes to the store's primary state (`TState`) should go through a reducer,
-not `set`. This keeps them visible to middleware — users can log them, trace
-them, or cancel them. Both `history` and `persist` follow this: `_restore` is a
-plain reducer that travels through the full pipeline, so a logging middleware
-will see every undo and every hydration, and a guard middleware can cancel
-either.
+not `set`. Reducers travel through the full middleware pipeline — they can be
+logged, traced, or canceled by any middleware in the chain:
 
 ```ts
-// Middleware that logs all plugin-internal actions too:
+// Observe every reducer call, including ones from plugins:
 ((ctx, next) => {
   console.log(ctx.reducer.name); // "history._restore", "persist._restore", ...
   return next();
 });
 
-// Middleware that prevents hydration in a specific condition:
+// Cancel a specific reducer under a condition:
 ((ctx, next) => {
   if (ctx.reducer.name === "persist._restore" && !auth.isReady()) {
     return CANCELED;
@@ -371,13 +367,16 @@ either.
 });
 ```
 
-Plugin-internal bookkeeping — flags, counters, listener sets — lives in
-closure variables. It is not `TState` and has no reason to go through the
-pipeline. `set` is the escape hatch for the rare case where you intentionally
-need to mutate primary state outside the pipeline (e.g. a hard reset that must
-survive a middleware that would otherwise cancel it), or when you're writing a
-plugin that is purpose-built for a store with no reducers and pipeline
-observability is not a goal.
+`set` bypasses the pipeline by design — use it when you need a hard reset that
+must survive middleware that would otherwise cancel it, or when traceability is
+not a goal.
+
+Plugin-internal bookkeeping — flags, counters, listener sets — lives in closure
+variables, not `TState`.
+
+### Middleware
+
+A plugin can include middleware that runs on every dispatch:
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";
@@ -397,8 +396,10 @@ const loggingPlugin: StorePlugin<State> = {
 const store = withPlugins({ count: 0 }).use(loggingPlugin);
 ```
 
-`onActivated` and `onDestroy` run once, immediately after the plugin is
-registered and when `store.destroy()` is called:
+### Lifecycle hooks
+
+`onActivated` runs immediately after the plugin is registered; `onDestroy` runs
+when `store.destroy()` is called:
 
 ```ts
 const store = withPlugins({ count: 0 }).use({
@@ -411,8 +412,10 @@ const store = withPlugins({ count: 0 }).use({
 });
 ```
 
-Use `getPluginDispatch` to resolve the correctly-typed dispatch target for a
-plugin's own reducers regardless of whether it is namespaced:
+### Dispatching from methods
+
+Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
+regardless of whether the plugin is namespaced:
 
 ```ts
 import { getPluginDispatch } from "@kin-store/core/index.ts";

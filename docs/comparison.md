@@ -130,8 +130,8 @@ await todoStore.fetchTodos();
 
 **What's different:**
 
-|                | Redux / RTK                               | Kin Store                     |
-| -------------- | ----------------------------------------- | ----------------------------- |
+|                     | Redux / RTK                               | Kin Store                     |
+| ------------------- | ----------------------------------------- | ----------------------------- |
 | Async actions       | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
 | Middleware          | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
 | Type exports        | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
@@ -173,7 +173,7 @@ type TodoStore = {
 
 // Read inside-out: immer → persist → devtools.
 // The order matters and affects what `set` does inside each wrapper.
-const useStore = create()(
+const useStore = create(
   devtools(
     persist(
       // Explicit type annotation required.
@@ -204,9 +204,9 @@ const useStore = create()(
           }
         },
       })),
-      { name: "todos-storage" }, // persist config — nested here, not at the call site.
+      { name: "todos-storage" }, // persist config
     ),
-    { name: "TodoStore" }, // devtools config — outermost wrapper.
+    { name: "TodoStore" }, // devtools config
   ),
 );
 
@@ -277,14 +277,14 @@ function TodoApp() {
 
 **What's different:**
 
-|                        | Zustand                             | Kin Store                                     |
-| ---------------------- | ----------------------------------- | --------------------------------------------- |
-| Adding persist         | Wrap entire store in `persist(...)` | `.use('persist', persist(...))`               |
-| Adding immer           | Wrap again in `immer(...)`          | `.use('immer', immer())`                      |
-| Adding devtools        | Wrap again in `devtools(...)`       | `.use('devtools', devtools(...))` _(planned)_ |
-| Reading pipeline order | Inside-out                          | Top-to-bottom                                 |
-| State vs actions       | Same object                         | Structurally separate                         |
-| Call logic in React    | Hook required — subscribes even to stable action refs | Call directly — no hook |
+|                        | Zustand                                               | Kin Store                                     |
+| ---------------------- | ----------------------------------------------------- | --------------------------------------------- |
+| Adding persist         | Wrap entire store in `persist(...)`                   | `.use('persist', persist(...))`               |
+| Adding immer           | Wrap again in `immer(...)`                            | `.use('immer', immer())`                      |
+| Adding devtools        | Wrap again in `devtools(...)`                         | `.use('devtools', devtools(...))` _(planned)_ |
+| Reading pipeline order | Inside-out                                            | Top-to-bottom                                 |
+| State vs actions       | Same object                                           | Structurally separate                         |
+| Call logic in React    | Hook required — subscribes even to stable action refs | Call directly — no hook                       |
 
 ## vs Jotai
 
@@ -385,13 +385,13 @@ function TodoApp() {
 
 **What's different:**
 
-|                            | Jotai                                     | Kin Store                                            |
-| -------------------------- | ----------------------------------------- | ---------------------------------------------------- |
-| State model                | Atoms                                     | Stores (value + subscribers)                         |
-| App logic                  | Wrapped in atoms                          | Plain functions / methods                            |
-| Read / write outside React | `jotai/vanilla` or `getDefaultStore()`    | Yes — `get()`, `set()` and plain functions / methods |
-| Reactive composition       | Derived atoms                             | `derive((get) => ...)`                               |
-| Mental model               | "think in atoms"                          | "think in domains"                                   |
+|                            | Jotai                                  | Kin Store                                            |
+| -------------------------- | -------------------------------------- | ---------------------------------------------------- |
+| State model                | Atoms                                  | Stores (value + subscribers)                         |
+| App logic                  | Wrapped in atoms                       | Plain functions / methods                            |
+| Read / write outside React | `jotai/vanilla` or `getDefaultStore()` | Yes — `get()`, `set()` and plain functions / methods |
+| Reactive composition       | Derived atoms                          | `derive((get) => ...)`                               |
+| Mental model               | "think in atoms"                       | "think in domains"                                   |
 
 ## vs MobX
 
@@ -510,10 +510,10 @@ function TodoApp() {
 
 |                        | MobX                                    | Kin Store                        |
 | ---------------------- | --------------------------------------- | -------------------------------- |
-| State mutations        | Mutable (proxy-intercepted)                           | `set` — no proxy                 |
-| Async updates          | Must wrap in `runInAction`                            | `set` after `await` — no wrapper |
-| Call logic in React    | Direct — no hook needed                               | Direct — no hook needed          |
-| Read state in React    | `observer()` on every component                       | `useSelector` only where needed  |
-| Class required         | Yes (or `observable({...})`)                          | No — plain object                |
-| Reactive graph         | Implicit, auto-tracked                                | Explicit via `derive`            |
-| Silent stale-data bugs | Two sources (`runInAction`, `observer`)               | None                             |
+| State mutations        | Mutable (proxy-intercepted)             | `set` — no proxy                 |
+| Async updates          | Must wrap in `runInAction`              | `set` after `await` — no wrapper |
+| Call logic in React    | Direct — no hook needed                 | Direct — no hook needed          |
+| Read state in React    | `observer()` on every component         | `useSelector` only where needed  |
+| Class required         | Yes (or `observable({...})`)            | No — plain object                |
+| Reactive graph         | Implicit, auto-tracked                  | Explicit via `derive`            |
+| Silent stale-data bugs | Two sources (`runInAction`, `observer`) | None                             |
