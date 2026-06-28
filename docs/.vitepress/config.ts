@@ -37,6 +37,7 @@ export default defineConfig({
           items: [
             { text: "Why Kin Store?", link: "/guide/" },
             { text: "Getting Started", link: "/guide/getting-started" },
+            { text: "Design Principles", link: "/guide/design-principles" },
           ],
         },
         {
