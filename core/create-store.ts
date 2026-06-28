@@ -109,7 +109,6 @@ export function createStore<TState>(initialState: TState): Store<TState> {
 
   function subscribe(listener: Listener<TState>): VoidFunction {
     listeners.add(listener);
-
     return () => listeners.delete(listener);
   }
 

@@ -286,7 +286,7 @@ export function immer<
   }
 
   return {
-    middleware: middleware,
+    middleware,
     reducers,
     methods,
     onActivated,
