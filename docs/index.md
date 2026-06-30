@@ -41,48 +41,48 @@ features:
 <FeatureMatrix />
 
 <style>
-.VPHero .name {
+html .VPHero .name {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 20px;
   line-height: 32px;
 }
-.VPHero .text {
+html .VPHero .text {
   font-size: 36px;
   line-height: 40px;
   max-width: 100%;
 }
-.VPHero .tagline {
+html .VPHero .tagline {
   font-size: 16px;
   line-height: 1.5;
   max-width: 564px;
 }
 
 @media (min-width: 640px) {
-  .VPHero .name {
+  html .VPHero .name {
     font-size: 24px;
     line-height: 1.5;
   }
 
-  .VPHero .text {
+  html .VPHero .text {
     /* max-width: 576px; */
     font-size: 44px;
     line-height: 56px;
   }
 
-  .VPHero .tagline {
+  html .VPHero .tagline {
     font-size: 20px;
     line-height: 32px;
   }
 }
 
 @media (min-width: 960px) {
-  .VPHero .name{
+  html .VPHero .name {
     font-size: 32px;
     line-height: 1.5;
   }
 
-  .VPHero .text {
+  html .VPHero .text {
     font-size: 56px;
     line-height: 64px;
   }
