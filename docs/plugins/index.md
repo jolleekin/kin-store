@@ -2,6 +2,9 @@
 
 Official plugins for `@kin-store/core`, published as `@kin-store/plugins`.
 
+To learn how to write your own plugin, see
+[Writing Plugins](/guide/writing-plugins).
+
 ## Install
 
 ::: code-group
@@ -22,16 +25,18 @@ deno add jsr:@kin-store/plugins
 
 ## Available plugins
 
-| Plugin                        | Description                                           |
-| ----------------------------- | ----------------------------------------------------- |
-| [`persist`](/plugins/persist) | Persist state to localStorage (or any custom storage) |
-| [`history`](/plugins/history) | Undo / redo / reset with snapshot history             |
-| [`immer`](/plugins/immer)     | Write reducers as Immer draft mutations               |
+| Plugin                          | Description                                                  |
+| ------------------------------- | ------------------------------------------------------------ |
+| [`devtools`](/plugins/devtools) | Connects to the Redux DevTools Extension                     |
+| [`history`](/plugins/history)   | Undo / redo / reset with snapshot history                    |
+| [`immer`](/plugins/immer)       | Writes reducers or `set`'s updaters as Immer draft mutations |
+| [`persist`](/plugins/persist)   | Persists state to localStorage (or any custom storage)       |
 
 ## Usage pattern
 
-All plugins are registered with `.use()`. Plugins can be top-level or namespaced. Namespaced plugins (like `persist` and
-`history` below) expose their methods under their namespace key:
+All plugins are registered with `.use()`. Plugins can be top-level or
+namespaced. Namespaced plugins (like `persist` and `history` below) expose their
+methods under their namespace key:
 
 ```ts
 import { withPlugins } from "@kin-store/core/index.ts";

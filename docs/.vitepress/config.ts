@@ -55,9 +55,10 @@ export default defineConfig({
           text: "Official Plugins",
           items: [
             { text: "Overview", link: "/plugins/" },
-            { text: "persist", link: "/plugins/persist" },
+            { text: "devtools", link: "/plugins/devtools" },
             { text: "history", link: "/plugins/history" },
             { text: "immer", link: "/plugins/immer" },
+            { text: "persist", link: "/plugins/persist" },
           ],
         },
       ],

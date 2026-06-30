@@ -1,5 +1,5 @@
 import { withPlugins } from "@kin-store/core/index.ts";
-import { immer, persist } from "@kin-store/plugins/index.ts";
+import { devtools, immer, persist } from "@kin-store/plugins/index.ts";
 
 export type Filter = "all" | "active" | "done";
 
@@ -14,6 +14,7 @@ export const todoStore = withPlugins({
   filter: "all" as Filter,
 })
   .use("persist", persist({ key: "todos" }))
+  .use(import.meta.env.DEV ? devtools() : {})
   .use(
     immer({
       reducers: {
