@@ -11,6 +11,14 @@ import { withPlugins } from "@kin-store/core/index.ts";
 capability — not a nesting level. The store's type is updated at each step, so
 TypeScript always knows exactly what's available.
 
+## Concepts
+
+| Term           | Definition                                                                                                                                                   |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Plugin**     | Extra capability added to a store — reducers, middleware, methods, or lifecycle hooks. Each `.use()` call registers one plugin.                              |
+| **Reducer**    | A pure function `(state, ...args) => nextState` that performs a named state transition. Called via `dispatch.*` and travels through the middleware pipeline. |
+| **Middleware** | A pipeline interceptor `(ctx, next) => ...` that runs on every `dispatch.*` call. Can observe, modify, or cancel a dispatch.                                 |
+
 ## Step 1 — Colocate logic with methods
 
 Move logic inside the store using `methods`. Each method receives the full store
