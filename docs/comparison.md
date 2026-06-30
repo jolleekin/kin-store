@@ -138,6 +138,98 @@ await todoStore.fetchTodos();
 | Access pattern      | `slice.actions.addTodo(...)`              | `store.dispatch.addTodo(...)` |
 | Call logic in React | `useDispatch()` hook required             | Call directly — no hook       |
 
+### Writing extensions
+
+A Redux enhancer wraps the store factory and returns a new store — it is the
+lower-level primitive that `applyMiddleware` is itself built on. RTK 2.0 exposes
+this via `configureStore`'s `enhancers` callback using a typed `EnhancerArray` —
+chained `.concat()` calls preserve each enhancer's extension type. The
+fundamental limit remains: `StoreEnhancer<Ext>` can only describe new
+_properties_ added to the store — the state type is not threaded through `Ext`,
+so any method that reads state must return `unknown`.
+
+<SideBySide>
+
+::: code-group
+
+```ts [Redux enhancer]
+import { configureStore } from "@reduxjs/toolkit";
+import type { StoreEnhancer } from "@reduxjs/toolkit";
+
+// StoreEnhancer<Ext> adds Ext to the store's type.
+// State is not threaded through Ext — getLogs must return unknown[].
+const loggerEnhancer: StoreEnhancer<{ getLogs: () => unknown[] }> =
+  (createStoreApi) => (reducer, preloadedState) => {
+    const store = createStoreApi(reducer, preloadedState);
+    const logs: unknown[] = [];
+
+    store.subscribe(() => logs.push(store.getState()));
+
+    return { ...store, getLogs: () => [...logs] };
+  };
+
+const store = configureStore({
+  reducer: rootReducer,
+  enhancers: (getDefaultEnhancers) =>
+    getDefaultEnhancers().concat(loggerEnhancer),
+});
+
+store.getLogs(); // ✓ — but returns unknown[], not RootState[]
+```
+
+```ts [Kin Store plugin]
+import type {
+  NestedMethods,
+  NestedReducers,
+  StorePlugin,
+} from "@kin-store/core/index.ts";
+
+export function logger<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+>(): StorePlugin<
+  TState,
+  TStoreReducers,
+  TStoreMethods,
+  TNamespace,
+  {},
+  { getLogs: () => TState[] }
+> {
+  const logs: TState[] = [];
+
+  // The plugin is just a plain object that declares its capabilities.
+  return {
+    onActivated: (store) => {
+      store.subscribe((get) => logs.push(get()));
+    },
+    methods: () => ({ getLogs: () => [...logs] }),
+  };
+}
+```
+
+:::
+
+</SideBySide>
+
+**What's different:**
+
+|                       | Redux enhancer                                              | Kin Store plugin                              |
+| --------------------- | ----------------------------------------------------------- | --------------------------------------------- |
+| Extension API         | Wrap `createStoreApi`, spread store, patch `dispatch`       | `methods` on a plain object                   |
+| State type in methods | Must supply generic explicitly; internal `as S` cast needed | Flows through `TState` — no annotation needed |
+| Name collision        | Silent overwrite                                            | Throws at registration time                   |
+
+::: warning
+
+Kin Store plugins have full access to the store from `onActivated`, `onDestroy`,
+and `methods` — but patching the store object itself is discouraged. Declare
+capabilities through `methods` and `reducers` instead; the plugin system is
+designed around those.
+
+:::
+
 ## vs Zustand
 
 Zustand is not type-safe by default — omit the explicit type annotation on
@@ -285,6 +377,117 @@ function TodoApp() {
 | Reading pipeline order | Inside-out                                            | Top-to-bottom                                 |
 | State vs actions       | Same object                                           | Structurally separate                         |
 | Call logic in React    | Hook required — subscribes even to stable action refs | Call directly — no hook                       |
+
+### Writing extensions
+
+Every Zustand middleware implements the `StateCreator` protocol: receive
+`(fn, set, get, api)`, patch `api` directly to add new behaviour or expose new
+methods, then call `fn(set, get, api)` yourself and return its result. Extending
+the TypeScript types requires `declare module` augmentation with conditional
+mapped types. The result is that writing any middleware — even a simple logger —
+means writing framework internals.
+
+<SideBySide>
+
+::: code-group
+
+```ts [Zustand middleware]
+import type { StateCreator, StoreMutatorIdentifier } from "zustand/vanilla";
+
+type Write<T, U> = Omit<T, keyof U> & U;
+
+// Module augmentation required to extend the store's TypeScript type.
+declare module "zustand/vanilla" {
+  interface StoreMutators<S, A> {
+    "custom/logger": Write<S, { getLogs: () => string[] }>;
+  }
+}
+
+type Logger = <
+  T,
+  Mps extends [StoreMutatorIdentifier, unknown][] = [],
+  Mcs extends [StoreMutatorIdentifier, unknown][] = [],
+>(
+  initializer: StateCreator<T, [...Mps, ["custom/logger", never]], Mcs>,
+) => StateCreator<T, Mps, [["custom/logger", never], ...Mcs]>;
+
+type LoggerImpl = <T>(
+  storeInitializer: StateCreator<T, [], []>,
+) => StateCreator<T, [], []>;
+
+const loggerImpl: LoggerImpl = (fn) => (set, get, api) => {
+  const logs: ReturnType<typeof fn>[] = [];
+  const origSet = api.setState;
+
+  // Patch api.setState to intercept every state change.
+  // Most Zustand's official middlewares are implemented this way.
+  api.setState = (state, replace) => {
+    logs.push(api.getState());
+    return origSet(state, replace as any);
+  };
+
+  // Add getLogs by mutating api directly — no declared contract.
+  (api as any).getLogs = () => [...logs];
+
+  // Must call the inner initializer and return its result.
+  return fn(set, get, api);
+};
+
+export const logger = loggerImpl as unknown as Logger;
+```
+
+```ts [Kin Store plugin]
+import type {
+  NestedMethods,
+  NestedReducers,
+  StorePlugin,
+} from "@kin-store/core/index.ts";
+
+export function logger<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+>(): StorePlugin<
+  TState,
+  TStoreReducers,
+  TStoreMethods,
+  TNamespace,
+  {},
+  { getLogs: () => TState[] }
+> {
+  const logs: TState[] = [];
+
+  // The plugin is just a plain object that declares its capabilities.
+  return {
+    onActivated: (store) => {
+      store.subscribe((get) => logs.push(get()));
+    },
+    methods: () => ({ getLogs: () => [...logs] }),
+  };
+}
+```
+
+:::
+
+</SideBySide>
+
+**What's different:**
+
+|                | Zustand middleware                            | Kin Store plugin                     |
+| -------------- | --------------------------------------------- | ------------------------------------ |
+| Extension API  | Mutate `api` directly; call inner initializer | `methods` on a plain object          |
+| Type extension | `declare module` augmentation required        | Flows through `StorePlugin` generics |
+| Name collision | Silent overwrite                              | Throws at registration time          |
+
+::: warning
+
+Kin Store plugins have full access to the store from `onActivated`, `onDestroy`,
+and `methods` — but patching the store object itself is discouraged. Declare
+capabilities through `methods` and `reducers` instead; the plugin system is
+designed around those.
+
+:::
 
 ## vs Jotai
 
