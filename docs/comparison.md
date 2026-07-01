@@ -140,13 +140,13 @@ await todoStore.fetchTodos();
 
 ### Writing extensions
 
-A Redux enhancer wraps the store factory and returns a new store — it is the
-lower-level primitive that `applyMiddleware` is itself built on. RTK 2.0 exposes
-this via `configureStore`'s `enhancers` callback using a typed `EnhancerArray` —
-chained `.concat()` calls preserve each enhancer's extension type. The
-fundamental limit remains: `StoreEnhancer<Ext>` can only describe new
-_properties_ added to the store — the state type is not threaded through `Ext`,
-so any method that reads state must return `unknown`.
+The fundamental difference is model: Redux enhancers (and Zustand middleware)
+are imperative wrappers — functions that intercept the store factory and may
+freely reshape any part of the store API. A Kin Store plugin is a declarative
+object: it lists what it contributes (reducers, middleware, methods, lifecycle
+hooks) and nothing more. That constraint is what makes plugins fully type-safe
+without `any`, and registration safe — the runtime validates names at `.use()`
+time and throws on conflict.
 
 <SideBySide>
 
@@ -156,35 +156,102 @@ so any method that reads state must return `unknown`.
 import { configureStore } from "@reduxjs/toolkit";
 import type { StoreEnhancer } from "@reduxjs/toolkit";
 
-// StoreEnhancer<Ext> adds Ext to the store's type.
-// State is not threaded through Ext — getLogs must return unknown[].
-const loggerEnhancer: StoreEnhancer<{ getLogs: () => unknown[] }> =
-  (createStoreApi) => (reducer, preloadedState) => {
-    const store = createStoreApi(reducer, preloadedState);
-    const logs: unknown[] = [];
-
-    store.subscribe(() => logs.push(store.getState()));
-
-    return { ...store, getLogs: () => [...logs] };
+type HistoryExt = {
+  history: {
+    canUndo(): boolean;
+    canRedo(): boolean;
+    undo(): boolean;
+    redo(): boolean;
   };
+};
+
+// StoreEnhancer<Ext> does not thread state — TState must be manually inferred
+// from the reducer. Action types still require casts to satisfy Redux's Action.
+function makeHistory(): StoreEnhancer<HistoryExt> {
+  return (createStoreApi) => (reducer: any, preloadedState: any) => {
+    type TState = ReturnType<typeof reducer>;
+    type RestoreAction = { type: "@@HISTORY/RESTORE"; payload: TState };
+
+    const snapshots: TState[] = [];
+    let index = 0;
+    let isRestoring = false;
+
+    // Wrap the reducer to intercept a private RESTORE action.
+    const wrapped: typeof reducer = (state, action) =>
+      // Type casts required for type safety.
+      (action as unknown as RestoreAction).type === "@@HISTORY/RESTORE"
+        ? (action as unknown as RestoreAction).payload
+        : reducer(state, action);
+
+    const store = createStoreApi(wrapped, preloadedState);
+    snapshots.push(store.getState());
+
+    store.subscribe(() => {
+      if (isRestoring) return;
+      snapshots.length = index + 1;
+      snapshots.push(store.getState());
+      index = snapshots.length - 1;
+    });
+
+    function restore(saved: TState): void {
+      isRestoring = true;
+      store.dispatch(
+        // Type cast required for type safety.
+        { type: "@@HISTORY/RESTORE", payload: saved } as RestoreAction as never,
+      );
+      isRestoring = false;
+    }
+
+    return {
+      ...store,
+      history: {
+        canUndo: () => index > 0,
+        canRedo: () => index + 1 < snapshots.length,
+        undo(): boolean {
+          if (index <= 0) return false;
+          restore(snapshots[--index]);
+          return true;
+        },
+        redo(): boolean {
+          if (index + 1 >= snapshots.length) return false;
+          restore(snapshots[++index]);
+          return true;
+        },
+      },
+    };
+  };
+}
 
 const store = configureStore({
   reducer: rootReducer,
   enhancers: (getDefaultEnhancers) =>
-    getDefaultEnhancers().concat(loggerEnhancer),
+    getDefaultEnhancers().concat(makeHistory()),
 });
 
-store.getLogs(); // ✓ — but returns unknown[], not RootState[]
+store.history.undo(); // ✓ — snapshots are TState[], but required manual inference and casts
 ```
 
 ```ts [Kin Store plugin]
+import { getPluginDispatch } from "@kin-store/core/index.ts";
 import type {
+  InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
 } from "@kin-store/core/index.ts";
 
-export function logger<
+type HistoryReducers<TState> = {
+  _restore: (state: TState, saved: TState) => TState;
+};
+type HistoryMethods = {
+  canUndo(): boolean;
+  canRedo(): boolean;
+  undo(): boolean;
+  redo(): boolean;
+};
+
+// TState flows through every type position — no any needed.
+export function history<
   TState,
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
@@ -194,17 +261,56 @@ export function logger<
   TStoreReducers,
   TStoreMethods,
   TNamespace,
-  {},
-  { getLogs: () => TState[] }
+  HistoryReducers<TState>,
+  HistoryMethods
 > {
-  const logs: TState[] = [];
+  const snapshots: TState[] = [];
+  let index = 0;
+  let isRestoring = false;
 
-  // The plugin is just a plain object that declares its capabilities.
   return {
-    onActivated: (store) => {
-      store.subscribe((get) => logs.push(get()));
+    reducers: {
+      // A declared reducer, not a hidden action type — visible in devtools.
+      _restore: (_state, saved: TState) => saved,
     },
-    methods: () => ({ getLogs: () => [...logs] }),
+
+    methods: (store, { namespace }) => {
+      const dispatch = getPluginDispatch(store, namespace) as InferActions<
+        TState,
+        HistoryReducers<TState>
+      >;
+
+      function restore(state: TState): void {
+        isRestoring = true;
+        dispatch._restore(state); // Fully typed.
+        isRestoring = false;
+      }
+
+      return {
+        canUndo: () => index > 0,
+        canRedo: () => index + 1 < snapshots.length,
+        undo(): boolean {
+          if (index <= 0) return false;
+          restore(snapshots[--index]);
+          return true;
+        },
+        redo(): boolean {
+          if (index + 1 >= snapshots.length) return false;
+          restore(snapshots[++index]);
+          return true;
+        },
+      };
+    },
+
+    onActivated: (store) => {
+      snapshots.push(store.get());
+      store.subscribe((get) => {
+        if (isRestoring) return;
+        snapshots.length = index + 1;
+        snapshots.push(get());
+        index = snapshots.length - 1;
+      });
+    },
   };
 }
 ```
@@ -212,14 +318,6 @@ export function logger<
 :::
 
 </SideBySide>
-
-**What's different:**
-
-|                       | Redux enhancer                                              | Kin Store plugin                              |
-| --------------------- | ----------------------------------------------------------- | --------------------------------------------- |
-| Extension API         | Wrap `createStoreApi`, spread store, patch `dispatch`       | `methods` on a plain object                   |
-| State type in methods | Must supply generic explicitly; internal `as S` cast needed | Flows through `TState` — no annotation needed |
-| Name collision        | Silent overwrite                                            | Throws at registration time                   |
 
 ::: warning
 
@@ -369,81 +467,136 @@ function TodoApp() {
 
 **What's different:**
 
-|                        | Zustand                                               | Kin Store                                     |
-| ---------------------- | ----------------------------------------------------- | --------------------------------------------- |
-| Adding persist         | Wrap entire store in `persist(...)`                   | `.use('persist', persist(...))`               |
-| Adding immer           | Wrap again in `immer(...)`                            | `.use('immer', immer())`                      |
-| Adding devtools        | Wrap again in `devtools(...)`                         | `.use('devtools', devtools(...))` _(planned)_ |
-| Reading pipeline order | Inside-out                                            | Top-to-bottom                                 |
-| State vs actions       | Same object                                           | Structurally separate                         |
-| Call logic in React    | Hook required — subscribes even to stable action refs | Call directly — no hook                       |
+|                        | Zustand                                                                    | Kin Store                                                        |
+| ---------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Extension/Plugin model | Imperative wrapper — each layer may alter `set`, `get`, or the store shape | Declarative object — declares reducers, methods, lifecycle hooks |
+| Adding persist         | Wrap entire store in `persist(...)`                                        | `.use('persist', persist(...))`                                  |
+| Adding immer           | Wrap again in `immer(...)`                                                 | `.use('immer', immer())`                                         |
+| Adding devtools        | Wrap again in `devtools(...)`                                              | `.use('devtools', devtools(...))`                                |
+| Reading pipeline order | Inside-out                                                                 | Top-to-bottom                                                    |
+| State vs actions       | Same object                                                                | Structurally separate                                            |
+| Call logic in React    | Hook required — subscribes even to stable action refs                      | Call directly — no hook                                          |
 
 ### Writing extensions
 
 Every Zustand middleware implements the `StateCreator` protocol: receive
-`(fn, set, get, api)`, patch `api` directly to add new behaviour or expose new
-methods, then call `fn(set, get, api)` yourself and return its result. Extending
-the TypeScript types requires `declare module` augmentation with conditional
-mapped types. The result is that writing any middleware — even a simple logger —
-means writing framework internals.
+`(fn, set, get, api)`, patch `api` directly to add new behaviour, then call
+`fn(set, get, api)` and return its result. An undo/redo middleware exposes the
+full ceremony: the TypeScript types require a `declare module` augmentation, the
+`history` namespace is added by mutating `api as any`, and the whole thing is
+cast via `as unknown as History` because the type system can't follow the
+runtime mutation. The same pattern is used by every Zustand official middleware.
 
 <SideBySide>
 
 ::: code-group
 
 ```ts [Zustand middleware]
-import type { StateCreator, StoreMutatorIdentifier } from "zustand/vanilla";
+import { StateCreator, StoreMutatorIdentifier } from "zustand";
 
 type Write<T, U> = Omit<T, keyof U> & U;
+
+type HistoryApi = {
+  history: {
+    canUndo(): boolean;
+    canRedo(): boolean;
+    undo(): boolean;
+    redo(): boolean;
+  };
+};
 
 // Module augmentation required to extend the store's TypeScript type.
 declare module "zustand/vanilla" {
   interface StoreMutators<S, A> {
-    "custom/logger": Write<S, { getLogs: () => string[] }>;
+    "custom/history": Write<S, HistoryApi>;
   }
 }
 
-type Logger = <
+type History = <
   T,
   Mps extends [StoreMutatorIdentifier, unknown][] = [],
   Mcs extends [StoreMutatorIdentifier, unknown][] = [],
 >(
-  initializer: StateCreator<T, [...Mps, ["custom/logger", never]], Mcs>,
-) => StateCreator<T, Mps, [["custom/logger", never], ...Mcs]>;
+  fn: StateCreator<T, [...Mps, ["custom/history", never]], Mcs>,
+) => StateCreator<T, Mps, [["custom/history", never], ...Mcs]>;
 
-type LoggerImpl = <T>(
-  storeInitializer: StateCreator<T, [], []>,
+type HistoryImpl = <T>(
+  fn: StateCreator<T, [], []>,
 ) => StateCreator<T, [], []>;
 
-const loggerImpl: LoggerImpl = (fn) => (set, get, api) => {
-  const logs: ReturnType<typeof fn>[] = [];
-  const origSet = api.setState;
+// A higher-order function that wraps the original state creator and alters the
+// store API.
+const historyImpl: HistoryImpl = (fn) => (set, get, api) => {
+  // Manual type inference required because the type system can't follow the
+  // runtime mutation.
+  type TState = ReturnType<typeof get>;
 
-  // Patch api.setState to intercept every state change.
-  // Most Zustand's official middlewares are implemented this way.
-  api.setState = (state, replace) => {
-    logs.push(api.getState());
-    return origSet(state, replace as any);
+  const snapshots: TState[] = [];
+  let index = 0;
+  let isRestoring = false;
+
+  function restore(state: TState): void {
+    isRestoring = true;
+    api.setState(state, true);
+    isRestoring = false;
+  }
+
+  // Add history namespace by mutating api directly — silent override.
+  (api as typeof api & HistoryApi).history = {
+    canUndo: () => index > 0,
+    canRedo: () => index + 1 < snapshots.length,
+    undo(): boolean {
+      if (index <= 0) return false;
+      restore(snapshots[--index]);
+      return true;
+    },
+    redo(): boolean {
+      if (index + 1 >= snapshots.length) return false;
+      restore(snapshots[++index]);
+      return true;
+    },
   };
 
-  // Add getLogs by mutating api directly — no declared contract.
-  (api as any).getLogs = () => [...logs];
+  const state = fn(set, get, api);
 
-  // Must call the inner initializer and return its result.
-  return fn(set, get, api);
+  snapshots.push(api.getState());
+
+  api.subscribe((current) => {
+    if (isRestoring) return;
+    snapshots.length = index + 1;
+    snapshots.push(current);
+    index = snapshots.length - 1;
+  });
+
+  return state;
 };
 
-export const logger = loggerImpl as unknown as Logger;
+// Type system can't follow the runtime mutation — double cast required.
+export const history = historyImpl as unknown as History;
 ```
 
 ```ts [Kin Store plugin]
+import { getPluginDispatch } from "@kin-store/core/index.ts";
 import type {
+  InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
 } from "@kin-store/core/index.ts";
 
-export function logger<
+type HistoryReducers<TState> = {
+  _restore: (state: TState, saved: TState) => TState;
+};
+
+type HistoryMethods = {
+  canUndo(): boolean;
+  canRedo(): boolean;
+  undo(): boolean;
+  redo(): boolean;
+};
+
+// TState flows through every type position — no any needed.
+export function history<
   TState,
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
@@ -453,17 +606,56 @@ export function logger<
   TStoreReducers,
   TStoreMethods,
   TNamespace,
-  {},
-  { getLogs: () => TState[] }
+  HistoryReducers<TState>,
+  HistoryMethods
 > {
-  const logs: TState[] = [];
+  const snapshots: TState[] = [];
+  let index = 0;
+  let isRestoring = false;
 
-  // The plugin is just a plain object that declares its capabilities.
   return {
-    onActivated: (store) => {
-      store.subscribe((get) => logs.push(get()));
+    reducers: {
+      // A declared reducer — visible in devtools.
+      _restore: (_state, saved) => saved,
     },
-    methods: () => ({ getLogs: () => [...logs] }),
+
+    methods: (store, { namespace }) => {
+      const dispatch = getPluginDispatch(store, namespace) as InferActions<
+        TState,
+        HistoryReducers<TState>
+      >;
+
+      function restore(state: TState): void {
+        isRestoring = true;
+        dispatch._restore(state);
+        isRestoring = false;
+      }
+
+      return {
+        canUndo: () => index > 0,
+        canRedo: () => index + 1 < snapshots.length,
+        undo(): boolean {
+          if (index <= 0) return false;
+          restore(snapshots[--index]);
+          return true;
+        },
+        redo(): boolean {
+          if (index + 1 >= snapshots.length) return false;
+          restore(snapshots[++index]);
+          return true;
+        },
+      };
+    },
+
+    onActivated: (store) => {
+      snapshots.push(store.get());
+      store.subscribe((get) => {
+        if (isRestoring) return;
+        snapshots.length = index + 1;
+        snapshots.push(get());
+        index = snapshots.length - 1;
+      });
+    },
   };
 }
 ```
@@ -474,11 +666,12 @@ export function logger<
 
 **What's different:**
 
-|                | Zustand middleware                            | Kin Store plugin                     |
-| -------------- | --------------------------------------------- | ------------------------------------ |
-| Extension API  | Mutate `api` directly; call inner initializer | `methods` on a plain object          |
-| Type extension | `declare module` augmentation required        | Flows through `StorePlugin` generics |
-| Name collision | Silent overwrite                              | Throws at registration time          |
+|                | Zustand middleware                                      | Kin Store plugin                   |
+| -------------- | ------------------------------------------------------- | ---------------------------------- |
+| Type extension | `declare module` augmentation + `as unknown as History` | `StorePlugin` generics             |
+| Expose methods | Mutate `api as any`                                     | `methods` on a plain object        |
+| Restore state  | `api.setState(saved, true)` — bypasses all middlewares  | `_restore` reducer — full pipeline |
+| Name collision | Silent overwrite                                        | Throws at registration time        |
 
 ::: warning
 
