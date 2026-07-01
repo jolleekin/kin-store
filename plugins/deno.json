@@ -1,6 +1,6 @@
 {
   "name": "@kin-store/plugins",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "imports": {
     "immer": "npm:immer@^11.1.8"
