@@ -3,7 +3,8 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   cleanUrls: true,
   title: "Kin Store",
-  description: "Reactive state you want to use",
+  description:
+    "Lightweight, framework-agnostic state management for TypeScript. Zero dependencies, 100% type-safe. Start simple with 244 B and grow with plugins.",
 
   markdown: {
     codeTransformers: [
@@ -79,7 +80,7 @@ export default defineConfig({
     },
 
     footer: {
-      message: "Released under the MIT License.",
+      message: "Released under the MIT License.<br/>Copyright &copy; 2026-present Man Hoang",
     },
 
     editLink: {
