@@ -1,5 +1,9 @@
 # Changelog
 
+## @kin-store/plugins 0.3.1
+
+- Update README, add devtools and reorder sections.
+
 ## @kin-store/plugins 0.3.0
 
 - Add devtools plugin.
