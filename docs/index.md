@@ -20,22 +20,22 @@ hero:
 features:
   - icon: 🪜
     title: Start simple, grow freely
-    details: Begin with createStore and three methods. Add withPlugins for structure, derive for composition. Each step is additive — nothing you built needs to change.
+    details: Begin with <code>createStore</code> and three methods. Add <code>withPlugins</code> for structure, <code>derive</code> for composition. Each feature is its own layer — adopt one without affecting the others.
   - icon: 🔒
     title: 100% type-safe by default
-    details: Every reducer, dispatch call, and plugin method is fully inferred. No any, no manual annotation at call sites. The type system is load-bearing, not decorative.
+    details: Every reducer, <code>dispatch</code> call, and plugin method is fully inferred. No <code>any</code>, no manual annotation at call sites. The type system is load-bearing, not decorative.
   - icon: 📦
     title: Tiny and pay-per-use
-    details: "244 B for createStore. 465 B for derive. 1.07 KB for withPlugins with the full plugin system. Zero cost for capability you haven't opted into."
+    details: "244 B for <code>createStore</code>. 465 B for <code>derive</code>. 1.07 KB for <code>withPlugins</code> with the full plugin system. Zero cost for capability you haven't opted into."
   - icon: 🔌
     title: Flat plugin composition
-    details: Each .use() adds one line — not one nesting level. Read the pipeline top-to-bottom, not inside-out. No conflicting middleware assumptions.
+    details: Plugins compose with <code>.use()</code> — each call adds a step, not a nesting level. Read the pipeline top-to-bottom, not inside-out. No silent overrides, no monkey-patching.
   - icon: 🔍
     title: Explicit, not magic
     details: No hidden merges, no auto-propagating destroy, no implicit dependency graphs. If something happens, you triggered it.
   - icon: ⚛️
     title: Framework-agnostic
-    details: Works in any framework or none. React bindings ship separately, backed by useSyncExternalStore for concurrent mode safety.
+    details: Works in any framework or none. React bindings ship separately, backed by <code>useSyncExternalStore</code> for concurrent mode safety.
 ---
 
 <FeatureMatrix />
@@ -86,5 +86,13 @@ html .VPHero .tagline {
     font-size: 56px;
     line-height: 64px;
   }
+}
+
+code {
+  background-color: var(--vp-code-bg);
+  border-radius: 4px;
+  color: var(--vp-code-color);
+  font-size: var(--vp-code-font-size);
+  padding: 3px 6px;
 }
 </style>
