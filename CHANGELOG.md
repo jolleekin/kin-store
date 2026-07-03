@@ -1,5 +1,9 @@
 # Changelog
 
+## @kin-store/react 0.2.1
+
+- Bump version to pick up `@kin-store/core` 0.2.1 dependency
+
 ## @kin-store/core 0.2.1
 
 - Fix `use()` type inference: without default type parameters, TypeScript
