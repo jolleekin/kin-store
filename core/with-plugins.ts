@@ -297,8 +297,8 @@ export type StoreWithPlugins<
      * ```
      */
     use<
-      TPluginReducers extends Reducers<TState>,
-      TPluginMethods extends Methods,
+      TPluginReducers extends Reducers<TState> = {},
+      TPluginMethods extends Methods = {},
     >(
       plugin: StorePlugin<
         TState,
@@ -348,8 +348,8 @@ export type StoreWithPlugins<
      */
     use<
       TPluginNamespace extends string,
-      TPluginReducers extends Reducers<TState>,
-      TPluginMethods extends Methods,
+      TPluginReducers extends Reducers<TState> = {},
+      TPluginMethods extends Methods = {},
     >(
       namespace: TPluginNamespace,
       plugin: StorePlugin<

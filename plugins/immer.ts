@@ -203,8 +203,10 @@ export function immer<
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
   TNamespace extends string | undefined,
-  TPluginReducers extends ImmerReducers<TState>,
-  TPluginMethods extends Methods,
+  // deno-lint-ignore ban-types
+  TPluginReducers extends ImmerReducers<TState> = {},
+  // deno-lint-ignore ban-types
+  TPluginMethods extends Methods = {},
 >(
   plugin: ImmerPlugin<
     TState,
