@@ -10,6 +10,7 @@
     "npm:@deno/vite-plugin@*": "2.0.2_vite@8.0.16__@types+node@22.19.20_@types+node@22.19.20",
     "npm:@tailwindcss/postcss@4": "4.3.1",
     "npm:@tailwindcss/vite@^4.3.1": "4.3.1_vite@8.0.16__@types+node@22.19.20_@types+node@22.19.20",
+    "npm:@tanstack/react-query@^5.101.2": "5.101.2_react@19.2.7",
     "npm:@testing-library/react@^16.3.0": "16.3.2_@testing-library+dom@10.4.1_@types+react@19.2.17_@types+react-dom@19.2.3__@types+react@19.2.17_react@19.2.7_react-dom@19.2.7__react@19.2.7",
     "npm:@types/node@22": "22.19.20",
     "npm:@types/react-dom@*": "19.2.3_@types+react@19.2.17",
@@ -1054,6 +1055,16 @@
         "vite@8.0.16_@types+node@22.19.20"
       ]
     },
+    "@tanstack/query-core@5.101.2": {
+      "integrity": "sha512-hH5MLoJhF7KaIGd7q3xTXGXvslI+GYlM1Z/35aSHHWaCJWB7XvTSHYuV3eM7tw+aE0mT/xMro4M4Q9rCGHT0lw=="
+    },
+    "@tanstack/react-query@5.101.2_react@19.2.7": {
+      "integrity": "sha512-seDkr6kzGzX1okaaTtZPtgA688CDPlXUz1C6xSg0ESqn04Vuc8tlrYms1s3de+znBqhPVxFRfpAfUf+6XvfPWg==",
+      "dependencies": [
+        "@tanstack/query-core",
+        "react"
+      ]
+    },
     "@testing-library/dom@10.4.1": {
       "integrity": "sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==",
       "dependencies": [
@@ -2053,6 +2064,20 @@
         "dependencies": [
           "npm:vitepress@^1.6.4",
           "npm:vue@^3.5.39"
+        ]
+      },
+      "examples/checkout-redux-style-react-query": {
+        "dependencies": [
+          "npm:@deno/vite-plugin@*",
+          "npm:@tailwindcss/vite@^4.3.1",
+          "npm:@tanstack/react-query@^5.101.2",
+          "npm:@types/react-dom@*",
+          "npm:@types/react@*",
+          "npm:@vitejs/plugin-react@*",
+          "npm:react-dom@*",
+          "npm:react@*",
+          "npm:tailwindcss@^4.3.1",
+          "npm:vite@*"
         ]
       },
       "examples/todo-minimal": {
