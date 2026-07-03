@@ -2055,7 +2055,7 @@
           "npm:vue@^3.5.39"
         ]
       },
-      "examples/better-redux": {
+      "examples/todo-minimal": {
         "dependencies": [
           "npm:@deno/vite-plugin@*",
           "npm:@tailwindcss/vite@^4.3.1",
@@ -2068,7 +2068,20 @@
           "npm:vite@*"
         ]
       },
-      "examples/nextjs-todo": {
+      "examples/todo-redux-style": {
+        "dependencies": [
+          "npm:@deno/vite-plugin@*",
+          "npm:@tailwindcss/vite@^4.3.1",
+          "npm:@types/react-dom@*",
+          "npm:@types/react@*",
+          "npm:@vitejs/plugin-react@*",
+          "npm:react-dom@*",
+          "npm:react@*",
+          "npm:tailwindcss@^4.3.1",
+          "npm:vite@*"
+        ]
+      },
+      "examples/todo-redux-style-nextjs": {
         "packageJson": {
           "dependencies": [
             "npm:@tailwindcss/postcss@4",
@@ -2083,19 +2096,6 @@
             "npm:typescript@5"
           ]
         }
-      },
-      "examples/simple": {
-        "dependencies": [
-          "npm:@deno/vite-plugin@*",
-          "npm:@tailwindcss/vite@^4.3.1",
-          "npm:@types/react-dom@*",
-          "npm:@types/react@*",
-          "npm:@vitejs/plugin-react@*",
-          "npm:react-dom@*",
-          "npm:react@*",
-          "npm:tailwindcss@^4.3.1",
-          "npm:vite@*"
-        ]
       },
       "plugins": {
         "dependencies": [
