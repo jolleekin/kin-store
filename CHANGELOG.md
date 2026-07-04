@@ -1,14 +1,31 @@
 # Changelog
 
+## @kin-store/core 0.2.2
+
+- Add a `ReadonlyStore` base type (`get`/`subscribe`) that `Store` extends with
+  `set`. `derive`, `useSelector`/`useSelectorWithEquality`, and
+  `StoreProvider`/`useStoreContext` now accept `ReadonlyStore` instead of
+  `Store`, so a `DerivedStore` can be passed anywhere a read-only store is
+  expected — including as a source for another `derive()`, which previously
+  didn't type-check.
+
+## @kin-store/react 0.2.2
+
+- Bump version to pick up `@kin-store/core` 0.2.2 dependency.
+
+## @kin-store/plugins 0.3.4
+
+- Bump version to pick up `@kin-store/core` 0.2.2 dependency.
+
 ## @kin-store/react 0.2.1
 
 - Bump version to pick up `@kin-store/core` 0.2.1 dependency
 
 ## @kin-store/core 0.2.1
 
-- Fix `use()` type inference: without default type parameters, TypeScript
-  fell back to the full `Reducers<TState>`/`Methods` constraint (instead of
-  `{}`) when a plugin contributed no reducers/methods, so invalid
+- Fix `use()` type inference: without default type parameters, TypeScript fell
+  back to the full `Reducers<TState>`/`Methods` constraint (instead of `{}`)
+  when a plugin contributed no reducers/methods, so invalid
   `store.dispatch.<name>()`, `store.<name>()` calls went unflagged.
 
 ## @kin-store/plugins 0.3.3
