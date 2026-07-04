@@ -3,23 +3,14 @@ import { useRef, useSyncExternalStore } from "react";
 import type { ReadonlyStore } from "@kin-store/core/index.ts";
 
 /**
- * Selects a slice of the state and triggers re-renders when it changes.
+ * Selects the whole state and triggers re-renders on every state change.
  *
  * Internally uses React's `useSyncExternalStore`, so it is safe to use in
  * concurrent mode.
  *
  * @template TState The store's state type.
- * @template TSlice The type of the selected slice. Defaults to `TState` when no
- * selector is provided.
  *
  * @param store The store to select from.
- * @param selector The selector function to extract the slice of state.
- * If not provided, the whole state is returned.
- *
- * @remarks
- * If {@linkcode selector} returns a new object every time, it will trigger
- * re-renders on every state change. Consider using
- * {@linkcode useSelectorWithEquality} instead.
  *
  * @example Selecting the whole state
  * ```tsx
@@ -28,6 +19,26 @@ import type { ReadonlyStore } from "@kin-store/core/index.ts";
  *   return <div>{state.count}</div>;
  * }
  * ```
+ */
+export function useSelector<TState>(store: ReadonlyStore<TState>): TState;
+
+/**
+ * Selects a slice of the state and triggers re-renders only when that slice
+ * changes.
+ *
+ * Internally uses React's `useSyncExternalStore`, so it is safe to use in
+ * concurrent mode.
+ *
+ * @template TState The store's state type.
+ * @template TSlice The type of the selected slice.
+ *
+ * @param store The store to select from.
+ * @param selector The selector function to extract the slice of state.
+ *
+ * @remarks
+ * If {@linkcode selector} returns a new object every time, it will trigger
+ * re-renders on every state change. Consider using
+ * {@linkcode useSelectorWithEquality} instead.
  *
  * @example Selecting a slice to avoid unnecessary re-renders
  * ```tsx
@@ -38,8 +49,6 @@ import type { ReadonlyStore } from "@kin-store/core/index.ts";
  * }
  * ```
  */
-export function useSelector<TState>(store: ReadonlyStore<TState>): TState;
-
 export function useSelector<TState, TSlice = TState>(
   store: ReadonlyStore<TState>,
   selector: (state: TState) => TSlice,

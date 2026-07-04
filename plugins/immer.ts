@@ -188,8 +188,7 @@ function asImmerStore<
  * store.dispatch.todos.add("Buy milk");
  * store.dispatch.todos.toggle(someId);
  * ```
- */
-/**
+ *
  * @template TState The store's state type.
  * @template TStoreReducers Reducers already on the store before this plugin is applied.
  * @template TStoreMethods Methods already on the store before this plugin is applied.

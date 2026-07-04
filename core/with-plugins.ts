@@ -139,6 +139,11 @@ export type MiddlewareContextUnion<
  * ```
  */
 export const CANCELED = Symbol("canceled");
+
+/**
+ * The type of the {@linkcode CANCELED} sentinel, returned by
+ * {@linkcode Middleware} to abort a dispatch.
+ */
 export type Canceled = typeof CANCELED;
 
 /**
@@ -204,8 +209,19 @@ type InferDispatch<
 > = keyof TNestedReducers extends never ? {}
   : { dispatch: InferActions<TState, TNestedReducers> };
 
+/**
+ * A flat map of method name → arbitrary function attached to a store.
+ */
 // deno-lint-ignore no-explicit-any
 export type Methods = Record<string, (...args: any[]) => any>;
+
+/**
+ * Either a flat {@linkcode Methods} map **or** a one-level nested map
+ * where each value is itself a `Methods` map (a namespace).
+ *
+ * Top-level methods are accessible at `store.<name>`.
+ * Namespaced methods are accessible at `store.<namespace>.<name>`.
+ */
 export type NestedMethods = Methods | Record<string, Methods>;
 
 /**

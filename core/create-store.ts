@@ -3,8 +3,31 @@ import type { Listener } from "./_types.ts";
 
 export type { Listener };
 
-type Updater<TState> = (prev: TState) => TState;
+/**
+ * A function passed to {@linkcode Store.set} that computes the next state
+ * from the previous one, instead of replacing it outright.
+ *
+ * @template TState The type of the state being updated.
+ *
+ * @example
+ * ```ts
+ * const store = createStore(0);
+ * const increment: Updater<number> = (n) => n + 1;
+ * store.set(increment);
+ * ```
+ */
+export type Updater<TState> = (prev: TState) => TState;
 
+/**
+ * The read-only surface of a {@linkcode Store}: `get` and `subscribe`, but
+ * no `set`.
+ *
+ * APIs that only need to read a store — such as {@linkcode derive}'s
+ * `get` helper or React's `useSelector` — should accept `ReadonlyStore` so both
+ * plain and derived stores can be passed in.
+ *
+ * @template TState The type of the state held by this store.
+ */
 // deno-lint-ignore no-explicit-any
 export type ReadonlyStore<TState = any> = {
   /**

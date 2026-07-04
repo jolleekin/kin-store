@@ -1,9 +1,21 @@
 import { notify, throwError } from "./_internals.ts";
 import type { Listener, ReadonlyStore } from "./create-store.ts";
 
-type Getter = <T>(store: ReadonlyStore<T>) => T;
+/**
+ * The `get` helper passed to a {@linkcode derive} compute function. Reads a
+ * source store's current state and registers it as a tracked dependency.
+ *
+ * @template T The source store's state type.
+ */
+export type Getter = <T>(store: ReadonlyStore<T>) => T;
 
-type ComputeFn<TState> = (
+/**
+ * The callback passed to {@linkcode derive}. See {@linkcode derive}'s
+ * documentation for what `get` and `prev` do.
+ *
+ * @template TState The type of the derived value.
+ */
+export type ComputeFn<TState> = (
   get: Getter,
   prev: () => TState | undefined,
 ) => TState;

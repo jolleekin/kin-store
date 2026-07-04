@@ -206,7 +206,7 @@ type PersistMethods<TState> = {
 };
 
 /**
- * Plugin that persists and hydrates the store state using a storage backend.
+ * Creates a plugin that persists and hydrates the store state using a storage backend.
  *
  * On activation, the plugin reads any previously stored value, merges it with
  * the current state, and dispatches it through the pipeline via an internal
@@ -261,8 +261,7 @@ type PersistMethods<TState> = {
  * // Later, on the client:
  * await store.persist.hydrate();
  * ```
- */
-/**
+ *
  * @template TState The store's state type.
  * @template TStoreReducers Reducers already on the store before this plugin is applied.
  * @template TStoreMethods Methods already on the store before this plugin is applied.

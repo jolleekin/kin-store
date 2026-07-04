@@ -42,6 +42,9 @@ type Extension = {
   }): Connection<TState>;
 };
 
+/**
+ * Options accepted by {@linkcode devtools}.
+ */
 export type DevtoolsOptions = {
   /**
    * The name shown in the Redux DevTools extension instance selector.
@@ -55,7 +58,7 @@ export type DevtoolsOptions = {
 };
 
 /**
- * Plugin that connects a store to the
+ * Creates a plugin that connects a store to the
  * [Redux DevTools Extension](https://github.com/reduxjs/redux-devtools).
  *
  * This plugin is a thin bridge: every state change is forwarded to the

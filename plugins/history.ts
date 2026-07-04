@@ -52,6 +52,9 @@ type HistoryMethods = {
   undo(): boolean;
 };
 
+/**
+ * Options accepted by {@linkcode history}.
+ */
 export type HistoryOptions = {
   /**
    * Maximum number of snapshots to keep. When exceeded, the oldest snapshot is
@@ -61,7 +64,7 @@ export type HistoryOptions = {
 };
 
 /**
- * Plugin that tracks state history and enables undo / redo / reset.
+ * Creates a plugin that tracks state history and enables undo / redo / reset.
  *
  * Every state change that goes through the dispatch pipeline is recorded.
  * Changes made via {@linkcode import("@kin-store/core/index.ts").StoreWithPlugins.set set}
@@ -105,9 +108,7 @@ export type HistoryOptions = {
  * store.history.redo();    // count = 2
  * store.history.reset();   // count = 0
  * ```
- */
-
-/**
+ *
  * @template TState The store's state type.
  * @template TStoreReducers Reducers already on the store before this plugin is applied.
  * @template TStoreMethods Methods already on the store before this plugin is applied.
