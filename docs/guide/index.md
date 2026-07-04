@@ -265,12 +265,10 @@ What if we had:
 
 That's Kin Store.
 
-## Three primitives. Each composable. None mandatory.
+## Three primitives
 
 | Primitive                            | What it does                                                                          |
 | ------------------------------------ | ------------------------------------------------------------------------------------- |
 | [`createStore`](/guide/create-store) | The irreducible floor. `get` · `set` · `subscribe`. Nothing else.                     |
 | [`withPlugins`](/guide/with-plugins) | Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins. |
 | [`derive`](/guide/derive)            | Lazy, dependency-tracked, read-only views composed from one or more stores.           |
-
-Each is additive. You never undo what you built.

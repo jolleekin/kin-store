@@ -7,9 +7,9 @@ plugins.
 import { withPlugins } from "@kin-store/core/index.ts";
 ```
 
-`withPlugins` upgrades a store with a plugin system. Each `.use()` call adds
-capability — not a nesting level. The store's type is updated at each step, so
-TypeScript always knows exactly what's available.
+`withPlugins` upgrades a store (or creates one) with a plugin system. Each
+`.use()` call adds capability — not a nesting level. The store's type is updated
+at each step, so TypeScript always knows exactly what's available.
 
 ## Concepts
 
@@ -75,7 +75,7 @@ await todoStore.persist.hydrate();
 
 ## Step 3 — Extract mutations into reducers
 
-When you want auditability, extract state mutations into `reducers`. Each
+When you want traceability, extract state mutations into `reducers`. Each
 reducer is a pure function `(state, ...args) => nextState`. Reducers are called
 through `store.dispatch.*` — they travel through the full middleware pipeline,
 making every state change observable and traceable.
@@ -179,7 +179,7 @@ A plugin passed to `.use()` is a plain object with any combination of:
 | Field         | Description                                          |
 | ------------- | ---------------------------------------------------- |
 | `reducers`    | Pure functions `(state, ...args) => nextState`       |
-| `middleware`  | Factory returning middleware functions(s)            |
+| `middleware`  | Factory returning middleware function(s)            |
 | `methods`     | Factory returning methods added to the store         |
 | `onActivated` | Runs once immediately after the plugin is registered |
 | `onDestroy`   | Runs when `store.destroy()` is called                |

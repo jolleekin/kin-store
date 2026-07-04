@@ -44,7 +44,7 @@ import type { StorePlugin } from "@kin-store/core/index.ts";
 type State = { count: number };
 
 const loggingPlugin: StorePlugin<State> = {
-  middleware: (ctx, next) => {
+  middleware: () => (ctx, next) => {
     console.log("->", ctx.reducer.name, ctx.reducer.args);
     const result = next();
     console.log("<-", result);

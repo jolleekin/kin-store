@@ -15,14 +15,14 @@ stays cold (no subscriptions, no caching) until something subscribes to it.
 ```ts
 import { createStore, derive } from "@kin-store/core/index.ts";
 
-const userStore = createStore({ name: "Ada", role: "admin" });
-const cartStore = createStore({ items: [] as string[], total: 0 });
+const user = createStore({ name: "Ada", role: "admin" });
+const cart = createStore({ items: [] as string[], total: 0 });
 
 // Reads from both stores. Recomputes only when either changes.
 const summary = derive((get) => ({
-  greeting: `Hello, ${get(userStore).name}`,
-  itemCount: get(cartStore).items.length,
-  total: get(cartStore).total,
+  greeting: `Hello, ${get(user).name}`,
+  itemCount: get(cart).items.length,
+  total: get(cart).total,
 }));
 
 console.log(summary.get());
@@ -38,7 +38,7 @@ Only stores actually read during a recompute are subscribed. Branches that
 aren't taken don't create subscriptions:
 
 ```ts
-const isAdmin = derive((get) => get(userStore).role === "admin");
+const isAdmin = derive((get) => get(user).role === "admin");
 
 // When isAdmin is false, changes to adminStore don't trigger a recompute.
 const view = derive((get) =>

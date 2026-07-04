@@ -73,8 +73,9 @@ unsubscribe();
 ```
 
 The listener receives `get` (a getter, not the value itself) and `prevState`
-(the state before the change). Using a getter prevents you from accidentally
-closing over a stale snapshot.
+(the state before the change). Using a getter allows [`derive`](/guide/derive)
+to stay lazy: a derived store defers recomputation until something actually
+calls its `get()`, instead of recomputing eagerly on every upstream change.
 
 ## `listenerWithSelector`
 
