@@ -172,3 +172,90 @@ Deno.test(
     assertEquals(received, 16);
   },
 );
+
+// ---------------------------------------------------------------------------
+// Composing derive with derive (a DerivedStore used as a source)
+// ---------------------------------------------------------------------------
+
+Deno.test("derive - can use another derived store as a source", () => {
+  const n = createStore(2);
+  const doubled = derive((get) => get(n) * 2);
+  const quadrupled = derive((get) => get(doubled) * 2);
+
+  assertEquals(quadrupled.get(), 8);
+  n.set(3);
+  assertEquals(quadrupled.get(), 12);
+});
+
+Deno.test(
+  "derive - can mix a plain store and a derived store as sources",
+  () => {
+    const n = createStore(2);
+    const doubled = derive((get) => get(n) * 2);
+    const sum = derive((get) => get(n) + get(doubled));
+
+    assertEquals(sum.get(), 6); // 2 + 4
+    n.set(3);
+    assertEquals(sum.get(), 9); // 3 + 6
+  },
+);
+
+Deno.test(
+  "derive - subscriber notified when a nested derived store's source changes",
+  () => {
+    const n = createStore(2);
+    const doubled = derive((get) => get(n) * 2);
+    const quadrupled = derive((get) => get(doubled) * 2);
+
+    let received: number | undefined;
+    quadrupled.subscribe((get) => {
+      received = get();
+    });
+
+    n.set(5);
+    assertEquals(received, 20);
+  },
+);
+
+Deno.test(
+  "derive - unsubscribing from the outer derive lets the inner derived store go cold too",
+  () => {
+    const n = createStore(1);
+    let innerComputeCalls = 0;
+    const doubled = derive((get) => {
+      innerComputeCalls++;
+      return get(n) * 2;
+    });
+    const quadrupled = derive((get) => get(doubled) * 2);
+
+    const unsub = quadrupled.subscribe(() => {});
+    innerComputeCalls = 0; // Reset after the initial subscription read.
+
+    unsub();
+
+    // Both quadrupled and doubled are cold now; changing n shouldn't
+    // proactively recompute the inner derived store.
+    n.set(9);
+    assertEquals(innerComputeCalls, 0);
+
+    // An on-demand read still produces the correct value, recomputing once.
+    assertEquals(quadrupled.get(), 36);
+    assertEquals(innerComputeCalls, 1);
+  },
+);
+
+Deno.test(
+  "derive - destroying a nested derived source surfaces as an error on read",
+  () => {
+    const n = createStore(1);
+    const doubled = derive((get) => get(n) * 2);
+    const quadrupled = derive((get) => get(doubled) * 2);
+
+    // Establish dependency once, so doubled isn't fresh-computed below.
+    quadrupled.get();
+    
+    doubled.destroy();
+
+    assertThrows(() => quadrupled.get(), Error, "destroyed");
+  },
+);

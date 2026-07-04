@@ -3,7 +3,7 @@ import { Window } from "happy-dom";
 import { act, renderHook } from "@testing-library/react";
 import { assertEquals, assertThrows } from "@std/assert";
 
-import { createStore, withPlugins } from "@kin-store/core/index.ts";
+import { createStore, derive, withPlugins } from "@kin-store/core/index.ts";
 import { useSelector, useSelectorWithEquality } from "./hooks.ts";
 import { StoreProvider, useStoreContext } from "./context.tsx";
 
@@ -67,6 +67,17 @@ Deno.test("useSelector - re-renders when selected field changes", () => {
 
   act(() => store.set({ count: 99, name: "Alice" }));
   assertEquals(result.current, 99);
+});
+
+Deno.test("useSelector - works with a derived store", () => {
+  const count = createStore(2);
+  const doubled = derive((get) => get(count) * 2);
+
+  const { result } = renderHook(() => useSelector(doubled));
+  assertEquals(result.current, 4);
+
+  act(() => count.set(5));
+  assertEquals(result.current, 10);
 });
 
 // ---------------------------------------------------------------------------

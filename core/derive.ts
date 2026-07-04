@@ -1,7 +1,7 @@
 import { notify, throwError } from "./_internals.ts";
-import type { Listener, Store } from "./create-store.ts";
+import type { Listener, ReadonlyStore } from "./create-store.ts";
 
-type Getter = <T>(store: Store<T>) => T;
+type Getter = <T>(store: ReadonlyStore<T>) => T;
 
 type ComputeFn<TState> = (
   get: Getter,
@@ -20,10 +20,7 @@ type ComputeFn<TState> = (
  * @template TState The type of the derived value.
  */
 export type DerivedStore<TState> =
-  & Pick<
-    Store<TState>,
-    "get" | "subscribe"
-  >
+  & ReadonlyStore<TState>
   & {
     /**
      * Destroys the store, removing all listeners and all dependencies.
@@ -138,9 +135,9 @@ export function derive<TState>(
   let state: TState | undefined;
   let isInvalidated = true;
   let isDestroyed = false;
-  let dependencies: Map<Store, unknown> | undefined;
+  let dependencies: Map<ReadonlyStore, unknown> | undefined;
   const listeners = new Set<Listener<TState>>();
-  const subscriptions = new Map<Store, VoidFunction>();
+  const subscriptions = new Map<ReadonlyStore, VoidFunction>();
 
   function checkDestroyed(): void | never {
     if (isDestroyed) throwError("The store has been destroyed");
@@ -167,9 +164,9 @@ export function derive<TState>(
     if (!isInvalidated) return state!;
 
     if (!dependencies || anyDependencyChanged()) {
-      const newDependencies = new Map<Store, unknown>();
+      const newDependencies = new Map<ReadonlyStore<unknown>, unknown>();
 
-      const getter: Getter = <T>(store: Store<T>) => {
+      const getter: Getter = <T>(store: ReadonlyStore<T>) => {
         const s = store.get();
         newDependencies.set(store, s);
         return s;

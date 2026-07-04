@@ -5,41 +5,12 @@ export type { Listener };
 
 type Updater<TState> = (prev: TState) => TState;
 
-/**
- * A reactive state container that holds a value of type `TState`.
- *
- * Use {@linkcode createStore} to create a plain store, or
- * {@linkcode withPlugins} to create one with reducer/middleware/method support.
- *
- * @example Basic usage
- * ```ts
- * const counter = createStore(0);
- *
- * counter.subscribe((get, prevState) => {
- *   console.log("changed from", prevState, "to", get());
- * });
- *
- * counter.set(1); // logs: changed from 0 to 1
- * counter.set((n) => n + 1); // logs: changed from 1 to 2
- * ```
- *
- * @template TState The type of the state held by this store.
- */
 // deno-lint-ignore no-explicit-any
-export type Store<TState = any> = {
+export type ReadonlyStore<TState = any> = {
   /**
    * Returns the current state of the store.
    */
   get(): TState;
-
-  /**
-   * Sets the state of the store and notifies listeners.
-   * @param next The next state or a function that computes the next state.
-   *
-   * **NOTE**:
-   * This method completely bypasses the dispatch pipeline (if there is one).
-   */
-  set(next: TState | Updater<TState>): void;
 
   /**
    * Registers a listener that gets called when the state changes.
@@ -61,6 +32,38 @@ export type Store<TState = any> = {
    * ```
    */
   subscribe(listener: Listener<TState>): VoidFunction;
+};
+
+/**
+ * A reactive state container that holds a value of type `TState`.
+ *
+ * Use {@linkcode createStore} to create a plain store, or
+ * {@linkcode withPlugins} to create one with reducer/middleware/method support.
+ *
+ * @example Basic usage
+ * ```ts
+ * const counter = createStore(0);
+ *
+ * counter.subscribe((get, prevState) => {
+ *   console.log("changed from", prevState, "to", get());
+ * });
+ *
+ * counter.set(1); // logs: changed from 0 to 1
+ * counter.set((n) => n + 1); // logs: changed from 1 to 2
+ * ```
+ *
+ * @template TState The type of the state held by this store.
+ */
+// deno-lint-ignore no-explicit-any
+export type Store<TState = any> = ReadonlyStore<TState> & {
+  /**
+   * Sets the state of the store and notifies listeners.
+   * @param next The next state or a function that computes the next state.
+   *
+   * **NOTE**:
+   * This method completely bypasses the dispatch pipeline (if there is one).
+   */
+  set(next: TState | Updater<TState>): void;
 };
 
 /**

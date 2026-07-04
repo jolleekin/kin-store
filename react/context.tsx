@@ -1,8 +1,8 @@
 import { createContext, type JSX, type ReactNode, useContext } from "react";
 
-import type { Store } from "@kin-store/core/index.ts";
+import type { ReadonlyStore } from "@kin-store/core/index.ts";
 
-const StoreContext = createContext<Store | null>(null);
+const StoreContext = createContext<ReadonlyStore | null>(null);
 
 /**
  * React context provider that makes a store available to
@@ -35,11 +35,12 @@ export function StoreProvider({
   store,
   children,
 }: {
-  store: Store;
+  store: ReadonlyStore;
   children: ReactNode;
 }): JSX.Element {
-  return <StoreContext.Provider value={store}>{children}
-  </StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+  );
 }
 
 /**
@@ -64,7 +65,7 @@ export function StoreProvider({
  * }
  * ```
  */
-export function useStoreContext<TStore extends Store>(): TStore {
+export function useStoreContext<TStore extends ReadonlyStore>(): TStore {
   const store = useContext(StoreContext);
   if (!store) {
     throw new Error(

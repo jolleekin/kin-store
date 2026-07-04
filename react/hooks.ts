@@ -1,6 +1,6 @@
 import { useRef, useSyncExternalStore } from "react";
 
-import type { Store } from "@kin-store/core/index.ts";
+import type { ReadonlyStore } from "@kin-store/core/index.ts";
 
 /**
  * Selects a slice of the state and triggers re-renders when it changes.
@@ -38,15 +38,15 @@ import type { Store } from "@kin-store/core/index.ts";
  * }
  * ```
  */
-export function useSelector<TState>(store: Store<TState>): TState;
+export function useSelector<TState>(store: ReadonlyStore<TState>): TState;
 
 export function useSelector<TState, TSlice = TState>(
-  store: Store<TState>,
+  store: ReadonlyStore<TState>,
   selector: (state: TState) => TSlice,
 ): TSlice;
 
 export function useSelector<TState, TSlice = TState>(
-  store: Store<TState>,
+  store: ReadonlyStore<TState>,
   selector?: (state: TState) => TSlice,
 ): TState | TSlice {
   const getSnapshot = selector ? () => selector(store.get()) : store.get;
@@ -102,7 +102,7 @@ export function useSelector<TState, TSlice = TState>(
  * ```
  */
 export function useSelectorWithEquality<TState, TSlice = TState>(
-  store: Store<TState>,
+  store: ReadonlyStore<TState>,
   selector: (state: TState) => TSlice,
   equalFn: (prev: TSlice | undefined, next: TSlice) => boolean,
 ): TSlice {
