@@ -1,5 +1,30 @@
 # Changelog
 
+## @kin-store/core 0.2.3
+
+- Document previously undocumented public symbols: `ReadonlyStore`,
+  `Canceled`, `Methods`, `NestedMethods`. Export and document `Updater`
+  (`createStore`) and `Getter`/`ComputeFn` (`derive`), which were referenced
+  from public types without being exported themselves. Add a `@module` doc to
+  `core/index.ts`.
+
+## @kin-store/plugins 0.3.5
+
+- Document previously undocumented `DevtoolsOptions` and `HistoryOptions`.
+  Reword the `devtools`/`history`/`persist` plugin factory summaries to start
+  with "Creates a plugin that ..." instead of "Plugin that ...", since the
+  exported symbol is a factory, not a plugin instance. Fix `history`/`immer`/
+  `persist`'s `@template` tags, which were stranded in a second JSDoc block
+  that `deno doc` doesn't attach to the symbol. Add a `@module` doc to
+  `plugins/index.ts`.
+
+## @kin-store/react 0.2.3
+
+- Split `useSelector`'s two overloads (whole-state vs. selector) into two
+  fully documented JSDoc blocks, each with its own example, instead of the
+  selector overload pointing back to the other. Add a `@module` doc to
+  `react/index.ts`.
+
 ## @kin-store/core 0.2.2
 
 - Add a `ReadonlyStore` base type (`get`/`subscribe`) that `Store` extends with
