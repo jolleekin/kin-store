@@ -52,6 +52,8 @@ There is no separate typecheck task — `deno test`/`deno lint` surface type err
 
 `.github/workflows/publish.yml` triggers on tags `core@*`, `plugins@*`, `react@*`. Each publish job runs `deno lint` + `deno test -A core plugins react`, then `deno publish` from that package's directory. Package versions live in each package's `deno.json` (`core/deno.json`, `plugins/deno.json`, `react/deno.json`) and must be bumped before tagging.
 
+The three publish jobs are independent in CI (no `needs` between them), but when a change touches multiple packages, tag and push `core` first and confirm its publish job succeeds (`gh run list --workflow=publish.yml`) before tagging/pushing `plugins`/`react` — they depend on `core`, so publishing them first risks pinning against a core version that isn't live on JSR yet.
+
 ## Architecture
 
 ### Layering: `createStore` → `withPlugins` → `derive`
@@ -84,4 +86,7 @@ Thin wrappers around `useSyncExternalStore` (`react/hooks.ts`) — no separate r
 - Internal/non-exported helpers live in `_internals.ts` / `_types.ts` (underscore prefix signals "not part of the public API").
 - Public API surface is exported only via each package's `index.ts`; import other packages' public APIs through their `index.ts` (e.g. `@kin-store/core/index.ts`), not by reaching into internal files.
 - JSDoc on exported symbols is extensive and treated as user-facing documentation (it feeds the JSR package page) — `@example`, `@template`, and `@linkcode` tags are used consistently. Match this style when adding/editing public API.
+- A JSDoc block's `@template`/other tags must be attached to the same comment block as the summary — a second, separate `/** ... */` block directly above the symbol is legal TS but `deno doc` doesn't associate it with the symbol, silently dropping those tags from the JSR page.
+- Plugin factories (`history`, `devtools`, `persist`, and similar functions that return a `StorePlugin`) should have summaries starting with an action verb describing what calling them produces (e.g. "Creates a plugin that ..."), not a noun phrase describing the plugin itself (e.g. "Plugin that ...") — the exported symbol is the factory, not the plugin instance.
+- Overloaded exported functions (e.g. `useSelector`) get a full, independent JSDoc block per overload (summary, `@template`/`@param`/`@example` as applicable) — don't have one overload's doc point back to another's with "see above", since JSR/IDE hover for that overload would otherwise show only the pointer.
 - In TS/TSX documentation code blocks (in JSDoc and in `docs/`), use semicolons on statements and periods on sentence-style comments; shell code blocks are exempt from this.
