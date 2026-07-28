@@ -31,10 +31,10 @@
     "npm:react@^19.2.7": "19.2.7",
     "npm:tailwindcss@4": "4.3.1",
     "npm:tailwindcss@^4.3.1": "4.3.1",
-    "npm:typescript@5": "5.9.3",
+    "npm:typescript@^6.0.3": "6.0.3",
     "npm:vite@*": "8.0.16_@types+node@22.19.20",
-    "npm:vitepress@^1.6.4": "1.6.4_@algolia+client-search@5.55.1_@types+node@22.19.20_@types+react@19.2.17_react@19.2.7_react-dom@19.2.7__react@19.2.7_search-insights@2.17.3_typescript@5.9.3",
-    "npm:vue@^3.5.39": "3.5.39_typescript@5.9.3"
+    "npm:vitepress@^1.6.4": "1.6.4_typescript@6.0.3",
+    "npm:vue@^3.5.39": "3.5.39_typescript@6.0.3"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -1173,10 +1173,11 @@
         "vite@8.0.16_@types+node@22.19.20"
       ]
     },
-    "@vitejs/plugin-vue@5.2.4_vite@5.4.21__@types+node@22.19.20_vue@3.5.38__typescript@5.9.3_@types+node@22.19.20_typescript@5.9.3": {
+    "@vitejs/plugin-vue@5.2.4_vite@5.4.21__@types+node@22.19.20_vue@3.5.39__typescript@6.0.3_typescript@6.0.3": {
       "integrity": "sha512-7Yx/SXSOcQq5HiiV3orevHUFn+pmMB4cgbEkDYgnkUWb0WfeQ/wa2yFv6D5ICiCQOVpjA7vYDXrC7AGO8yjDHA==",
       "dependencies": [
-        "vite@5.4.21_@types+node@22.19.20"
+        "vite@5.4.21_@types+node@22.19.20",
+        "vue"
       ]
     },
     "@vue/compiler-core@3.5.39": {
@@ -1263,7 +1264,7 @@
         "csstype"
       ]
     },
-    "@vue/server-renderer@3.5.39_vue@3.5.39__typescript@5.9.3_typescript@5.9.3": {
+    "@vue/server-renderer@3.5.39_vue@3.5.39__typescript@6.0.3_typescript@6.0.3": {
       "integrity": "sha512-yZSakiAGw85rZfG7UM8akMnIF+FmeiNk47uvHf2nVBBSe+dIKUhZuZq9+XgJhbV3nS5Z4ALH23/MpXofW+mbcw==",
       "dependencies": [
         "@vue/compiler-ssr",
@@ -1274,7 +1275,7 @@
     "@vue/shared@3.5.39": {
       "integrity": "sha512-l1rrBtBfTnmxvtsvdQDXltUUy8S1Y+ZaqdfUzmAnJkTd8Z8rv5v/ytW+TKiqEOWyHPoqtPlNFSs0lhRmYVSHVA=="
     },
-    "@vueuse/core@12.8.2_typescript@5.9.3": {
+    "@vueuse/core@12.8.2_typescript@6.0.3": {
       "integrity": "sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==",
       "dependencies": [
         "@types/web-bluetooth",
@@ -1283,7 +1284,7 @@
         "vue"
       ]
     },
-    "@vueuse/integrations@12.8.2_focus-trap@7.8.0_typescript@5.9.3": {
+    "@vueuse/integrations@12.8.2_focus-trap@7.8.0_typescript@6.0.3": {
       "integrity": "sha512-fbGYivgK5uBTRt7p5F3zy6VrETlV9RtZjBqd1/HxGdjdckBgBM4ugP8LHpjolqTj14TXTxSK1ZfgPbHYyGuH7g==",
       "dependencies": [
         "@vueuse/core",
@@ -1298,7 +1299,7 @@
     "@vueuse/metadata@12.8.2": {
       "integrity": "sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A=="
     },
-    "@vueuse/shared@12.8.2_typescript@5.9.3": {
+    "@vueuse/shared@12.8.2_typescript@6.0.3": {
       "integrity": "sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==",
       "dependencies": [
         "vue"
@@ -1919,8 +1920,8 @@
     "tslib@2.8.1": {
       "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="
     },
-    "typescript@5.9.3": {
-      "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+    "typescript@6.0.3": {
+      "integrity": "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==",
       "bin": true
     },
     "undici-types@6.21.0": {
@@ -2007,7 +2008,7 @@
       ],
       "bin": true
     },
-    "vitepress@1.6.4_@algolia+client-search@5.55.1_@types+node@22.19.20_@types+react@19.2.17_react@19.2.7_react-dom@19.2.7__react@19.2.7_search-insights@2.17.3_typescript@5.9.3": {
+    "vitepress@1.6.4_typescript@6.0.3": {
       "integrity": "sha512-+2ym1/+0VVrbhNyRoFFesVvBvHAVMZMK0rw60E3X/5349M1GuVdKeazuksqopEdvkKwKGs21Q729jX81/bkBJg==",
       "dependencies": [
         "@docsearch/css",
@@ -2031,7 +2032,7 @@
       ],
       "bin": true
     },
-    "vue@3.5.39_typescript@5.9.3": {
+    "vue@3.5.39_typescript@6.0.3": {
       "integrity": "sha512-xmZCYabFGcirU8r0fTuvl/LICc1OU620rnqepaJDL/a141ZigkG7AyaxQLdqJ02ZRYzWe6YPaDHeQx7MfknQfA==",
       "dependencies": [
         "@vue/compiler-dom",
@@ -2132,7 +2133,7 @@
             "npm:react-dom@19",
             "npm:react@19",
             "npm:tailwindcss@4",
-            "npm:typescript@5"
+            "npm:typescript@^6.0.3"
           ]
         }
       },
