@@ -151,9 +151,10 @@ type PersistReducers<TState> = {
 
 type PersistMethods<TState> = {
   /**
-   * Returns a promise that resolves once the current or next hydration
-   * completes. If no hydration is in progress and the store has already
-   * hydrated, resolves immediately.
+   * Returns a promise that settles once the current or most recent hydration
+   * completes: it resolves on success and rejects with the error that caused
+   * the hydration to fail. If no hydration is in progress and the store has
+   * already hydrated successfully, resolves immediately.
    *
    * Useful for coordinating with other plugins (e.g. `history`) that
    * need to re-baseline their state after the persisted value is loaded:
@@ -287,7 +288,7 @@ export function persist<
 > {
   const {
     key,
-    storage = localStorage,
+    storage,
     selector = (s: TState) => s as unknown as TSlice,
     merge = (current: TState, slice: TSlice) => ({ ...current, ...slice }),
     version: targetVersion = 0,
@@ -296,6 +297,13 @@ export function persist<
     decode = JSON.parse,
     skipHydration = false,
   } = options;
+
+  // Resolved lazily (not as a default parameter) so constructing the plugin
+  // never touches the `localStorage` global. Environments without it (SSR)
+  // only fail if a hydration/write actually runs without a custom `storage`.
+  function getStorage(): PersistStorage {
+    return storage ?? localStorage;
+  }
 
   type TStore = StoreWithPlugins<
     TState,
@@ -306,14 +314,14 @@ export function persist<
   let _hydrating = false;
   let resolveActive!: () => void;
   let rejectActive!: (e: unknown) => void;
-  // Always initialized so hydrated() has a real promise to return before any
-  // hydration starts. _hydrate() resolves/rejects it; then it is set to null.
-  let activeHydration: Promise<void> | undefined = new Promise<void>(
-    (res, rej) => {
-      resolveActive = res;
-      rejectActive = rej;
-    },
-  );
+  // Always initialized so hydrationComplete() has a real promise to await
+  // before any hydration starts. Once a round settles, this promise is left
+  // in place (resolved or rejected) so hydrationComplete() keeps reporting
+  // that round's outcome until the next startHydration() call replaces it.
+  let activeHydration = new Promise<void>((res, rej) => {
+    resolveActive = res;
+    rejectActive = rej;
+  });
 
   const onHydrationStartListeners = new Set<(state: TState) => void>();
   const onHydrationCompleteListeners = new Set<(state: TState) => void>();
@@ -325,7 +333,7 @@ export function persist<
     onHydrationStartListeners.forEach((cb) => cb(store.get()));
 
     try {
-      let raw = storage.getItem(key);
+      let raw = getStorage().getItem(key);
       if (raw instanceof Promise) raw = await raw;
 
       if (raw) {
@@ -356,8 +364,9 @@ export function persist<
       onHydrationCompleteListeners.forEach((cb) => cb(store.get()));
       resolveActive();
     } catch (e) {
+      // Reported to callers via activeHydration; not rethrown, since
+      // _hydrate()'s own returned promise has no consumer of its own.
       rejectActive(e);
-      throw e;
     }
   }
 
@@ -366,20 +375,18 @@ export function persist<
     dispatch: InferActions<TState, PersistReducers<TState>>,
   ): Promise<void> {
     if (!_hydrating) {
-      if (!activeHydration) {
-        // Re-hydration: create a fresh promise for this round.
-        activeHydration = new Promise<void>((res, rej) => {
-          resolveActive = res;
-          rejectActive = rej;
-        });
-      }
+      // Fresh attempt: a new promise so hydrationComplete() tracks this
+      // round instead of the previous one's already-settled outcome.
+      activeHydration = new Promise<void>((res, rej) => {
+        resolveActive = res;
+        rejectActive = rej;
+      });
       _hydrating = true;
       _hydrate(store, dispatch).finally(() => {
         _hydrating = false;
-        activeHydration = undefined;
       });
     }
-    return activeHydration!;
+    return activeHydration;
   }
 
   return {
@@ -394,10 +401,10 @@ export function persist<
       >;
 
       return {
-        clear: () => storage.removeItem(key),
+        clear: () => getStorage().removeItem(key),
         hasHydrated: () => _hasHydrated,
         hydrate: () => startHydration(store, dispatch),
-        hydrationComplete: () => activeHydration ?? Promise.resolve(),
+        hydrationComplete: () => activeHydration,
         onHydrationStart: (cb: (state: TState) => void) => {
           onHydrationStartListeners.add(cb);
           return () => onHydrationStartListeners.delete(cb);
@@ -416,12 +423,19 @@ export function persist<
       >;
 
       if (!skipHydration) {
-        await startHydration(store, dispatch);
+        try {
+          await startHydration(store, dispatch);
+        } catch {
+          // Failures surface through hasHydrated()/hydrationComplete();
+          // swallow here so they don't become an unhandled rejection from
+          // onActivated, which with-plugins.ts calls without awaiting or
+          // attaching a catch.
+        }
       }
 
       store.subscribe((get) => {
         try {
-          storage.setItem(
+          getStorage().setItem(
             key,
             encode({ value: selector(get()), version: targetVersion }),
           );

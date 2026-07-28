@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 import { withPlugins } from "@kin-store/core/index.ts";
 import { persist, type PersistStorage } from "./persist.ts";
 
@@ -84,6 +84,24 @@ Deno.test("persist - skipHydration skips auto-hydration", async () => {
   await store.persist.hydrate();
   assertEquals(store.get().count, 99);
   assertEquals(store.persist.hasHydrated(), true);
+});
+
+Deno.test("persist - skipHydration with no storage option never touches the localStorage global", () => {
+  // Simulates an SSR environment (e.g. Next.js build) where `localStorage`
+  // isn't defined. Constructing/activating the plugin must not read the
+  // global merely because no `storage` override was passed.
+  const original = globalThis.localStorage;
+  // deno-lint-ignore no-explicit-any
+  delete (globalThis as any).localStorage;
+
+  try {
+    const store = withPlugins({ count: 0 })
+      .use("persist", persist({ key: "no-storage-test", skipHydration: true }));
+
+    assertEquals(store.get().count, 0);
+  } finally {
+    globalThis.localStorage = original;
+  }
 });
 
 Deno.test("persist - selector persists only a slice", async () => {
@@ -238,4 +256,26 @@ Deno.test("persist - async storage is supported", async () => {
 
   await store.persist.hydrationComplete();
   assertEquals(store.get().count, 33);
+});
+
+Deno.test("persist - hydrationComplete rejects after a failed hydration", async () => {
+  const failingStorage: PersistStorage = {
+    getItem: () => {
+      throw new Error("boom");
+    },
+    setItem: () => {},
+    removeItem: () => {},
+  };
+
+  // Construction/activation must not throw or produce an unhandled
+  // rejection even though the initial auto-hydration fails internally.
+  const store = withPlugins({ count: 0 })
+    .use("persist", persist({ key: "fail-test", storage: failingStorage }));
+
+  await assertRejects(
+    () => store.persist.hydrationComplete(),
+    Error,
+    "boom",
+  );
+  assertEquals(store.persist.hasHydrated(), false);
 });
