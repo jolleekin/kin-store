@@ -1,6 +1,5 @@
 import {
   getPluginDispatch,
-  type InferActions,
   type NestedMethods,
   type NestedReducers,
   type StorePlugin,
@@ -149,10 +148,7 @@ export function history<
     },
 
     methods: (store, { namespace }) => {
-      const dispatch = getPluginDispatch(store, namespace) as InferActions<
-        TState,
-        HistoryReducers<TState>
-      >;
+      const dispatch = getPluginDispatch(store, namespace);
 
       return {
         canRedo,

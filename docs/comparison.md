@@ -275,10 +275,7 @@ export function history<
     },
 
     methods: (store, { namespace }) => {
-      const dispatch = getPluginDispatch(store, namespace) as InferActions<
-        TState,
-        HistoryReducers<TState>
-      >;
+      const dispatch = getPluginDispatch(store, namespace);
 
       function restore(state: TState): void {
         isRestoring = true;
@@ -620,10 +617,7 @@ export function history<
     },
 
     methods: (store, { namespace }) => {
-      const dispatch = getPluginDispatch(store, namespace) as InferActions<
-        TState,
-        HistoryReducers<TState>
-      >;
+      const dispatch = getPluginDispatch(store, namespace);
 
       function restore(state: TState): void {
         isRestoring = true;

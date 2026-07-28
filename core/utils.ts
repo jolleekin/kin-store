@@ -1,6 +1,7 @@
 import type { Listener } from "./_types.ts";
 import type {
   InferActions,
+  MergeReducers,
   NestedMethods,
   NestedReducers,
   Reducers,
@@ -111,30 +112,28 @@ export function listenerWithSelector<TState, TSlice>(
  * @template TStoreReducers The reducers registered on the store.
  * @template TStoreMethods The methods registered on the store.
  * @template TNamespace The plugin's namespace, or `undefined` for top-level.
+ * @template TPluginReducers The plugin's own reducers type, inferred from
+ * `store`'s type; no need to specify it explicitly.
  *
  * @param store The store passed to the plugin callback.
  * @param namespace The namespace the plugin was registered under, or
  * `undefined` for top-level plugins. Pass the `namespace` from
  * {@linkcode import("./with-plugins.ts").PluginContext PluginContext} directly.
- *
- * @remarks
- * The return type is necessarily wide. Cast the result to
- * `InferActions<TState, TPluginReducers>` — where `TPluginReducers` is your
- * plugin's own reducers type — to get fully-typed action callers.
  */
 export function getPluginDispatch<
   TState,
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
   TNamespace extends string | undefined,
+  TPluginReducers extends Reducers<TState>,
 >(
-  store: StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
+  store: StoreWithPlugins<
+    TState,
+    MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
+    TStoreMethods
+  >,
   namespace: TNamespace,
-): TNamespace extends keyof TStoreReducers
-  ? TStoreReducers[TNamespace] extends Reducers<TState>
-    ? InferActions<TState, TStoreReducers[TNamespace]>
-  : InferActions<TState, TStoreReducers>
-  : InferActions<TState, TStoreReducers> {
+): InferActions<TState, TPluginReducers> {
   return namespace
     // deno-lint-ignore no-explicit-any
     ? (store.dispatch as any)[namespace]

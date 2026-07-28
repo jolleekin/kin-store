@@ -395,10 +395,7 @@ export function persist<
     },
 
     methods: (store, { namespace }) => {
-      const dispatch = getPluginDispatch(store, namespace) as InferActions<
-        TState,
-        PersistReducers<TState>
-      >;
+      const dispatch = getPluginDispatch(store, namespace);
 
       return {
         clear: () => getStorage().removeItem(key),
@@ -417,10 +414,7 @@ export function persist<
     },
 
     async onActivated(store, { namespace }) {
-      const dispatch = getPluginDispatch(store, namespace) as InferActions<
-        TState,
-        PersistReducers<TState>
-      >;
+      const dispatch = getPluginDispatch(store, namespace);
 
       if (!skipHydration) {
         try {
