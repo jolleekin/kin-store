@@ -16,10 +16,18 @@ TODO list
        the equality/memoization contract explicitly (today it's implied by
        useSelectorWithEquality's existence, not stated as a rule).
 
-4. [ ] **GitHub**: Add LICENSE (deno.json says MIT, GitHub shows none),
+4. [x] **GitHub**: Add LICENSE (deno.json says MIT, GitHub shows none),
        CONTRIBUTING.md, SECURITY.md, Code of Conduct, issue/PR templates, a
        support policy, a public roadmap, enable Discussions, and add
        dependency-update automation (Dependabot/Renovate).
+       (Added LICENSE, CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md,
+       SUPPORT.md, ROADMAP.md, `.github/ISSUE_TEMPLATE/*`,
+       `.github/PULL_REQUEST_TEMPLATE.md`. Dependabot covers github-actions +
+       the one npm example package; Renovate (`renovate.json`) covers the
+       `deno.json` import maps across core/plugins/react/docs, which
+       Dependabot has no ecosystem for; Renovate still needs its GitHub App
+       installed on the repo before it's active. Discussions and private
+       vulnerability reporting are enabled on the repo.)
 
 5. [ ] **Testing**: CI on every PR/push, not just release tags: deno lint, deno
        test -A, docs build, Next.js production build, and browser-level

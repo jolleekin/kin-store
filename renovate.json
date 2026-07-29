@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "UTC",
+  "schedule": ["before 6am on monday"],
+  "deno": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["deno"],
+      "groupName": "deno imports"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    }
+  ]
+}
