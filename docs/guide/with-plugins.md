@@ -126,13 +126,23 @@ todoStore.history.undo();
 
 ## Two tiers of mutation
 
-| Tier         | How                                    | When to use                                                        |
-| ------------ | -------------------------------------- | ------------------------------------------------------------------ |
-| `dispatch.*` | Routes through the middleware pipeline | State changes you want to log, trace, or cancel                    |
-| `set`        | Bypasses the pipeline                  | Hard resets, plugin internals, or when you don't need the pipeline |
+| Tier         | How                                    | Good fit for                                                |
+| ------------ | -------------------------------------- | ------------------------------------------------------------ |
+| `dispatch.*` | Routes through the middleware pipeline | Changes you want every plugin to see: logging, undo, guards |
+| `set`        | Writes state directly, no pipeline     | Simple stores, or changes that don't need the pipeline       |
 
-Methods can use both: `dispatch.*` for traceable changes, `set` when they need
-to escape the pipeline.
+Neither tier is a fallback for the other — pick per store, or per method.
+`methods: (store) => ({...})` with `set` calls only is a complete,
+Zustand-style store; `reducers` dispatched via `dispatch.*` is a complete,
+Redux-style store. A method can also mix both in the same call when part of a
+change should be traceable and part shouldn't.
+
+If your team standardizes on one style — e.g. "every mutation goes through
+`dispatch.*`" — hold that convention at your store module's boundary (export
+`dispatch` and your methods, not `set`) rather than expecting the library to
+block direct `set` calls; see
+[Two tiers of mutation](./design-principles.md#two-tiers-of-mutation) in
+Design Principles for the full reasoning.
 
 ## Canceling a dispatch
 

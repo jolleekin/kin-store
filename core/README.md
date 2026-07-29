@@ -45,11 +45,16 @@ load-bearing, not decorative.
 
 ### **Two tiers of mutation**
 
-Reducers are pure functions. `dispatch.*` routes them through the middleware
-pipeline — every state change is traceable and cancellable. This is the pipeline
-tier. `set` bypasses the pipeline by design — use it when traceability is not a
-goal. Plugin methods sit above both: call `dispatch.*` to stay traceable, call
-`set` for a direct state write, or mix both.
+`dispatch.*` and `set` are both first-class ways to change state, not a
+primary path and a fallback. `dispatch.*` calls a named reducer through the
+middleware pipeline — traceable, loggable, cancellable. `set` writes state
+directly, no pipeline involved. A `methods`-and-`set` store is a complete
+Zustand-style store; a `reducers`-and-`dispatch.*` store is a complete
+Redux-style store; a method can mix both when part of a change should be
+traceable and part shouldn't. Teams that want `dispatch.*` to be the only door
+in their own codebase should enforce that at their store module's boundary
+(export `dispatch` and methods, not `set`) rather than expect a built-in
+strict mode.
 
 ---
 

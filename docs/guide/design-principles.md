@@ -35,12 +35,27 @@ at the call site.
 
 ## Two tiers of mutation
 
-Reducers are pure functions that describe a named state transition. `dispatch.*`
-routes them through the middleware pipeline — every call is traceable and
-cancellable. This is the pipeline tier.
+`dispatch.*` and `set` are both first-class ways to change state — neither is
+a fallback for the other. `dispatch.*` calls a named reducer through the
+middleware pipeline, so the change is traceable, loggable, and cancellable.
+`set` writes state directly, with no pipeline in between. Which one a team
+reaches for is an architectural choice, not a hierarchy, and Kin Store is
+deliberately built so any point on that spectrum is a first-class way to use
+the library:
 
-`set` bypasses the pipeline by design — use it when you need a hard reset that
-must survive a guard middleware, or when traceability is not a goal.
+- **Primitive composition** — `createStore` + `derive` + plain functions, no
+  `withPlugins` at all (Jotai-style).
+- **Methods only** — `withPlugins` + `methods` that call `set` directly, no
+  reducers or middleware (Zustand-style).
+- **Reducers + middleware** — `withPlugins` + `reducers` dispatched through
+  `dispatch.*`, with middleware doing the logging/undo/guard work (Redux-style).
+- **Fat store** — `createStore` plus colocated top-level logic functions that
+  call `set`, no plugin system involved.
 
-Plugin methods sit above both: call `dispatch.*` to stay traceable, call `set`
-for a direct state write, or mix both.
+Within a `withPlugins` store, a method can also mix both in the same call:
+`dispatch.*` for the parts of a change that should be traceable, `set` for a
+direct write, matching what that specific change needs rather than a
+store-wide rule. If your team standardizes on one style — e.g. "every mutation
+goes through `dispatch.*`" — that's a convention to hold at the module
+boundary (export `dispatch` and your methods, not `set`, from your store
+module), not something Kin Store enforces for you.
