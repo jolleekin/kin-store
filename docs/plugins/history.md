@@ -7,8 +7,8 @@ snapshot.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { history } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0 })
   .use({

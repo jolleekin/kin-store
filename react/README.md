@@ -22,7 +22,7 @@ Subscribes a component to a store's whole state and re-renders on every state
 change. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
-import { useStore } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react";
 
 function Counter(): JSX.Element {
   const state = useStore(counterStore);
@@ -41,7 +41,7 @@ selector returns a new object or array reference on every call (e.g.
 `.filter()`, `.map()`, object literals).
 
 ```tsx
-import { useSelector } from "@kin-store/react/index.ts";
+import { useSelector } from "@kin-store/react";
 
 // Only re-renders when `name` changes, not on every state update.
 function UserName(): JSX.Element {
@@ -87,8 +87,8 @@ import {
   StoreProvider,
   useSelector,
   useStoreContext,
-} from "@kin-store/react/index.ts";
-import { withPlugins } from "@kin-store/core/index.ts";
+} from "@kin-store/react";
+import { withPlugins } from "@kin-store/core";
 
 const store = withPlugins({ count: 0 }).use({
   reducers: {

@@ -7,8 +7,8 @@ accepted — including async ones.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { persist } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0 })
   .use({

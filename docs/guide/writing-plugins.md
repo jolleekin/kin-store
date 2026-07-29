@@ -38,8 +38,8 @@ variables, not `TState`.
 A plugin can include middleware that runs on every dispatch:
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import type { StorePlugin } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
+import type { StorePlugin } from "@kin-store/core";
 
 type State = { count: number };
 
@@ -86,7 +86,7 @@ Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
 regardless of whether the plugin is namespaced:
 
 ```ts
-import { getPluginDispatch } from "@kin-store/core/index.ts";
+import { getPluginDispatch } from "@kin-store/core";
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);
@@ -107,7 +107,7 @@ import type {
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type LoggerOptions = { prefix?: string };
 type LoggerMethods = { getLogs(): string[] };

@@ -20,8 +20,8 @@ back to the store. No namespace is needed because the plugin adds no public
 methods or reducers.
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { devtools } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { devtools } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0 })
   .use({
@@ -80,8 +80,8 @@ whether dispatched through reducers or made via `set` — is recorded as a
 snapshot. Pass `{ limit }` to cap memory use in apps with frequent changes.
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { history } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0 })
   .use({
@@ -141,8 +141,8 @@ Lets you write reducers (and `set` calls) as
 new state objects.
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { immer } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { immer } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0, items: [] as string[] }).use(
   immer({
@@ -186,8 +186,8 @@ is accepted — including async ones.
 ### Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { persist } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0 })
   .use({

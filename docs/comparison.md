@@ -84,7 +84,7 @@ store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 ```
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -232,13 +232,13 @@ store.history.undo(); // ✓ — snapshots are TState[], but required manual inf
 ```
 
 ```ts [Kin Store plugin]
-import { getPluginDispatch } from "@kin-store/core/index.ts";
+import { getPluginDispatch } from "@kin-store/core";
 import type {
   InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type HistoryReducers<TState> = {
   _restore: (state: TState, saved: TState) => TState;
@@ -406,9 +406,9 @@ function TodoApp() {
 ```
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history, immer, persist } from "@kin-store/plugins/index.ts";
-import { useSelector } from "@kin-store/react/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { history, immer, persist } from "@kin-store/plugins";
+import { useSelector } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -573,13 +573,13 @@ export const history = historyImpl as unknown as History;
 ```
 
 ```ts [Kin Store plugin]
-import { getPluginDispatch } from "@kin-store/core/index.ts";
+import { getPluginDispatch } from "@kin-store/core";
 import type {
   InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type HistoryReducers<TState> = {
   _restore: (state: TState, saved: TState) => TState;
@@ -732,8 +732,8 @@ function TodoApp() {
 ```
 
 ```ts [Kin Store]
-import { createStore } from "@kin-store/core/index.ts";
-import { useStore } from "@kin-store/react/index.ts";
+import { createStore } from "@kin-store/core";
+import { useStore } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 
@@ -851,8 +851,8 @@ const TodoApp = observer(() => {
 ```
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core/index.ts";
-import { useSelector } from "@kin-store/react/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { useSelector } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };

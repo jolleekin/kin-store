@@ -1,7 +1,7 @@
 "use client";
 
 import { SubmitEvent, useCallback, useRef } from "react";
-import { useStoreContext } from "@kin-store/react/index.ts";
+import { useStoreContext } from "@kin-store/react";
 import type { TodoStore } from "@/lib/store.ts";
 
 export function TodoInput() {

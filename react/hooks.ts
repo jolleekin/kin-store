@@ -1,6 +1,6 @@
 import { useRef, useSyncExternalStore } from "react";
 
-import type { ReadonlyStore } from "@kin-store/core/index.ts";
+import type { ReadonlyStore } from "@kin-store/core";
 import { shallowEqual } from "./shallow-equal.ts";
 
 /**

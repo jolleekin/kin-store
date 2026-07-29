@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { StoreProvider } from "@kin-store/react/index.ts";
+import { StoreProvider } from "@kin-store/react";
 import { createTodoStore, type TodoStore } from "@/lib/store.ts";
 
 export function Providers({ children }: { children: React.ReactNode }) {

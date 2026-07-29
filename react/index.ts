@@ -14,7 +14,7 @@
  *
  * @module
  */
-export * from "@kin-store/core/index.ts";
+export * from "@kin-store/core";
 
 export * from "./context.tsx";
 export * from "./hooks.ts";

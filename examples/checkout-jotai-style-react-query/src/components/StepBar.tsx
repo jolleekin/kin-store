@@ -1,4 +1,4 @@
-import { useStore } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react";
 import { stepStore, type Step } from "../stores.ts";
 
 const STEPS: { label: string; value: Step }[] = [

@@ -6,8 +6,8 @@ draft mutations instead of returning new state objects.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { immer } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { immer } from "@kin-store/plugins";
 
 const store = withPlugins({ count: 0, items: [] as string[] })
   .use(immer({

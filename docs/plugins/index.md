@@ -39,8 +39,8 @@ namespaced. Namespaced plugins (like `persist` and `history` below) expose their
 methods under their namespace key:
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history, immer, persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { history, immer, persist } from "@kin-store/plugins";
 
 const store = withPlugins({ todos: [] as string[], count: 0 })
   .use("persist", persist({ key: "my-store" }))

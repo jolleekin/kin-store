@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useSelector } from "@kin-store/react";
 import { useCallback } from "react";
 
 import { checkoutStore } from "../store.ts";

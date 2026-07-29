@@ -4,7 +4,7 @@ Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced
 plugins.
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
 ```
 
 `withPlugins` upgrades a store (or creates one) with a plugin system. Each
@@ -55,7 +55,7 @@ Plugins can be **namespaced** (`.use(namespace, plugin)`) or **top-level**
 surprises:
 
 ```ts
-import { history, persist } from "@kin-store/plugins/index.ts";
+import { history, persist } from "@kin-store/plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use("persist", persist({ key: "todos" }))
@@ -81,8 +81,8 @@ through `store.dispatch.*` — they travel through the full middleware pipeline,
 making every state change observable and traceable.
 
 ```ts
-import { CANCELED, withPlugins } from "@kin-store/core/index.ts";
-import { history, persist } from "@kin-store/plugins/index.ts";
+import { CANCELED, withPlugins } from "@kin-store/core";
+import { history, persist } from "@kin-store/plugins";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -149,7 +149,7 @@ Design Principles for the full reasoning.
 Return `CANCELED` from a middleware to abort a dispatch without updating state:
 
 ```ts
-import { CANCELED } from '@kin-store/core/index.ts';
+import { CANCELED } from '@kin-store/core';
 
 middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;

@@ -16,6 +16,7 @@
     "react-dom": "npm:react-dom@^19.2.7"
   },
   "exports": {
+    ".": "./index.ts",
     "./index.ts": "./index.ts"
   }
 }

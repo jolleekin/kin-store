@@ -1,4 +1,4 @@
-import { createStore, derive } from "@kin-store/core/index.ts";
+import { createStore, derive } from "@kin-store/core";
 
 // Client-owned state only: what's in the cart, what step of checkout the user
 // is on, and the draft promo code / zip. Product data, stock, pricing, and

@@ -74,7 +74,7 @@ The three publish jobs are independent in CI (no `needs` between them), but when
 
 ### Plugins package conventions
 
-Official plugins (`plugins/*.ts`) are built entirely on the public `@kin-store/core` API (imported as `@kin-store/core/index.ts`) — they don't reach into core internals. Each plugin exports its options type, a factory function (e.g. `persist(options)`) returning a `StorePlugin`, and typically uses `getPluginDispatch(store, namespace)` to locate its own dispatch actions when namespaced. `immer.ts` is the only plugin with an npm dependency (`immer`, declared in `plugins/deno.json` imports).
+Official plugins (`plugins/*.ts`) are built entirely on the public `@kin-store/core` API — they don't reach into core internals. Each plugin exports its options type, a factory function (e.g. `persist(options)`) returning a `StorePlugin`, and typically uses `getPluginDispatch(store, namespace)` to locate its own dispatch actions when namespaced. `immer.ts` is the only plugin with an npm dependency (`immer`, declared in `plugins/deno.json` imports).
 
 ### React bindings
 
@@ -84,7 +84,7 @@ Thin wrappers around `useSyncExternalStore` (`react/hooks.ts`) — no separate r
 
 - Tests are co-located as `<name>.test.ts` next to the source file (Deno convention), not in a separate `__tests__` or `test/` directory.
 - Internal/non-exported helpers live in `_internals.ts` / `_types.ts` (underscore prefix signals "not part of the public API").
-- Public API surface is exported only via each package's `index.ts`; import other packages' public APIs through their `index.ts` (e.g. `@kin-store/core/index.ts`), not by reaching into internal files.
+- Public API surface is exported only via each package's `index.ts`, mapped to the bare `@kin-store/<pkg>` specifier by that package's `deno.json` `exports` map (a `./index.ts` deep path also still resolves, for back-compat). Import other packages' public APIs through that specifier (e.g. `@kin-store/core`), not by reaching into internal files.
 - JSDoc on exported symbols is extensive and treated as user-facing documentation (it feeds the JSR package page) — `@example`, `@template`, and `@linkcode` tags are used consistently. Match this style when adding/editing public API.
 - A JSDoc block's `@template`/other tags must be attached to the same comment block as the summary — a second, separate `/** ... */` block directly above the symbol is legal TS but `deno doc` doesn't associate it with the symbol, silently dropping those tags from the JSR page.
 - Plugin factories (`history`, `devtools`, `persist`, and similar functions that return a `StorePlugin`) should have summaries starting with an action verb describing what calling them produces (e.g. "Creates a plugin that ..."), not a noun phrase describing the plugin itself (e.g. "Plugin that ...") — the exported symbol is the factory, not the plugin instance.

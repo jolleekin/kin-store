@@ -1,6 +1,6 @@
 import { createContext, type JSX, type ReactNode, useContext } from "react";
 
-import type { ReadonlyStore } from "@kin-store/core/index.ts";
+import type { ReadonlyStore } from "@kin-store/core";
 
 const StoreContext = createContext<ReadonlyStore | null>(null);
 

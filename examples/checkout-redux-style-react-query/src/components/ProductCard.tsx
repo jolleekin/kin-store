@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useSelector } from "@kin-store/react";
 import { checkoutStore } from "../store.ts";
 import { useInventory } from "../queries/inventory.ts";
 import { money } from "../utils.ts";

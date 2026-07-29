@@ -1,5 +1,5 @@
-import { withPlugins } from "@kin-store/core/index.ts";
-import { devtools, persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { devtools, persist } from "@kin-store/plugins";
 
 // Client-owned state only: what's in the cart, what step of checkout the user
 // is on, and the draft promo code / zip. Product data, stock, pricing, and

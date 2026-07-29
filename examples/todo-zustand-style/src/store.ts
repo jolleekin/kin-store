@@ -1,5 +1,5 @@
-import { withPlugins } from "@kin-store/core/index.ts";
-import { devtools, immer, persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { devtools, immer, persist } from "@kin-store/plugins";
 
 export type Filter = "all" | "active" | "done";
 

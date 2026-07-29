@@ -1,6 +1,6 @@
 "use client";
 
-import { useSelector, useStoreContext } from "@kin-store/react/index.ts";
+import { useSelector, useStoreContext } from "@kin-store/react";
 import type { Filter, TodoStore } from "../../lib/store.ts";
 
 const FILTERS: { label: string; value: Filter }[] = [

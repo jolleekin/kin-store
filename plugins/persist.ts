@@ -6,7 +6,7 @@ import {
   type NestedReducers,
   type StorePlugin,
   type StoreWithPlugins,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type PromiseOr<T> = Promise<T> | T;
 

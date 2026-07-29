@@ -1,4 +1,4 @@
-import { useSelector, useStore } from "@kin-store/react/index.ts";
+import { useSelector, useStore } from "@kin-store/react";
 import * as React from "react";
 import { type Filter, type Todo, todoStore } from "./store.ts";
 

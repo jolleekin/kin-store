@@ -6,6 +6,7 @@
     "check-size": "deno run --allow-read --allow-write --allow-run --allow-net scripts/check-size.ts"
   },
   "exports": {
+    ".": "./index.ts",
     "./index.ts": "./index.ts"
   }
 }

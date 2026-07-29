@@ -1,6 +1,6 @@
 /**
  * `@kin-store/plugins` — official plugins for `@kin-store/core`'s
- * {@linkcode import("@kin-store/core/index.ts").withPlugins withPlugins}.
+ * {@linkcode import("@kin-store/core").withPlugins withPlugins}.
  *
  * - {@linkcode devtools} connects a store to the Redux DevTools Extension.
  * - {@linkcode history} adds undo/redo support.

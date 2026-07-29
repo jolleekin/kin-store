@@ -70,7 +70,7 @@ A store holds a value and notifies listeners when it changes. Logic lives in
 plain top-level functions.
 
 ```ts
-import { createStore } from "@kin-store/core/index.ts";
+import { createStore } from "@kin-store/core";
 
 type TodoState = { todos: string[]; status: "idle" | "loading" };
 
@@ -103,7 +103,7 @@ When the store grows, move logic inside it using `withPlugins` + `methods`. Each
 `.use()` call adds a plugin — not a new nesting level:
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState).use({
   methods: (store) => ({
@@ -128,7 +128,7 @@ Plugins extend the store with zero nesting. Each `.use()` adds one feature —
 never wraps the previous one:
 
 ```ts
-import { history, immer, persist } from "@kin-store/plugins/index.ts";
+import { history, immer, persist } from "@kin-store/plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use(immer({
@@ -187,8 +187,8 @@ calling `dispatch.*`, handling async logic, or sequencing multiple reducers. App
 logic goes last — it can depend on any plugin registered before it.
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { history, persist } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { history, persist } from "@kin-store/plugins";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -233,7 +233,7 @@ todoStore.history.undo();
 Return `CANCELED` from a middleware to abort a dispatch without updating state:
 
 ```ts
-import { CANCELED } from "@kin-store/core/index.ts";
+import { CANCELED } from "@kin-store/core";
 
 middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;
@@ -278,7 +278,7 @@ The derived store stays cold (no subscriptions, no caching) until something
 subscribes to it.
 
 ```ts
-import { createStore, derive } from "@kin-store/core/index.ts";
+import { createStore, derive } from "@kin-store/core";
 
 const userStore = createStore({ name: "Ada", role: "admin" });
 const cartStore = createStore({ items: [] as string[], total: 0 });
@@ -327,7 +327,7 @@ Wraps a listener so it only fires when a selected slice of the state changes.
 Useful for subscribing to a store outside of React.
 
 ```ts
-import { listenerWithSelector } from "@kin-store/core/index.ts";
+import { listenerWithSelector } from "@kin-store/core";
 
 const store = createStore({ count: 0, name: "Alice" });
 
@@ -384,8 +384,8 @@ variables, not `TState`.
 A plugin can include middleware that runs on every dispatch:
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import type { StorePlugin } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
+import type { StorePlugin } from "@kin-store/core";
 
 type State = { count: number };
 
@@ -423,7 +423,7 @@ Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
 regardless of whether the plugin is namespaced:
 
 ```ts
-import { getPluginDispatch } from "@kin-store/core/index.ts";
+import { getPluginDispatch } from "@kin-store/core";
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);
@@ -444,7 +444,7 @@ import type {
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type LoggerOptions = {
   prefix?: string;

@@ -57,10 +57,10 @@ TODO list
         typed plugin composition) and push the competitor call-outs to a
         secondary "trade-offs" reference.
 
-12. [ ] **Distribution**: Make npm installation first-class alongside JSR;
-        reduce .ts//index.ts import-path friction (@kin-store/core/index.ts) for
-        React developers who've never seen a Deno-style import — confirmed this
-        convention runs through every doc example and app import today.
+12. [ ] **Distribution**: Make npm installation first-class alongside JSR.
+        (Import-path friction is addressed: each package's `deno.json` now
+        exports a bare `.` specifier, e.g. `@kin-store/core`, alongside
+        `./index.ts`, and every doc/example import uses the bare form.)
 
 13. [ ] **Ecosystem**: First-party integrations: reset/audit/logger middleware,
         cross-tab persistence, testing utilities, and a real TanStack Query +

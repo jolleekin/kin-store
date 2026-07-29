@@ -1,4 +1,4 @@
-import { useStore } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react";
 import { lastOrderIdStore, startNewOrder } from "../stores.ts";
 
 export function Confirmation() {

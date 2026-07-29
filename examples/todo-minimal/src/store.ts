@@ -1,4 +1,4 @@
-import { createStore } from "@kin-store/core/index.ts";
+import { createStore } from "@kin-store/core";
 
 export type Filter = "all" | "active" | "done";
 

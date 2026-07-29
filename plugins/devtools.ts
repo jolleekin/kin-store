@@ -3,7 +3,7 @@ import {
   type NestedMethods,
   type NestedReducers,
   type StorePlugin,
-} from "@kin-store/core/index.ts";
+} from "@kin-store/core";
 
 type DispatchMessage = {
   type: "DISPATCH";

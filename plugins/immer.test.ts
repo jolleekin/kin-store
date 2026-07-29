@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { withPlugins } from "@kin-store/core/index.ts";
+import { withPlugins } from "@kin-store/core";
 import { immer } from "./immer.ts";
 
 Deno.test("immer - reducer mutates draft to produce new state", () => {

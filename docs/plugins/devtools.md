@@ -10,8 +10,8 @@ Install the browser extension, then register the plugin. No namespace is
 required because the plugin adds no public methods or reducers:
 
 ```ts
-import { withPlugins } from "@kin-store/core/index.ts";
-import { devtools } from "@kin-store/plugins/index.ts";
+import { withPlugins } from "@kin-store/core";
+import { devtools } from "@kin-store/plugins";
 
 const store = withPlugins(0)
   .use({
