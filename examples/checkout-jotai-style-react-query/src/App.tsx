@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { stepStore } from "./stores.ts";
 import { StepBar } from "./components/StepBar.tsx";
 import { ProductCatalog } from "./components/ProductCatalog.tsx";
@@ -8,7 +8,7 @@ import { Confirmation } from "./components/Confirmation.tsx";
 import { OrderHistory } from "./components/OrderHistory.tsx";
 
 export function App() {
-  const step = useSelector(stepStore);
+  const step = useStore(stepStore);
 
   return (
     <div className="max-w-5xl mx-auto my-12 px-4">

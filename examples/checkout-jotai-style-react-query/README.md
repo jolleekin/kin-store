@@ -17,7 +17,7 @@ putting everything in one store.
 
 The seam between the two: [`useCartPricing`](src/queries/pricing.ts) is a
 *dependent* query — it reads its inputs (cart items, promo code, zip) with
-`useSelector` from the Kin Store, and uses them as its query key. Editing the
+`useStore` from the Kin Store, and uses them as its query key. Editing the
 cart in the store automatically triggers a re-fetch of the
 server-authoritative price. [`useSubmitOrder`](src/mutations/submit-order.ts)
 does the reverse: on success it resets the Kin Store (client state moves to

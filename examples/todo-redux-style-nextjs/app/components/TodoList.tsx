@@ -1,6 +1,6 @@
 "use client";
 
-import { useSelector, useStoreContext } from "@kin-store/react/index.ts";
+import { useStore, useStoreContext } from "@kin-store/react/index.ts";
 import type { Todo, TodoStore } from "@/lib/store.ts";
 
 function TodoItem({ item }: { item: Todo }) {
@@ -39,7 +39,7 @@ function TodoItem({ item }: { item: Todo }) {
 
 export function TodoList() {
   const store = useStoreContext<TodoStore>();
-  const { items, filter } = useSelector(store);
+  const { items, filter } = useStore(store);
 
   const visible = items.filter(
     (it) => filter === "all" || (filter === "active" ? !it.done : it.done),

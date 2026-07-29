@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { stepStore, type Step } from "../stores.ts";
 
 const STEPS: { label: string; value: Step }[] = [
@@ -8,7 +8,7 @@ const STEPS: { label: string; value: Step }[] = [
 ];
 
 export function StepBar() {
-  const step = useSelector(stepStore);
+  const step = useStore(stepStore);
 
   return (
     <div className="flex items-center gap-2 text-sm">

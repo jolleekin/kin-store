@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { useCallback } from "react";
 
 import { useProductCatalog } from "../queries/products.ts";
@@ -12,8 +12,8 @@ import {
 } from "../stores.ts";
 
 export function CartPanel() {
-  const items = useSelector(itemsStore);
-  const promoCode = useSelector(promoCodeStore);
+  const items = useStore(itemsStore);
+  const promoCode = useStore(promoCodeStore);
   const { data: products } = useProductCatalog();
 
   const handlePromoCodeBlur = useCallback(

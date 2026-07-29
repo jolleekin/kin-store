@@ -50,16 +50,15 @@ export function StoreProvider({
  * indicate that this hook only triggers re-render when the store itself changes
  * rather than its state.
  *
- * To subscribe to the store's state changes, use {@linkcode useSelector} or
- * {@linkcode useSelectorWithEquality}.
+ * To subscribe to the store's state changes, use {@linkcode useStore} or
+ * {@linkcode useSelector}.
  *
  * @throws If called outside a `<StoreProvider>` tree.
  *
  * @example
  * ```tsx
  * function MyComponent(): JSX.Element {
- *   // TStore narrows the store type returned by useStoreContext.
- *   const store = useStoreContext<typeof myStore>();
+ *   const store = useStoreContext<MyStore>();
  *   const value = useSelector(store, (s) => s.someField);
  *   return <div>{value}</div>;
  * }

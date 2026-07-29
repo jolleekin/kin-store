@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useSelector, useStore } from "@kin-store/react/index.ts";
 import * as React from "react";
 import {
   addTodo,
@@ -115,7 +115,7 @@ function TodoItem({ item }: { item: Todo }) {
 }
 
 function TodoList() {
-  const { items, filter } = useSelector(todoStore);
+  const { items, filter } = useStore(todoStore);
   const visible = items.filter(
     (it) => filter === "all" || (filter === "active" ? !it.done : it.done),
   );

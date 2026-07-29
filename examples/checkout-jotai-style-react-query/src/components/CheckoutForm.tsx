@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { useCallback } from "react";
 
 import { itemsStore, stepStore, zipStore } from "../stores.ts";
@@ -7,7 +7,7 @@ import { useSubmitOrder } from "../mutations/submit-order.ts";
 import { PricingBreakdown } from "./PricingBreakdown.tsx";
 
 export function CheckoutForm() {
-  const zip = useSelector(zipStore);
+  const zip = useStore(zipStore);
   const pricing = useCartPricing();
   const submitOrder = useSubmitOrder();
 

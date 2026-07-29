@@ -2,8 +2,10 @@
  * `@kin-store/react` — React bindings for `@kin-store/core`, built on
  * `useSyncExternalStore`.
  *
- * - {@linkcode useSelector} and {@linkcode useSelectorWithEquality} subscribe
- *   a component to a store (or a slice of it).
+ * - {@linkcode useStore} and {@linkcode useSelector} subscribe a component to
+ *   a store (or a slice of it); `useSelector` adds an equality check.
+ * - {@linkcode shallowEqual} is the default equality function for
+ *   {@linkcode useSelector}, also usable standalone.
  * - {@linkcode StoreProvider} and {@linkcode useStoreContext} inject a store
  *   via React context instead of a module-level singleton.
  *
@@ -16,3 +18,4 @@ export * from "@kin-store/core/index.ts";
 
 export * from "./context.tsx";
 export * from "./hooks.ts";
+export * from "./shallow-equal.ts";

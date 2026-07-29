@@ -86,13 +86,13 @@ view.destroy();
 
 ## With React
 
-`derive` works directly with `useSelector`:
+`derive` works directly with `useStore`:
 
 ```tsx
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 
 function Summary() {
-  const { greeting, itemCount } = useSelector(summary);
+  const { greeting, itemCount } = useStore(summary);
   return <div>{greeting} — {itemCount} items</div>;
 }
 ```

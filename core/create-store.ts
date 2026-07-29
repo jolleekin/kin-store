@@ -23,7 +23,7 @@ export type Updater<TState> = (prev: TState) => TState;
  * no `set`.
  *
  * APIs that only need to read a store — such as {@linkcode derive}'s
- * `get` helper or React's `useSelector` — should accept `ReadonlyStore` so both
+ * `get` helper or React's `useStore` — should accept `ReadonlyStore` so both
  * plain and derived stores can be passed in.
  *
  * @template TState The type of the state held by this store.

@@ -8,7 +8,7 @@ Kin Store — a framework-agnostic, zero-dependency TypeScript reactive state li
 
 - `@kin-store/core` (`core/`) — `createStore`, `withPlugins`, `derive`: the primitives everything else is built on.
 - `@kin-store/plugins` (`plugins/`) — official plugins: `persist`, `history`, `immer`, `devtools`.
-- `@kin-store/react` (`react/`) — `useSelector`, `useSelectorWithEquality`, `StoreProvider`/`useStoreContext`.
+- `@kin-store/react` (`react/`) — `useStore`, `useSelector`, `StoreProvider`/`useStoreContext`.
 - `docs/` — VitePress site (kinstore.dev): guides, plugin docs, comparison page.
 - `examples/` — standalone Vite apps demonstrating usage (`simple`, `better-redux`, `nextjs-todo`) plus `code-snippets.local/` (untracked scratch snippets used while writing docs, not part of any workspace build).
 
@@ -78,7 +78,7 @@ Official plugins (`plugins/*.ts`) are built entirely on the public `@kin-store/c
 
 ### React bindings
 
-Thin wrappers around `useSyncExternalStore` (`react/hooks.ts`) — no separate reactivity system. `useSelector` re-subscribes via `store.subscribe`/`store.get`; `useSelectorWithEquality` adds a custom equality check to avoid re-renders when a selector returns new references. `StoreProvider`/`useStoreContext` (`react/context.tsx`) are a plain React context for DI, deliberately not named `useStore` to signal it doesn't itself subscribe to state.
+Thin wrappers around `useSyncExternalStore` (`react/hooks.ts`) — no separate reactivity system. `useStore` re-subscribes via `store.subscribe`/`store.get`; `useSelector` adds a custom equality check (defaulting to `shallowEqual`) to avoid re-renders when a selector returns new references. `StoreProvider`/`useStoreContext` (`react/context.tsx`) are a plain React context for DI, named `useStoreContext` rather than `useStore` to make clear it doesn't itself subscribe to state the way `useStore` does.
 
 ## Code conventions
 
@@ -88,5 +88,5 @@ Thin wrappers around `useSyncExternalStore` (`react/hooks.ts`) — no separate r
 - JSDoc on exported symbols is extensive and treated as user-facing documentation (it feeds the JSR package page) — `@example`, `@template`, and `@linkcode` tags are used consistently. Match this style when adding/editing public API.
 - A JSDoc block's `@template`/other tags must be attached to the same comment block as the summary — a second, separate `/** ... */` block directly above the symbol is legal TS but `deno doc` doesn't associate it with the symbol, silently dropping those tags from the JSR page.
 - Plugin factories (`history`, `devtools`, `persist`, and similar functions that return a `StorePlugin`) should have summaries starting with an action verb describing what calling them produces (e.g. "Creates a plugin that ..."), not a noun phrase describing the plugin itself (e.g. "Plugin that ...") — the exported symbol is the factory, not the plugin instance.
-- Overloaded exported functions (e.g. `useSelector`) get a full, independent JSDoc block per overload (summary, `@template`/`@param`/`@example` as applicable) — don't have one overload's doc point back to another's with "see above", since JSR/IDE hover for that overload would otherwise show only the pointer.
+- Overloaded exported functions get a full, independent JSDoc block per overload (summary, `@template`/`@param`/`@example` as applicable) — don't have one overload's doc point back to another's with "see above", since JSR/IDE hover for that overload would otherwise show only the pointer.
 - In TS/TSX documentation code blocks (in JSDoc and in `docs/`), use semicolons on statements and periods on sentence-style comments; shell code blocks are exempt from this.

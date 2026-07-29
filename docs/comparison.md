@@ -733,7 +733,7 @@ function TodoApp() {
 
 ```ts [Kin Store]
 import { createStore } from "@kin-store/core/index.ts";
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 
 type Todo = { id: number; text: string; done: boolean };
 
@@ -761,10 +761,10 @@ async function fetchTodos(): Promise<void> {
 await fetchTodos();
 addTodo("Buy groceries");
 
-// React subscription is opt-in via useSelector.
+// React subscription is opt-in via useStore.
 function TodoApp() {
-  const todos = useSelector(todosStore, (s) => s);
-  const status = useSelector(statusStore, (s) => s);
+  const todos = useStore(todosStore);
+  const status = useStore(statusStore);
   // ...
 }
 ```

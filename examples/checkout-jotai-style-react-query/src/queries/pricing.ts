@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { itemsStore, promoCodeStore, zipStore } from "../stores.ts";
 import { calculatePricing } from "../api.ts";
 
@@ -7,9 +7,9 @@ import { calculatePricing } from "../api.ts";
 // straight from Kin Store, and its query key changes whenever they do. The
 // server, not the client, owns tax/shipping/discount math.
 export function useCartPricing() {
-  const items = useSelector(itemsStore);
-  const promoCode = useSelector(promoCodeStore);
-  const zip = useSelector(zipStore);
+  const items = useStore(itemsStore);
+  const promoCode = useStore(promoCodeStore);
+  const zip = useStore(zipStore);
 
   return useQuery({
     queryKey: ["pricing", items, promoCode, zip],

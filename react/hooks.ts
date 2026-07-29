@@ -1,44 +1,54 @@
 import { useRef, useSyncExternalStore } from "react";
 
 import type { ReadonlyStore } from "@kin-store/core/index.ts";
+import { shallowEqual } from "./shallow-equal.ts";
 
 /**
- * Selects the whole state and triggers re-renders on every state change.
+ * Reads the whole state and triggers re-renders on every state change.
  *
  * Internally uses React's `useSyncExternalStore`, so it is safe to use in
  * concurrent mode.
+ *
+ * To read only a slice of the state, use {@linkcode useSelector} instead.
  *
  * @template TState The store's state type.
  *
- * @param store The store to select from.
+ * @param store The store to read from.
  *
- * @example Selecting the whole state
+ * @example Reading the whole state
  * ```tsx
+ * const counter = createStore(0);
+ *
  * function Counter(): JSX.Element {
- *   const state = useSelector(counterStore);
- *   return <div>{state.count}</div>;
+ *   const count = useStore(counter);
+ *   return <div>{count}</div>;
  * }
  * ```
  */
-export function useSelector<TState>(store: ReadonlyStore<TState>): TState;
+export function useStore<TState>(store: ReadonlyStore<TState>): TState {
+  return useSyncExternalStore<TState>(store.subscribe, store.get, store.get);
+}
 
 /**
- * Selects a slice of the state and triggers re-renders only when that slice
- * changes.
+ * Selects a slice of the state and triggers re-renders when it changes.
  *
- * Internally uses React's `useSyncExternalStore`, so it is safe to use in
- * concurrent mode.
+ * This hook accepts a custom equality function to determine if the slice has
+ * changed. This can be useful to avoid unnecessary re-renders when the
+ * selector returns a new object reference on every call (e.g. `.filter()`,
+ * `.map()`, or object literals). Defaults to {@linkcode shallowEqual}, which
+ * compares the slice one level deep.
  *
  * @template TState The store's state type.
  * @template TSlice The type of the selected slice.
  *
  * @param store The store to select from.
  * @param selector The selector function to extract the slice of state.
- *
- * @remarks
- * If {@linkcode selector} returns a new object every time, it will trigger
- * re-renders on every state change. Consider using
- * {@linkcode useSelectorWithEquality} instead.
+ * @param equalFn The equality function to compare the previous and next
+ * slices. Return `true` if they are considered equal (i.e. no re-render is
+ * needed). Only called once a previous slice exists, so `prev` is never
+ * `undefined`; the first computed slice is used as-is. Defaults to
+ * {@linkcode shallowEqual}.
+ * @returns The selected slice of state.
  *
  * @example Selecting a slice to avoid unnecessary re-renders
  * ```tsx
@@ -48,81 +58,50 @@ export function useSelector<TState>(store: ReadonlyStore<TState>): TState;
  *   return <span>{name}</span>;
  * }
  * ```
- */
-export function useSelector<TState, TSlice = TState>(
-  store: ReadonlyStore<TState>,
-  selector: (state: TState) => TSlice,
-): TSlice;
-
-export function useSelector<TState, TSlice = TState>(
-  store: ReadonlyStore<TState>,
-  selector?: (state: TState) => TSlice,
-): TState | TSlice {
-  const getSnapshot = selector ? () => selector(store.get()) : store.get;
-
-  return useSyncExternalStore<TState | TSlice>(
-    store.subscribe,
-    getSnapshot,
-    getSnapshot,
-  );
-}
-
-/**
- * Selects a slice of the state and triggers re-renders when it changes.
  *
- * This hook accepts a custom equality function to determine if the slice has
- * changed. This can be useful to avoid unnecessary re-renders when the
- * selector returns a new object reference on every call (e.g. `.filter()`,
- * `.map()`, or object literals).
- *
- * @template TState The store's state type.
- * @template TSlice The type of the selected slice.
- *
- * @param store The store to select from.
- * @param selector The selector function to extract the slice of state.
- * @param equalFn The equality function to compare previous and next slices.
- * Return `true` if they are considered equal (i.e. no re-render is needed).
- * @returns The selected slice of state.
- *
- * @example Avoiding re-renders for derived arrays
+ * @example Avoiding re-renders for derived arrays with the default shallow equality
  * ```tsx
- * import { shallowEqual } from "some-utils";
- *
  * function ActiveTodos(): JSX.Element {
- *   // selector returns a new array each time, but shallowEqual
+ *   // selector returns a new array each time; the default shallowEqual
  *   // prevents a re-render when the contents haven't changed.
- *   const active = useSelectorWithEquality(
+ *   const active = useSelector(
  *     todoStore,
  *     (s) => s.items.filter((item) => !item.completed),
- *     shallowEqual,
  *   );
  *
  *   return <ul>{active.map((t) => <li key={t.id}>{t.title}</li>)}</ul>;
  * }
  * ```
  *
- * @example Using a simple deep-equality check
+ * @example Using a custom equality function for tolerance-based comparison
  * ```tsx
- * const settings = useSelectorWithEquality(
- *   appStore,
- *   (s) => ({ theme: s.theme, lang: s.lang }),
- *   (a, b) => a?.theme === b.theme && a?.lang === b.lang,
+ * // shallowEqual requires an exact match per field; this instead ignores
+ * // floating-point drift smaller than 0.001 in the computed ratio.
+ * const progress = useSelector(
+ *   downloadStore,
+ *   (s) => s.bytesLoaded / s.totalBytes,
+ *   (a, b) => Math.abs(a - b) < 0.001,
  * );
  * ```
  */
-export function useSelectorWithEquality<TState, TSlice = TState>(
+export function useSelector<TState, TSlice = TState>(
   store: ReadonlyStore<TState>,
   selector: (state: TState) => TSlice,
-  equalFn: (prev: TSlice | undefined, next: TSlice) => boolean,
+  equalFn: (prev: TSlice, next: TSlice) => boolean = shallowEqual,
 ): TSlice {
-  const prev = useRef<TSlice>(undefined);
+  const sliceRef = useRef<TSlice>(undefined);
 
-  const newSelector = (state: TState): TSlice => {
-    const next = selector(state);
-    return equalFn(prev.current, next)
-      ? (prev.current as TSlice)
-      : (prev.current = next);
+  const getSnapshot = (): TSlice => {
+    const prev = sliceRef.current;
+    const next = selector(store.get());
+    return prev !== undefined && equalFn(prev, next)
+      ? prev
+      : (sliceRef.current = next);
   };
 
-  return useSelector(store, newSelector);
+  return useSyncExternalStore(
+    store.subscribe,
+    getSnapshot,
+    getSnapshot,
+  );
 }

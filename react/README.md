@@ -16,41 +16,46 @@ pnpm add jsr:@kin-store/react
 deno add jsr:@kin-store/react
 ```
 
-## `useSelector`
+## `useStore`
 
-Subscribes a component to a store and re-renders when the selected slice
-changes. Backed by `useSyncExternalStore` — safe for concurrent mode.
+Subscribes a component to a store's whole state and re-renders on every state
+change. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 
-// Subscribe to the whole state.
 function Counter(): JSX.Element {
-  const state = useSelector(counterStore);
+  const state = useStore(counterStore);
   return <div>{state.count}</div>;
-}
-
-// Subscribe to a slice — only re-renders when `name` changes.
-function UserName(): JSX.Element {
-  const name = useSelector(userStore, (s) => s.name);
-  return <span>{name}</span>;
 }
 ```
 
-## `useSelectorWithEquality`
+To subscribe to just a slice of the state, use `useSelector` instead.
 
-Like `useSelector`, but accepts a custom equality function. Use this when the
+## `useSelector`
+
+Selects a slice of the state and re-renders only when that slice changes,
+using an equality function to decide whether it actually changed. Defaults to
+`shallowEqual`, which compares the slice one level deep — safe even when the
 selector returns a new object or array reference on every call (e.g.
 `.filter()`, `.map()`, object literals).
 
 ```tsx
-import { useSelectorWithEquality } from "@kin-store/react/index.ts";
+import { useSelector } from "@kin-store/react/index.ts";
+
+// Only re-renders when `name` changes, not on every state update.
+function UserName(): JSX.Element {
+  const name = useSelector(userStore, (s) => s.name);
+  return <span>{name}</span>;
+}
 
 function ActiveTodos(): JSX.Element {
-  const active = useSelectorWithEquality(
+  // shallowEqual (the default) prevents a re-render when the filtered
+  // list's contents haven't changed, even though .filter() returns a new
+  // array reference every call.
+  const active = useSelector(
     todoStore,
     (s) => s.items.filter((item) => !item.completed),
-    (a, b) => a.length === b.length && a.every((v, i) => v === b[i]),
   );
 
   return (
@@ -59,6 +64,17 @@ function ActiveTodos(): JSX.Element {
     </ul>
   );
 }
+```
+
+Pass a custom equality function for cases `shallowEqual` can't cover, like
+tolerance-based comparisons:
+
+```tsx
+const progress = useSelector(
+  downloadStore,
+  (s) => s.bytesLoaded / s.totalBytes,
+  (a, b) => Math.abs(a - b) < 0.001,
+);
 ```
 
 ## `StoreProvider` and `useStoreContext`

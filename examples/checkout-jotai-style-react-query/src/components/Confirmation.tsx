@@ -1,8 +1,8 @@
-import { useSelector } from "@kin-store/react/index.ts";
+import { useStore } from "@kin-store/react/index.ts";
 import { lastOrderIdStore, startNewOrder } from "../stores.ts";
 
 export function Confirmation() {
-  const lastOrderId = useSelector(lastOrderIdStore);
+  const lastOrderId = useStore(lastOrderIdStore);
 
   return (
     <div className="space-y-4 text-center">

@@ -42,4 +42,4 @@ Kin Store is pay-per-use: import only `createStore` and pay 244 B. Import
 | ------------------------------------------- | ------------------------------------------------------------ |
 | [`@kin-store/core`](./core/README.md)       | `createStore`, `withPlugins`, `derive` — the core primitives |
 | [`@kin-store/plugins`](./plugins/README.md) | `persist`, `history`, `immer` — official plugins             |
-| [`@kin-store/react`](./react/README.md)     | `useSelector`, `useSelectorWithEquality` — React bindings    |
+| [`@kin-store/react`](./react/README.md)     | `useStore`, `useSelector` — React bindings                   |
