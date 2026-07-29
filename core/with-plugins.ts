@@ -411,24 +411,83 @@ type Flatten<
   }[keyof TNestedReducers]
 >;
 
-/**
- * Merges a plugin's reducers into the store's accumulated reducer map.
- *
- * When `TNamespace` is a `string`, the plugin's reducers are nested under that
- * key (`store.dispatch[TNamespace]`). When `undefined`, they are merged at the
- * top level.
- *
- * @template TStoreReducers The reducers already registered on the store.
- * @template TNamespace The plugin's namespace, or `undefined` for top-level.
- * @template TPluginReducers The reducers contributed by the plugin.
- */
-export type MergeReducers<
+// Merges a plugin's reducers into the store's accumulated reducer map: nested
+// under `TNamespace` (`store.dispatch[TNamespace]`) when it's a string,
+// merged at the top level when `undefined`.
+type MergeReducers<
   TStoreReducers,
   TNamespace extends string | undefined,
   TPluginReducers,
 > = TNamespace extends string
   ? TStoreReducers & { [K in TNamespace]: TPluginReducers }
   : TStoreReducers & TPluginReducers;
+
+/**
+ * The store type seen inside a plugin's own
+ * {@linkcode StorePlugin.methods methods},
+ * {@linkcode StorePlugin.onActivated onActivated}, or
+ * {@linkcode StorePlugin.onDestroy onDestroy}: `TStoreReducers` with the
+ * plugin's own {@linkcode TPluginReducers} merged in under its namespace (if
+ * any), and `TStoreMethods` with its own {@linkcode TPluginMethods} merged in.
+ *
+ * Exported so plugin authors who need to name this store type outside of a
+ * `StorePlugin`'s inline callback signatures — e.g. a standalone helper
+ * function that a `methods`/`onActivated`/`onDestroy` callback delegates to —
+ * don't need to reconstruct it by hand from {@linkcode StoreWithPlugins}
+ * themselves.
+ *
+ * Omit `TPluginMethods` (or pass `{}`) when typing the `store` parameter of a
+ * `methods` factory: a plugin's own methods aren't visible to its own
+ * `methods` factory, since they're attached to the store after the factory
+ * runs.
+ *
+ * @template TState The store's state type.
+ * @template TStoreReducers Reducers already on the store before this plugin is applied.
+ * @template TStoreMethods Methods already on the store before this plugin is applied.
+ * @template TNamespace The namespace this plugin is registered under, or `undefined` for top-level.
+ * @template TPluginReducers Reducers contributed by this plugin.
+ * @template TPluginMethods Methods contributed by this plugin, visible to `onActivated`/`onDestroy` but not to `methods`.
+ *
+ * @example A plugin whose method dispatches its own reducer via a standalone helper
+ * ```ts
+ * type CounterReducers<TState> = { bump: (state: TState) => TState };
+ *
+ * function bump<
+ *   TState,
+ *   TStoreReducers extends NestedReducers<TState>,
+ *   TStoreMethods extends NestedMethods,
+ *   TNamespace extends string | undefined,
+ * >(
+ *   store: PluginStore<TState, TStoreReducers, TStoreMethods, TNamespace, CounterReducers<TState>>,
+ * ): void {
+ *   store.dispatch.bump();
+ * }
+ *
+ * function counter<
+ *   TState,
+ *   TStoreReducers extends NestedReducers<TState>,
+ *   TStoreMethods extends NestedMethods,
+ *   TNamespace extends string | undefined,
+ * >(): StorePlugin<TState, TStoreReducers, TStoreMethods, TNamespace, CounterReducers<TState>> {
+ *   return {
+ *     reducers: { bump: (state) => state },
+ *     methods: (store) => ({ bump: () => bump(store) }),
+ *   };
+ * }
+ * ```
+ */
+export type PluginStore<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+  TPluginReducers extends Reducers<TState> = {},
+  TPluginMethods extends Methods = {},
+> = StoreWithPlugins<
+  TState,
+  MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
+  TStoreMethods & TPluginMethods
+>;
 
 type ArrayOr<T> = T[] | T;
 
@@ -593,10 +652,12 @@ export type StorePlugin<
    * ```
    */
   methods?: (
-    store: StoreWithPlugins<
+    store: PluginStore<
       TState,
-      MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
-      TStoreMethods
+      TStoreReducers,
+      TStoreMethods,
+      TNamespace,
+      TPluginReducers
     >,
     ctx: PluginContext<TNamespace>,
   ) => TPluginMethods;
@@ -618,10 +679,13 @@ export type StorePlugin<
    * ```
    */
   onActivated?: (
-    store: StoreWithPlugins<
+    store: PluginStore<
       TState,
-      MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
-      TStoreMethods & TPluginMethods
+      TStoreReducers,
+      TStoreMethods,
+      TNamespace,
+      TPluginReducers,
+      TPluginMethods
     >,
     ctx: PluginContext<TNamespace>,
   ) => void;
@@ -645,10 +709,13 @@ export type StorePlugin<
    * ```
    */
   onDestroy?: (
-    store: StoreWithPlugins<
+    store: PluginStore<
       TState,
-      MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
-      TStoreMethods & TPluginMethods
+      TStoreReducers,
+      TStoreMethods,
+      TNamespace,
+      TPluginReducers,
+      TPluginMethods
     >,
     ctx: PluginContext<TNamespace>,
   ) => void;

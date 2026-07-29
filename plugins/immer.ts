@@ -1,9 +1,9 @@
 import type {
-  MergeReducers,
   Methods,
   NestedMethods,
   NestedReducers,
   PluginContext,
+  PluginStore,
   SkipFirst,
   StorePlugin,
   StoreWithPlugins,
@@ -35,9 +35,21 @@ type ImmerStore<
   TState,
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined = undefined,
+  // deno-lint-ignore ban-types
+  TPluginReducers extends ImmerReducers<TState> = {},
+  // deno-lint-ignore ban-types
+  TPluginMethods extends Methods = {},
 > =
   & Omit<
-    StoreWithPlugins<TState, TStoreReducers, TStoreMethods>,
+    PluginStore<
+      TState,
+      TStoreReducers,
+      TStoreMethods,
+      TNamespace,
+      ToStandardReducers<TState, TPluginReducers>,
+      TPluginMethods
+    >,
     "set"
   >
   & {
@@ -70,12 +82,10 @@ type ImmerPlugin<
     methods?: (
       store: ImmerStore<
         TState,
-        MergeReducers<
-          TStoreReducers,
-          TNamespace,
-          ToStandardReducers<TState, TPluginReducers>
-        >,
-        TStoreMethods
+        TStoreReducers,
+        TStoreMethods,
+        TNamespace,
+        TPluginReducers
       >,
       options: PluginContext<TNamespace>,
     ) => TPluginMethods;
@@ -84,12 +94,11 @@ type ImmerPlugin<
     onActivated?: (
       store: ImmerStore<
         TState,
-        MergeReducers<
-          TStoreReducers,
-          TNamespace,
-          ToStandardReducers<TState, TPluginReducers>
-        >,
-        TStoreMethods
+        TStoreReducers,
+        TStoreMethods,
+        TNamespace,
+        TPluginReducers,
+        TPluginMethods
       >,
       ctx: PluginContext<TNamespace>,
     ) => void;
@@ -98,12 +107,11 @@ type ImmerPlugin<
     onDestroy?: (
       store: ImmerStore<
         TState,
-        MergeReducers<
-          TStoreReducers,
-          TNamespace,
-          ToStandardReducers<TState, TPluginReducers>
-        >,
-        TStoreMethods
+        TStoreReducers,
+        TStoreMethods,
+        TNamespace,
+        TPluginReducers,
+        TPluginMethods
       >,
       ctx: PluginContext<TNamespace>,
     ) => void;

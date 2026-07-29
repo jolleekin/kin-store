@@ -1,11 +1,10 @@
 import type { Listener } from "./_types.ts";
 import type {
   InferActions,
-  MergeReducers,
   NestedMethods,
   NestedReducers,
+  PluginStore,
   Reducers,
-  StoreWithPlugins,
 } from "./with-plugins.ts";
 
 /**
@@ -127,10 +126,12 @@ export function getPluginDispatch<
   TNamespace extends string | undefined,
   TPluginReducers extends Reducers<TState>,
 >(
-  store: StoreWithPlugins<
+  store: PluginStore<
     TState,
-    MergeReducers<TStoreReducers, TNamespace, TPluginReducers>,
-    TStoreMethods
+    TStoreReducers,
+    TStoreMethods,
+    TNamespace,
+    TPluginReducers
   >,
   namespace: TNamespace,
 ): InferActions<TState, TPluginReducers> {

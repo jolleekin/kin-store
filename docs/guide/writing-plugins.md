@@ -144,6 +144,57 @@ export function logger<
 }
 ```
 
+## Naming a plugin's own store type
+
+`methods`, `onActivated`, and `onDestroy` each receive `store` already typed
+with this plugin's own reducers merged in (and, outside of `methods`, its own
+methods too — see [Dispatching from methods](#dispatching-from-methods) for
+why `methods` can't see its own plugin's methods). Inline callbacks get this
+for free from `StorePlugin`'s own signatures. If you factor logic out into a
+standalone helper function instead, name that store type with `PluginStore`
+rather than reconstructing it from `StoreWithPlugins` yourself:
+
+```ts
+import type {
+  NestedMethods,
+  NestedReducers,
+  PluginStore,
+  StorePlugin,
+} from "@kin-store/core";
+
+type CounterReducers<TState> = { bump: (state: TState) => TState };
+
+function logAndBump<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+>(
+  store: PluginStore<
+    TState,
+    TStoreReducers,
+    TStoreMethods,
+    TNamespace,
+    CounterReducers<TState>
+  >,
+): void {
+  console.log("state before bump:", store.get());
+  store.dispatch.bump();
+}
+
+export function counter<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+>(): StorePlugin<TState, TStoreReducers, TStoreMethods, TNamespace, CounterReducers<TState>> {
+  return {
+    reducers: { bump: (state) => state },
+    methods: (store) => ({ logAndBump: () => logAndBump(store) }),
+  };
+}
+```
+
 ## Constraining which stores a plugin can target
 
 Tighten `TStoreMethods` or `TStoreReducers` to require certain plugins to be

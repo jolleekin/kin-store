@@ -30,12 +30,19 @@ TODO list
        contract. Consider a strict/audited store mode that disallows set
        bypassing middleware for teams that want dispatch to be the only door.
 
-7. [ ] **TypeScript**: Simplify the plugin-author-facing generics or ship helper
+7. [x] **TypeScript**: Simplify the plugin-author-facing generics or ship helper
        types/templates so writing a plugin doesn't require reading
-       MergeReducers/Flatten/UnionToIntersection; soften "100% type-safe / no
-       casts" marketing to something like "strong inference for application
-       authors" — true for store consumers, not yet demonstrated for plugin
-       authors at scale.
+       MergeReducers/Flatten/UnionToIntersection.
+       (`core` now exports `PluginStore`, so a plugin's
+       `methods`/`onActivated`/`onDestroy` store type can be named in a
+       standalone helper without reconstructing it from `MergeReducers` +
+       `StoreWithPlugins`; `persist`/`immer` and `docs/guide/writing-plugins.md`
+       updated to use it; `MergeReducers` is now module-private alongside
+       `Flatten`/`UnionToIntersection`. The four-generic boilerplate on every
+       plugin factory is intentionally left as-is: each param is load-bearing
+       (middleware's full action union, cross-plugin dependency constraints,
+       namespacing), and it's a one-time, mechanical copy from the
+       `writing-plugins.md` template per plugin, not a recurring cost.)
 
 8. [ ] **Performance**: Publish reproducible benchmarks vs. Zustand, Redux
        Toolkit, Jotai, and TanStack Store: update fan-out, selector cost,

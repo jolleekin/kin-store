@@ -1,11 +1,10 @@
 import {
   getPluginDispatch,
   type InferActions,
-  type MergeReducers,
   type NestedMethods,
   type NestedReducers,
+  type PluginStore,
   type StorePlugin,
-  type StoreWithPlugins,
 } from "@kin-store/core";
 
 type PromiseOr<T> = Promise<T> | T;
@@ -305,9 +304,12 @@ export function persist<
     return storage ?? localStorage;
   }
 
-  type TStore = StoreWithPlugins<
+  type TStore = PluginStore<
     TState,
-    MergeReducers<TStoreReducers, TNamespace, PersistReducers<TState>>
+    TStoreReducers,
+    TStoreMethods,
+    TNamespace,
+    PersistReducers<TState>
   >;
 
   let _hasHydrated = false;

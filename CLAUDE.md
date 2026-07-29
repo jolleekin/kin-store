@@ -54,6 +54,25 @@ There is no separate typecheck task — `deno test`/`deno lint` surface type err
 
 The three publish jobs are independent in CI (no `needs` between them), but when a change touches multiple packages, tag and push `core` first and confirm its publish job succeeds (`gh run list --workflow=publish.yml`) before tagging/pushing `plugins`/`react` — they depend on `core`, so publishing them first risks pinning against a core version that isn't live on JSR yet.
 
+#### Version bumps and CHANGELOG entries are their own commit
+
+Code commits (`feat`/`fix`/`refactor`/`docs`) never touch a package's `deno.json`
+version or `CHANGELOG.md`. Bumping is a separate `chore: bump version` commit,
+written only when preparing to publish, that can batch everything accumulated
+across multiple prior commits (and multiple packages) since the last bump.
+
+Each published version is git-tagged (`core@0.2.3`, `plugins@0.3.5`,
+`react@0.2.3`, ...), so at bump time the changelog entry is drafted straight
+from the commits since the last tag, not tracked incrementally:
+
+```sh
+git log core@0.2.3..HEAD --oneline -- core/
+```
+
+Commit messages already carry enough detail (a `type(scope): summary` subject
+plus a descriptive body on non-trivial `feat`/`fix` commits) to draft the entry
+from directly.
+
 ## Architecture
 
 ### Layering: `createStore` → `withPlugins` → `derive`
@@ -68,7 +87,7 @@ The three publish jobs are independent in CI (no `needs` between them), but when
   - Namespacing: passing a string as the first arg to `.use()` nests that plugin's reducers under `store.dispatch.<ns>` and methods under `store.<ns>`; namespace collisions throw.
   - Only one dispatch can be in flight at a time (`isDispatching` guard) — a reducer/middleware that dispatches another action synchronously will throw.
   - `destroy()` is idempotent, runs plugins' `onDestroy` callbacks, then makes `get`/`set`/`subscribe`/dispatched actions/methods throw.
-  - Reducer/method/middleware type inference (`InferActions`, `Flatten`, `MergeReducers`, `MiddlewareContextUnion`, etc.) is intentionally heavy — when adding new plugin capabilities, follow the existing generic-accumulation pattern (`TStoreReducers`/`TStoreMethods` threaded through each `.use()` call) rather than introducing a new mechanism.
+  - Reducer/method/middleware type inference (`InferActions`, `Flatten`, `MergeReducers`, `MiddlewareContextUnion`, etc.) is intentionally heavy — when adding new plugin capabilities, follow the existing generic-accumulation pattern (`TStoreReducers`/`TStoreMethods` threaded through each `.use()` call) rather than introducing a new mechanism. `Flatten`, `UnionToIntersection`, and `MergeReducers` are module-private; plugin authors who need to name the store type seen inside their own `methods`/`onActivated`/`onDestroy` (e.g. for a standalone helper function) use the exported `PluginStore` instead.
 
 - **`derive(compute)`** (`core/derive.ts`) creates a read-only store computed from other stores. Dependencies are auto-tracked per-recompute via the `get(sourceStore)` helper passed into `compute`; the derived store is "cold" (unsubscribes from all sources, drops cached state) whenever it has zero subscribers, and re-establishes dependencies lazily on the next `get()`/first subscriber. Use `prev()` inside `compute` to access the derived store's own previous value (accumulators); this requires an explicit type parameter (`derive<T>(...)`) since TS can't infer it from `prev()`'s usage.
 
