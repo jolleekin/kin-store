@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.7
+
+- Bump version to pick up `@kin-store/core` 0.3.0. `persist` and `immer` use
+  the new `PluginStore` helper internally instead of `MergeReducers`; no
+  public API change.
+- Fix `history`/`persist`: drop the `as InferActions<...>` cast previously
+  needed at each `getPluginDispatch` call site, now that its return type is
+  inferred structurally (see `@kin-store/core` 0.3.0).
+- Export a bare `.` package specifier (`@kin-store/plugins`) alongside
+  `./index.ts`.
+
 ## 0.3.6
 
 - Fix `persist`: `storage` fell back to the `localStorage` global through a

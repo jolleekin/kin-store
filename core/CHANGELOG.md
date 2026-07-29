@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+- **Breaking:** `MergeReducers` is no longer exported. It was only ever needed
+  to hand-reconstruct the store type seen inside a plugin's own
+  `methods`/`onActivated`/`onDestroy`; use the new `PluginStore` helper
+  instead, which does that merge for you.
+- Add `PluginStore`, a helper type for the store seen inside a plugin's own
+  `methods`/`onActivated`/`onDestroy`. `StorePlugin` and `getPluginDispatch`
+  now use it internally instead of reconstructing it from `MergeReducers` and
+  `StoreWithPlugins`.
+- Fix `getPluginDispatch`'s return type: `TPluginReducers` is now inferred
+  structurally from the store's own type instead of needing to be supplied by
+  the caller, so call sites no longer need an `as InferActions<...>` cast to
+  get fully-typed action callers.
+- Export a bare `.` package specifier (`@kin-store/core`) alongside
+  `./index.ts`.
+
 ## 0.2.3
 
 - Document previously undocumented public symbols: `ReadonlyStore`,
