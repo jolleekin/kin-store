@@ -1,3 +1,7 @@
+---
+description: "How to write a StorePlugin: reducers and internal state, middleware, methods, and the onActivated/onDestroy lifecycle hooks, for your own Kin Store plugins."
+---
+
 # Writing Plugins
 
 A `StorePlugin` is a plain object with any combination of `reducers`,

@@ -1,3 +1,7 @@
+---
+description: "The broadcast plugin syncs a store's entire state across browser tabs with BroadcastChannel, last-write-wins, with no storage dependency."
+---
+
 # broadcast
 
 Syncs a store's entire state across browser tabs using `BroadcastChannel`.

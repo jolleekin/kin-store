@@ -1,3 +1,7 @@
+---
+description: "The immer plugin lets reducers and set updaters mutate an Immer draft directly instead of returning a new state object."
+---
+
 # immer
 
 Write reducers (and `set` calls) as [Immer](https://immerjs.github.io/immer/)

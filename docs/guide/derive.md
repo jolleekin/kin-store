@@ -1,3 +1,7 @@
+---
+description: "derive composes one or more stores into a lazy, dependency-tracked, read-only view that recomputes only when a store it actually read changes."
+---
+
 # derive
 
 Lazy, dependency-tracked, read-only views composed from one or more stores.

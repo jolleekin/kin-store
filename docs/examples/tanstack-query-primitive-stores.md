@@ -1,3 +1,7 @@
+---
+description: "The same TanStack Query checkout flow, built with one createStore per client-owned field instead of a single withPlugins store, merged with derive."
+---
+
 # TanStack Query and Primitive Stores
 
 The same checkout flow as

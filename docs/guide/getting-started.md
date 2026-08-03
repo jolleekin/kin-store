@@ -1,3 +1,7 @@
+---
+description: "Install @kin-store/core, @kin-store/react, or @kin-store/plugins from JSR, write your first store with createStore, and grow it with withPlugins."
+---
+
 # Getting Started
 
 ## Install

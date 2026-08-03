@@ -1,3 +1,7 @@
+---
+description: "A checkout flow split along ownership lines: one withPlugins store for what the client owns (cart, step, promo code), TanStack Query for what the server owns."
+---
+
 # TanStack Query and One Fat Store
 
 A checkout flow that splits state along ownership lines: Kin Store holds what

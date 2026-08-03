@@ -1,3 +1,7 @@
+---
+description: "createStore is Kin Store's minimal primitive, a value plus get, set, and subscribe, with no dispatch, no action types, and no plugins required."
+---
+
 # createStore
 
 The irreducible floor. A value and three methods.

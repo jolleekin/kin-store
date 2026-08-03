@@ -1,3 +1,7 @@
+---
+description: "The history plugin records every state change as a snapshot and adds undo, redo, and reset, with an optional cap on how many snapshots to keep."
+---
+
 # history
 
 Tracks state history and enables undo / redo / reset. Every state change,

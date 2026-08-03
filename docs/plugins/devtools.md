@@ -1,3 +1,7 @@
+---
+description: "The devtools plugin connects a store to the Redux DevTools Extension for time-travel debugging: state inspection, action replay, and jump-to-state."
+---
+
 # devtools
 
 Connects a store to the

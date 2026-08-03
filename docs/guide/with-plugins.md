@@ -1,3 +1,7 @@
+---
+description: "withPlugins upgrades a store with reducers, middleware, methods, and lifecycle hooks added one .use() call at a time, each fully typed and namespaceable."
+---
+
 # withPlugins
 
 Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced

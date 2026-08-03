@@ -1,3 +1,7 @@
+---
+description: "The four principles behind every Kin Store API decision: explicit over implicit, opt-in complexity, type safety by default, and two equally first-class tiers of mutation."
+---
+
 # Design Principles
 
 These four principles shaped every API decision in Kin Store. Understanding them

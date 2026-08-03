@@ -1,3 +1,7 @@
+---
+description: "@kin-store/react: useStore and useSelector hooks built on useSyncExternalStore, plus StoreProvider/useStoreContext for dependency injection."
+---
+
 # React
 
 React bindings for `@kin-store/core`.

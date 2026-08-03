@@ -1,3 +1,7 @@
+---
+description: "Two recipes for syncing store state across open tabs: the storage event with persist, or BroadcastChannel directly with no persistence involved."
+---
+
 # Cross-Tab Sync
 
 `persist` writes on every change, store → storage, but nothing pulls the

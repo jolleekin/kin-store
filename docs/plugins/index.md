@@ -1,3 +1,7 @@
+---
+description: "The official @kin-store/plugins package: broadcast, devtools, history, immer, and persist, installed together and registered with .use()."
+---
+
 # Official Plugins
 
 Official plugins for `@kin-store/core`, published as `@kin-store/plugins`.

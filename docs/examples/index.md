@@ -1,3 +1,7 @@
+---
+description: "Guided, runnable examples: Next.js SSR, splitting client and server state with TanStack Query as one store or many, and cross-tab sync recipes."
+---
+
 # Guided Examples
 
 Full, runnable apps in the [repository](https://github.com/jolleekin/kin-store/tree/main/examples),
