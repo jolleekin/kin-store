@@ -98,7 +98,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: "https://github.com/jolleekin/kin-store/edit/main/docs2/:path",
+      pattern: "https://github.com/jolleekin/kin-store/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
   },
@@ -122,6 +122,10 @@ export default defineConfig({
           "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.",
       }) as never,
     ],
+  },
+
+  sitemap: {
+    hostname: "https://kinstore.dev",
   },
 
   head: [
