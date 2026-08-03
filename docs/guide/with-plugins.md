@@ -8,7 +8,7 @@ import { withPlugins } from "@kin-store/core";
 ```
 
 `withPlugins` upgrades a store (or creates one) with a plugin system. Each
-`.use()` call adds capability — not a nesting level. The store's type is updated
+`.use()` call adds capability, not a nesting level. The store's type is updated
 at each step, so TypeScript always knows exactly what's available.
 
 ## Concepts
@@ -126,16 +126,16 @@ todoStore.history.undo();
 
 ## Two tiers of mutation
 
-| Tier         | How                                    | Good fit for                                                |
-| ------------ | -------------------------------------- | ------------------------------------------------------------ |
-| `dispatch.*` | Routes through the middleware pipeline | Changes you want every plugin to see: logging, undo, guards |
-| `set`        | Writes state directly, no pipeline     | Simple stores, or changes that don't need the pipeline       |
+| Tier         | How                                    | Good fit for                                                 |
+| ------------ | --------------------------------------- | -------------------------------------------------------------- |
+| `dispatch.*` | Routes through the middleware pipeline | Changes you want every plugin to see: logging, undo, guards  |
+| `set`        | Writes state directly, no pipeline     | Simple stores, or changes that don't need the pipeline        |
 
 Neither tier is a fallback for the other — pick per store, or per method.
-`methods: (store) => ({...})` with `set` calls only is a complete,
-Zustand-style store; `reducers` dispatched via `dispatch.*` is a complete,
-Redux-style store. A method can also mix both in the same call when part of a
-change should be traceable and part shouldn't.
+`methods: (store) => ({...})` with `set` calls only is a complete store on its
+own; `reducers` dispatched via `dispatch.*` is a complete store built the other
+way. A method can also mix both in the same call when part of a change should
+be traceable and part shouldn't.
 
 If your team standardizes on one style — e.g. "every mutation goes through
 `dispatch.*`" — hold that convention at your store module's boundary (export
@@ -187,9 +187,9 @@ await store.todos.fetch();
 A plugin passed to `.use()` is a plain object with any combination of:
 
 | Field         | Description                                          |
-| ------------- | ---------------------------------------------------- |
+| ------------- | ------------------------------------------------------ |
 | `reducers`    | Pure functions `(state, ...args) => nextState`       |
-| `middleware`  | Factory returning middleware function(s)            |
+| `middleware`  | Factory returning middleware function(s)             |
 | `methods`     | Factory returning methods added to the store         |
 | `onActivated` | Runs once immediately after the plugin is registered |
 | `onDestroy`   | Runs when `store.destroy()` is called                |

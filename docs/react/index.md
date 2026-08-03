@@ -26,7 +26,7 @@ so no need to install it separately.
 ## `useStore`
 
 Subscribes a component to a store's whole state and re-renders on every state
-change. Backed by `useSyncExternalStore` — safe for concurrent mode.
+change. Backed by `useSyncExternalStore`, safe for concurrent mode.
 
 ```tsx
 import { createStore, useStore } from "@kin-store/react";
@@ -39,7 +39,7 @@ function Counter(): JSX.Element {
 }
 ```
 
-Works with any store — `createStore`, `withPlugins`, or `derive`:
+Works with any store, `createStore`, `withPlugins`, or `derive`:
 
 ```tsx
 const summary = derive((get) => ({
@@ -57,14 +57,15 @@ function Header() {
 }
 ```
 
-To subscribe to just a slice of the state, use `useSelector` instead.
+To subscribe to a transformed value derived from the state, use `useSelector`
+instead.
 
 ## `useSelector`
 
-Selects a slice of the state and re-renders only when that slice changes,
-using an equality function to decide whether it actually changed. Defaults to
-`shallowEqual`, which compares the slice one level deep — safe even when the
-selector returns a new object or array reference on every call (e.g.
+Selects a transformed value from the state and re-renders only when that value
+changes, using an equality function to decide whether it actually changed.
+Defaults to `shallowEqual`, which compares the value one level deep, safe even
+when the selector returns a new object or array reference on every call (e.g.
 `.filter()`, `.map()`, object literals):
 
 ```tsx
@@ -108,7 +109,7 @@ const progress = useSelector(
 
 ## `StoreProvider` and `useStoreContext`
 
-Inject a store via React context — useful for testing or SSR where you want to
+Inject a store via React context, useful for testing or SSR where you want to
 avoid module-level singletons:
 
 ```tsx
@@ -147,7 +148,7 @@ function Counter(): JSX.Element {
 
 ## Actions are stable refs
 
-Methods and dispatch functions on a `withPlugins` store are stable references —
+Methods and dispatch functions on a `withPlugins` store are stable references,
 they don't change between renders. You can call them directly without
 subscribing:
 
@@ -157,6 +158,3 @@ function AddButton() {
   return <button onClick={() => todoStore.addTodo("new item")}>Add</button>;
 }
 ```
-
-This avoids Zustand's `useStore(s => s.addTodo)` pattern, which registers a
-subscription for a value that never changes.

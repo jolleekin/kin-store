@@ -131,7 +131,7 @@ await todoStore.fetchTodos();
 **What's different:**
 
 |                     | Redux / RTK                               | Kin Store                     |
-| ------------------- | ----------------------------------------- | ----------------------------- |
+| -------------------- | -------------------------------------------- | -------------------------------- |
 | Async actions       | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
 | Middleware          | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
 | Type exports        | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
@@ -465,7 +465,7 @@ function TodoApp() {
 **What's different:**
 
 |                        | Zustand                                                                    | Kin Store                                                        |
-| ---------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| ------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | Extension/Plugin model | Imperative wrapper — each layer may alter `set`, `get`, or the store shape | Declarative object — declares reducers, methods, lifecycle hooks |
 | Adding persist         | Wrap entire store in `persist(...)`                                        | `.use('persist', persist(...))`                                  |
 | Adding immer           | Wrap again in `immer(...)`                                                 | `.use('immer', immer())`                                         |
@@ -661,7 +661,7 @@ export function history<
 **What's different:**
 
 |                | Zustand middleware                                      | Kin Store plugin                   |
-| -------------- | ------------------------------------------------------- | ---------------------------------- |
+| --------------- | --------------------------------------------------------- | ------------------------------------- |
 | Type extension | `declare module` augmentation + `as unknown as History` | `StorePlugin` generics             |
 | Expose methods | Mutate `api as any`                                     | `methods` on a plain object        |
 | Restore state  | `api.setState(saved, true)` — bypasses all middlewares  | `_restore` reducer — full pipeline |
@@ -776,7 +776,7 @@ function TodoApp() {
 **What's different:**
 
 |                            | Jotai                                  | Kin Store                                            |
-| -------------------------- | -------------------------------------- | ---------------------------------------------------- |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------ |
 | State model                | Atoms                                  | Stores (value + subscribers)                         |
 | App logic                  | Wrapped in atoms                       | Plain functions / methods                            |
 | Read / write outside React | `jotai/vanilla` or `getDefaultStore()` | Yes — `get()`, `set()` and plain functions / methods |
@@ -899,7 +899,7 @@ function TodoApp() {
 **What's different:**
 
 |                        | MobX                                    | Kin Store                        |
-| ---------------------- | --------------------------------------- | -------------------------------- |
+| ------------------------ | ------------------------------------------ | ----------------------------------- |
 | State mutations        | Mutable (proxy-intercepted)             | `set` — no proxy                 |
 | Async updates          | Must wrap in `runInAction`              | `set` after `await` — no wrapper |
 | Call logic in React    | Direct — no hook needed                 | Direct — no hook needed          |

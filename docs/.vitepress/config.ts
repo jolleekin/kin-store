@@ -1,33 +1,29 @@
-import { defineConfig } from "vitepress";
+import { defineConfig, type ThemeOptions } from "vitepress";
+import llmstxt from "vitepress-plugin-llms";
+import poimandresLight from "./theme/poimandres-light.json" with { type: "json" };
 
 export default defineConfig({
   cleanUrls: true,
+  // Homepage-only prototype so far; nav/footer links to guide/plugins/
+  // react/examples pages that don't exist here yet.
+  ignoreDeadLinks: true,
+  // The whole theme (palette, Shiki theme) is light-only by design, with no
+  // .dark counterpart defined anywhere — DefaultTheme's dark-mode toggle
+  // would otherwise render but do nothing, since this theme's CSS overrides
+  // are unconditional. Disabling it removes the dead toggle instead.
+  appearance: false,
   title: "Kin Store",
   description:
-    "Lightweight, framework-agnostic state management for TypeScript. Zero dependencies, 100% type-safe. Start simple with 244 B and grow with plugins.",
-
-  markdown: {
-    codeTransformers: [
-      {
-        name: "comment-lines",
-        line(node, line) {
-          const text = (this.tokens[line - 1] ?? [])
-            .map((t) => t.content)
-            .join("");
-          if (text.trimStart().startsWith("//")) {
-            this.addClassToHast(node, "comment-line");
-          }
-        },
-      },
-    ],
-  },
+    "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.",
 
   themeConfig: {
+    // Comparison stays out of the primary nav (footer link only) — it's
+    // opt-in reading, not the pitch.
     nav: [
       { text: "Guide", link: "/guide/" },
       { text: "Plugins", link: "/plugins/" },
       { text: "React", link: "/react/" },
-      { text: "Comparison", link: "/comparison" },
+      { text: "Examples", link: "/examples/" },
       { text: "API Reference", link: "https://jsr.io/@kin-store" },
     ],
 
@@ -56,6 +52,7 @@ export default defineConfig({
           text: "Official Plugins",
           items: [
             { text: "Overview", link: "/plugins/" },
+            { text: "broadcast", link: "/plugins/broadcast" },
             { text: "devtools", link: "/plugins/devtools" },
             { text: "history", link: "/plugins/history" },
             { text: "immer", link: "/plugins/immer" },
@@ -69,23 +66,73 @@ export default defineConfig({
           items: [{ text: "Overview", link: "/react/" }],
         },
       ],
+      "/examples/": [
+        {
+          text: "Guided Examples",
+          items: [
+            { text: "Overview", link: "/examples/" },
+            { text: "Next.js", link: "/examples/nextjs" },
+            {
+              text: "TanStack Query + Fat Store",
+              link: "/examples/tanstack-query-fat-store",
+            },
+            {
+              text: "TanStack Query + Primitive Stores",
+              link: "/examples/tanstack-query-primitive-stores",
+            },
+            { text: "Cross-Tab Sync", link: "/examples/cross-tab-sync" },
+          ],
+        },
+      ],
     },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/jolleekin/kin-store" },
     ],
 
-    search: {
-      provider: "local",
-    },
+    search: { provider: "local" },
 
     footer: {
-      message: "Released under the MIT License.<br/>Copyright &copy; 2026-present Man Hoang",
+      message: 'MIT License. <a href="/comparison">Comparison</a>',
+      copyright: "Copyright &copy; 2026-present Man Hoang",
     },
 
     editLink: {
-      pattern: "https://github.com/jolleekin/kin-store/edit/main/docs/:path",
+      pattern: "https://github.com/jolleekin/kin-store/edit/main/docs2/:path",
       text: "Edit this page on GitHub",
     },
   },
+
+  markdown: {
+    // poimandres has no official light variant, so this remaps its own
+    // token colors (soft blue identifiers, teal keywords/strings, rose
+    // for errors/null) onto a white background instead of picking an
+    // unrelated light theme with a different color language.
+    theme: poimandresLight as unknown as ThemeOptions,
+  },
+
+  vite: {
+    plugins: [
+      // Ships /llms.txt, /llms-full.txt, and a raw .md mirror of every
+      // page (e.g. /guide/getting-started.md) so agents can fetch clean
+      // Markdown instead of scraping rendered HTML. See https://llmstxt.org/.
+      llmstxt({
+        domain: "https://kinstore.dev",
+        description:
+          "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.",
+      }) as never,
+    ],
+  },
+
+  head: [
+    ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+    ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
+    [
+      "link",
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap",
+      },
+    ],
+  ],
 });

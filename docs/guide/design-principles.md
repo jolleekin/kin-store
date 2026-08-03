@@ -1,7 +1,7 @@
 # Design Principles
 
 These four principles shaped every API decision in Kin Store. Understanding them
-makes the library predictable — and explains why things work the way they do.
+makes the library predictable, and explains why things work the way they do.
 
 ## Explicit over implicit
 
@@ -17,25 +17,25 @@ mutation model all follow from this principle.
 ## Opt-in complexity
 
 `createStore` is the floor. `withPlugins` adds methods, reducers, middleware,
-and lifecycle hooks — only when you import it. `derive` adds reactive
-composition — only when you reach for it. You never pay for capability you
+and lifecycle hooks, only when you import it. `derive` adds reactive
+composition, only when you reach for it. You never pay for capability you
 haven't opted into.
 
 ## Type safety by default
 
-Every reducer argument, dispatch call, and plugin method is fully inferred — no
+Every reducer argument, dispatch call, and plugin method is fully inferred, no
 `any` or `unknown`, no manual annotation at call sites. The type system is
 load-bearing, not decorative.
 
 `dispatch.addTodo("Buy groceries")` knows that `addTodo` takes a `string`. A
 middleware that reads `ctx.reducer.args` gets the correct tuple type. A plugin
 that adds methods sees the accumulated store type including every plugin
-registered before it. Type errors are caught statically — at definition time or
+registered before it. Type errors are caught statically, at definition time or
 at the call site.
 
 ## Two tiers of mutation
 
-`dispatch.*` and `set` are both first-class ways to change state — neither is
+`dispatch.*` and `set` are both first-class ways to change state, neither is
 a fallback for the other. `dispatch.*` calls a named reducer through the
 middleware pipeline, so the change is traceable, loggable, and cancellable.
 `set` writes state directly, with no pipeline in between. Which one a team
@@ -44,11 +44,11 @@ deliberately built so any point on that spectrum is a first-class way to use
 the library:
 
 - **Primitive composition** — `createStore` + `derive` + plain functions, no
-  `withPlugins` at all (Jotai-style).
+  `withPlugins` at all.
 - **Methods only** — `withPlugins` + `methods` that call `set` directly, no
-  reducers or middleware (Zustand-style).
+  reducers or middleware.
 - **Reducers + middleware** — `withPlugins` + `reducers` dispatched through
-  `dispatch.*`, with middleware doing the logging/undo/guard work (Redux-style).
+  `dispatch.*`, with middleware doing the logging/undo/guard work.
 - **Fat store** — `createStore` plus colocated top-level logic functions that
   call `set`, no plugin system involved.
 

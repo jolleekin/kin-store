@@ -107,4 +107,4 @@ store.set({ count: 1, name: "Bob" }); // no log — count didn't change
 - You're building a library or utility on top of Kin Store
 
 When you need methods colocated with the store, a dispatch pipeline, or
-middleware — reach for [`withPlugins`](/guide/with-plugins).
+middleware, reach for [`withPlugins`](/guide/with-plugins).

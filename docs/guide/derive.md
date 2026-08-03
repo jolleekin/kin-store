@@ -7,7 +7,7 @@ import { derive } from "@kin-store/core";
 ```
 
 `derive` computes a value from one or more stores reactively. Dependencies are
-tracked automatically — no selector arrays, no manual wiring. The derived store
+tracked automatically, no selector arrays, no manual wiring. The derived store
 stays cold (no subscriptions, no caching) until something subscribes to it.
 
 ## Basic usage
@@ -78,7 +78,7 @@ view.destroy();
 ## Key properties
 
 | Property         | Behavior                                                                                |
-| ---------------- | --------------------------------------------------------------------------------------- |
+| ---------------- | ----------------------------------------------------------------------------------------- |
 | **Auto-tracked** | `get()` registers the dependency. No selector arrays needed.                            |
 | **Lazy**         | Cold when no subscribers. Zero computation cost until something listens.                |
 | **Conditional**  | Branches only subscribe to stores they actually read in a given pass.                   |

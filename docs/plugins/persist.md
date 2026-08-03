@@ -2,7 +2,7 @@
 
 Persists and hydrates store state using a storage backend. Defaults to
 `localStorage`. Any backend implementing `getItem` / `setItem` / `removeItem` is
-accepted — including async ones.
+accepted, including async ones.
 
 ## Basic usage
 
@@ -80,7 +80,7 @@ await store.persist.hydrate();
 Once registered under a namespace (e.g. `'persist'`), the plugin exposes:
 
 | Method                    | Description                                                           |
-| ------------------------- | --------------------------------------------------------------------- |
+| -------------------------- | ------------------------------------------------------------------------ |
 | `hydrate()`               | Triggers a hydration; returns the in-progress hydration if one exists |
 | `hasHydrated()`           | Returns `true` if at least one hydration has completed                |
 | `hydrationComplete()`     | Returns a promise that resolves after the current or next hydration   |
@@ -106,7 +106,7 @@ store.history.rebase();
 ## Options
 
 | Option          | Type                         | Default        | Description                         |
-| --------------- | ---------------------------- | -------------- | ----------------------------------- |
+| ---------------- | ----------------------------- | ---------------- | -------------------------------------- |
 | `key`           | `string`                     | required       | Storage key                         |
 | `storage`       | `PersistStorage`             | `localStorage` | Storage backend                     |
 | `selector`      | `(state) => partial`         | full state     | Slice to persist                    |

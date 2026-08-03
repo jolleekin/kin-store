@@ -110,7 +110,7 @@ store.history.undo();
 await store.persist.hydrate();
 ```
 
-Each `.use()` adds capability — not a nesting level. The store grows with you.
+Each `.use()` adds capability, not a nesting level. The store grows with you.
 
 ## What's next
 

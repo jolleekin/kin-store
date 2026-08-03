@@ -113,9 +113,9 @@ const visibleRows = computed(() =>
               </td>
               <td v-if="row.kin === 'bundle'" class="kin">
                 <div class="size-grid">
-                  <span class="size-line">244 B</span><span class="size-label">minimal</span>
-                  <span class="size-line">465 B</span><span class="size-label">composition</span>
-                  <span class="size-line">1.07 KB</span><span class="size-label">plugin support</span>
+                  <span class="size-line">244 B</span><code class="size-label">createStore</code>
+                  <span class="size-line">465 B</span><code class="size-label">derive</code>
+                  <span class="size-line">1.07 KB</span><code class="size-label">withPlugins</code>
                 </div>
               </td>
               <td v-else class="kin">{{ row.kin }}</td>
@@ -163,6 +163,9 @@ const visibleRows = computed(() =>
 }
 
 .matrix-wrapper {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  padding: 8px 16px;
   overflow-x: auto;
 }
 
@@ -200,7 +203,7 @@ const visibleRows = computed(() =>
 
 .matrix-table th.kin,
 .matrix-table td.kin {
-  color: var(--vp-c-brand-3);
+  color: var(--vp-c-brand-1);
   font-weight: 700;
 }
 
@@ -222,7 +225,7 @@ const visibleRows = computed(() =>
 }
 
 .row-link:hover {
-  color: var(--vp-c-brand-3);
+  color: var(--vp-c-brand-1);
   text-decoration: underline;
 }
 
@@ -243,6 +246,7 @@ const visibleRows = computed(() =>
   color: var(--vp-c-text-2);
   line-height: 20px;
   text-align: left;
+  padding: 0;
 }
 
 .feature-matrix-legend {
@@ -259,7 +263,7 @@ const visibleRows = computed(() =>
 }
 
 .feature-matrix-cta a {
-  color: var(--vp-c-brand-3);
+  color: var(--vp-c-brand-1);
   font-weight: 500;
   text-decoration: none;
 }

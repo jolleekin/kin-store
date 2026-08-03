@@ -1,7 +1,7 @@
 # history
 
-Tracks state history and enables undo / redo / reset. Every state change —
-whether dispatched through reducers or made via `set` — is recorded as a
+Tracks state history and enables undo / redo / reset. Every state change,
+whether dispatched through reducers or made via `set`, is recorded as a
 snapshot.
 
 ## Basic usage
@@ -30,7 +30,7 @@ store.history.reset(); // count = 0
 ## Plugin methods
 
 | Method      | Description                                                                |
-| ----------- | -------------------------------------------------------------------------- |
+| ------------ | ------------------------------------------------------------------------------ |
 | `canUndo()` | Returns `true` if there is a past state to undo to                         |
 | `canRedo()` | Returns `true` if there is a future state to redo to                       |
 | `undo()`    | Moves back one step; returns `true` if moved, `false` if already at start  |
@@ -41,7 +41,7 @@ store.history.reset(); // count = 0
 ## Options
 
 | Option  | Type     | Default    | Description                                                  |
-| ------- | -------- | ---------- | ------------------------------------------------------------ |
+| -------- | --------- | ----------- | ---------------------------------------------------------------- |
 | `limit` | `number` | `Infinity` | Max snapshots to keep. When exceeded, the oldest is dropped. |
 
 ```ts

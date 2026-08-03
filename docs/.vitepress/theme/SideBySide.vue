@@ -32,18 +32,17 @@ function toggle(): void {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* width: 32px; */
   height: 32px;
   padding-inline: 8px;
   border: none;
   border-radius: 5px;
-  background: var(--vp-c-brand-5);
+  background: var(--vp-c-brand-1);
   color: var(--vp-button-brand-text, #fff);
   cursor: pointer;
   transition: background 0.15s, transform 0.15s;
 }
 
-.fs-btn:hover  { background: var(--vp-c-brand-3); }
+.fs-btn:hover  { background: var(--vp-c-brand-2); }
 .fs-btn:active { transform: scale(0.95); }
 
 .compress { display: none }

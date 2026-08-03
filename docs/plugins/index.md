@@ -25,12 +25,13 @@ deno add jsr:@kin-store/plugins
 
 ## Available plugins
 
-| Plugin                          | Description                                                  |
-| ------------------------------- | ------------------------------------------------------------ |
-| [`devtools`](/plugins/devtools) | Connects to the Redux DevTools Extension                     |
-| [`history`](/plugins/history)   | Undo / redo / reset with snapshot history                    |
-| [`immer`](/plugins/immer)       | Writes reducers or `set`'s updaters as Immer draft mutations |
-| [`persist`](/plugins/persist)   | Persists state to localStorage (or any custom storage)       |
+| Plugin                            | Description                                                  |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| [`broadcast`](/plugins/broadcast) | Syncs state across browser tabs with `BroadcastChannel`      |
+| [`devtools`](/plugins/devtools)   | Connects to the Redux DevTools Extension                     |
+| [`history`](/plugins/history)     | Undo / redo / reset with snapshot history                    |
+| [`immer`](/plugins/immer)         | Writes reducers or `set`'s updaters as Immer draft mutations |
+| [`persist`](/plugins/persist)     | Persists state to localStorage (or any custom storage)       |
 
 ## Usage pattern
 

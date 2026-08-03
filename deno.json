@@ -1,6 +1,6 @@
 {
   "nodeModulesDir": "auto",
-  "workspace": ["core", "plugins", "react", "examples/*", "docs"],
+  "workspace": ["core", "plugins", "react", "docs", "examples/*"],
   "tasks": {
     "test": "deno test -A"
   },

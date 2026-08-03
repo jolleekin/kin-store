@@ -7,7 +7,7 @@ and composed independently of the store they are applied to.
 ## Reducers and internal state
 
 All changes to the store's primary state (`TState`) should go through a reducer,
-not `set`. Reducers travel through the full middleware pipeline — they can be
+not `set`. Reducers travel through the full middleware pipeline, they can be
 logged, traced, or canceled by any middleware in the chain:
 
 ```ts
@@ -148,7 +148,7 @@ export function logger<
 
 `methods`, `onActivated`, and `onDestroy` each receive `store` already typed
 with this plugin's own reducers merged in (and, outside of `methods`, its own
-methods too — see [Dispatching from methods](#dispatching-from-methods) for
+methods too, see [Dispatching from methods](#dispatching-from-methods) for
 why `methods` can't see its own plugin's methods). Inline callbacks get this
 for free from `StorePlugin`'s own signatures. If you factor logic out into a
 standalone helper function instead, name that store type with `PluginStore`
