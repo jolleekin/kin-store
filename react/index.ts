@@ -3,7 +3,8 @@
  * `useSyncExternalStore`.
  *
  * - {@linkcode useStore} and {@linkcode useSelector} subscribe a component to
- *   a store (or a slice of it); `useSelector` adds an equality check.
+ *   a store (or a transformed value from it); `useSelector` adds an equality
+ *   check.
  * - {@linkcode shallowEqual} is the default equality function for
  *   {@linkcode useSelector}, also usable standalone.
  * - {@linkcode StoreProvider} and {@linkcode useStoreContext} inject a store

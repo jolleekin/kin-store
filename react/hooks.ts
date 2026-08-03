@@ -9,7 +9,8 @@ import { shallowEqual } from "./shallow-equal.ts";
  * Internally uses React's `useSyncExternalStore`, so it is safe to use in
  * concurrent mode.
  *
- * To read only a slice of the state, use {@linkcode useSelector} instead.
+ * To read a transformed value derived from the state, use
+ * {@linkcode useSelector} instead.
  *
  * @template TState The store's state type.
  *
@@ -30,27 +31,28 @@ export function useStore<TState>(store: ReadonlyStore<TState>): TState {
 }
 
 /**
- * Selects a slice of the state and triggers re-renders when it changes.
+ * Selects a transformed value from the state and triggers re-renders when it
+ * changes.
  *
- * This hook accepts a custom equality function to determine if the slice has
- * changed. This can be useful to avoid unnecessary re-renders when the
- * selector returns a new object reference on every call (e.g. `.filter()`,
- * `.map()`, or object literals). Defaults to {@linkcode shallowEqual}, which
- * compares the slice one level deep.
+ * This hook accepts a custom equality function to determine if the selected
+ * value has changed. This can be useful to avoid unnecessary re-renders when
+ * the selector returns a new object reference on every call (e.g.
+ * `.filter()`, `.map()`, or object literals). Defaults to
+ * {@linkcode shallowEqual}, which compares the value one level deep.
  *
  * @template TState The store's state type.
- * @template TSlice The type of the selected slice.
+ * @template TSelected The type of the selected value.
  *
  * @param store The store to select from.
- * @param selector The selector function to extract the slice of state.
+ * @param selector The selector function to derive a value from the state.
  * @param equalFn The equality function to compare the previous and next
- * slices. Return `true` if they are considered equal (i.e. no re-render is
- * needed). Only called once a previous slice exists, so `prev` is never
- * `undefined`; the first computed slice is used as-is. Defaults to
+ * selected values. Return `true` if they are considered equal (i.e. no
+ * re-render is needed). Only called once a previous value exists, so `prev`
+ * is never `undefined`; the first computed value is used as-is. Defaults to
  * {@linkcode shallowEqual}.
- * @returns The selected slice of state.
+ * @returns The selected value.
  *
- * @example Selecting a slice to avoid unnecessary re-renders
+ * @example Selecting a derived value to avoid unnecessary re-renders
  * ```tsx
  * function UserName(): JSX.Element {
  *   // Only re-renders when `name` changes, not on every state update.
@@ -84,19 +86,19 @@ export function useStore<TState>(store: ReadonlyStore<TState>): TState {
  * );
  * ```
  */
-export function useSelector<TState, TSlice = TState>(
+export function useSelector<TState, TSelected = TState>(
   store: ReadonlyStore<TState>,
-  selector: (state: TState) => TSlice,
-  equalFn: (prev: TSlice, next: TSlice) => boolean = shallowEqual,
-): TSlice {
-  const sliceRef = useRef<TSlice>(undefined);
+  selector: (state: TState) => TSelected,
+  equalFn: (prev: TSelected, next: TSelected) => boolean = shallowEqual,
+): TSelected {
+  const selectedRef = useRef<TSelected>(undefined);
 
-  const getSnapshot = (): TSlice => {
-    const prev = sliceRef.current;
+  const getSnapshot = (): TSelected => {
+    const prev = selectedRef.current;
     const next = selector(store.get());
     return prev !== undefined && equalFn(prev, next)
       ? prev
-      : (sliceRef.current = next);
+      : (selectedRef.current = next);
   };
 
   return useSyncExternalStore(

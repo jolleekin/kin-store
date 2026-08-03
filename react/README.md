@@ -30,15 +30,16 @@ function Counter(): JSX.Element {
 }
 ```
 
-To subscribe to just a slice of the state, use `useSelector` instead.
+To subscribe to a transformed value derived from the state, use `useSelector`
+instead.
 
 ## `useSelector`
 
-Selects a slice of the state and re-renders only when that slice changes,
-using an equality function to decide whether it actually changed. Defaults to
-`shallowEqual`, which compares the slice one level deep — safe even when the
-selector returns a new object or array reference on every call (e.g.
-`.filter()`, `.map()`, object literals).
+Selects a transformed value from the state and re-renders only when that
+value changes, using an equality function to decide whether it actually
+changed. Defaults to `shallowEqual`, which compares the value one level deep —
+safe even when the selector returns a new object or array reference on every
+call (e.g. `.filter()`, `.map()`, object literals).
 
 ```tsx
 import { useSelector } from "@kin-store/react";
