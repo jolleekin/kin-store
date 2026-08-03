@@ -34,11 +34,17 @@ Have an opinion on ordering, or something missing? Open a
 ## Discovery
 
 - Focused landing pages (React state management, SSR state, persistence,
-  TypeScript state management) and an llms.txt / FAQ / non-goals page once
-  benchmarks and migration guides above are in place.
+  TypeScript state management), once benchmarks and migration guides above
+  are in place.
 
 ## Recently shipped
 
 - SSR-safe `persist()`, awaited plugin lifecycle hooks with defined error
   behavior, hardened `useSelector`, an explicit `set` vs `dispatch` policy,
   and a `PluginStore` helper to simplify plugin-author-facing generics.
+- A `broadcast` plugin for cross-tab state sync via `BroadcastChannel`.
+- AI/agent discovery: `llms.txt`/`llms-full.txt` and a raw Markdown mirror
+  of every docs page, `robots.txt` explicitly allowing major AI crawlers,
+  `sitemap.xml`, distinct per-page descriptions, and an FAQ/non-goals page.
+  Shipped ahead of the benchmarks/migration-guides gating above since none
+  of it depends on unpublished performance claims.
