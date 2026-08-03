@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+- Rename `useSelector`'s "slice" terminology to "selected value" throughout
+  its JSDoc, type parameter (`TSlice` to `TSelected`), and internal ref, since
+  a selector can return any transformed/derived value, not just a subset of
+  the original state shape. No behavior change.
+
 ## 0.3.0
 
 - **Breaking:** Split `useSelector` into two hooks. `useStore(store)` now only

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Add `broadcast`, a plugin that syncs a store's entire state across browser
+  tabs/windows via `BroadcastChannel`. Conflicts resolve last-write-wins by
+  wall-clock time; a tab opened after others requests the current state on
+  activation instead of waiting for the next change.
+
 ## 0.3.7
 
 - Bump version to pick up `@kin-store/core` 0.3.0. `persist` and `immer` use
