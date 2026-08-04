@@ -2,6 +2,11 @@ import { defineConfig, type ThemeOptions } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
 import poimandresLight from "./theme/poimandres-light.json" with { type: "json" };
 
+const SITE_URL = "https://kinstore.dev";
+
+const description =
+  "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.";
+
 export default defineConfig({
   cleanUrls: true,
   // Homepage-only prototype so far; nav/footer links to guide/plugins/
@@ -13,8 +18,7 @@ export default defineConfig({
   // are unconditional. Disabling it removes the dead toggle instead.
   appearance: false,
   title: "Kin Store",
-  description:
-    "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.",
+  description,
 
   themeConfig: {
     // Comparison stays out of the primary nav (footer link only) — it's
@@ -118,15 +122,25 @@ export default defineConfig({
       // page (e.g. /guide/getting-started.md) so agents can fetch clean
       // Markdown instead of scraping rendered HTML. See https://llmstxt.org/.
       llmstxt({
-        domain: "https://kinstore.dev",
-        description:
-          "A reactive state library for TypeScript. Framework-agnostic, zero dependencies, 100% type-safe.",
+        domain: SITE_URL,
+        description,
       }) as never,
     ],
   },
 
   sitemap: {
-    hostname: "https://kinstore.dev",
+    hostname: SITE_URL,
+  },
+
+  transformHead: ({ pageData }) => {
+    const path = pageData.relativePath
+      .replace(/index\.md$/, "")
+      .replace(/\.md$/, "");
+    const canonicalUrl = `${SITE_URL}/${path}`;
+    return [
+      ["link", { rel: "canonical", href: canonicalUrl }],
+      ["meta", { property: "og:url", content: canonicalUrl }],
+    ];
   },
 
   head: [
@@ -139,5 +153,12 @@ export default defineConfig({
         href: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap",
       },
     ],
+    ["meta", { property: "og:type", content: "website" }],
+    ["meta", { property: "og:site_name", content: "Kin Store" }],
+    ["meta", { property: "og:title", content: "Kin Store" }],
+    ["meta", { property: "og:description", content: description }],
+    ["meta", { name: "twitter:card", content: "summary" }],
+    ["meta", { name: "twitter:title", content: "Kin Store" }],
+    ["meta", { name: "twitter:description", content: description }],
   ],
 });
