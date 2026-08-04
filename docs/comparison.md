@@ -14,10 +14,11 @@ implemented in each library. Full, working setup in every example.
 
 ## vs Redux / RTK
 
-Redux wraps app logic in ceremony — a thunk, a slice, and a configured store
-just to fetch and add todos. Async actions are split across two concepts
-(thunk + extraReducers). TypeScript needs two manual type exports to flow
-through.
+Kin Store keeps sync and async state changes in one flat model: reducers for
+the state change, methods for orchestration, both fully inferred with no
+manual type exports. Redux splits that same logic across a thunk and a
+slice's `extraReducers`, and needs `RootState`/`AppDispatch` exported by hand
+for types to flow through call sites.
 
 <SideBySide>
 
@@ -328,16 +329,19 @@ designed around those.
 
 ## vs Zustand
 
-Zustand is not type-safe by default — omit the explicit type annotation on
-`create<State>()` (or the innermost plugin call) and everything infers as `any`
-or `unknown`. State and actions also live in the same object, making it
-impossible to tell from the type alone what's data and what's behavior.
+Kin Store separates state from behavior by construction, and infers types
+without needing an annotation to remember. Zustand keeps state and actions in
+one object, so the type alone can't say what's data and what's behavior, and
+infers as `any`/`unknown` if you omit the explicit type annotation on
+`create<State>()` (or the innermost plugin call).
 
-The middleware model nests each capability around the previous one — read
-right-to-left, outer wraps inner. Adding `persist` and `devtools` means three
-levels of nesting. Each middleware can also alter the store's API shape: `immer`
-changes `setState`'s updater from `(state: TState) => TState | Partial<TState>`
-to `(state: WritableNonArrayDraft<TState>) => void` — so what `setState` accepts
+Kin Store's plugins read top-to-bottom: each `.use()` call adds one capability
+without touching the ones before it. Zustand's middleware nests instead, read
+right-to-left with the outer layer wrapping the inner one, so adding `persist`
+and `devtools` means three levels of nesting. Each middleware can also alter
+the store's own API shape: `immer` changes `setState`'s updater from
+`(state: TState) => TState | Partial<TState>` to
+`(state: WritableNonArrayDraft<TState>) => void`, so what `setState` accepts
 depends on composition order.
 
 <SideBySide>
@@ -477,13 +481,16 @@ function TodoApp() {
 
 ### Writing extensions
 
-Every Zustand middleware implements the `StateCreator` protocol: receive
-`(fn, set, get, api)`, patch `api` directly to add new behaviour, then call
-`fn(set, get, api)` and return its result. An undo/redo middleware exposes the
-full ceremony: the TypeScript types require a `declare module` augmentation, the
-`history` namespace is added by mutating `api as any`, and the whole thing is
-cast via `as unknown as History` because the type system can't follow the
-runtime mutation. The same pattern is used by every Zustand official middleware.
+A Kin Store plugin is a declarative object, so writing one means listing what
+it contributes (reducers, middleware, methods, lifecycle hooks) with no
+runtime patching involved. Every Zustand middleware instead implements the
+`StateCreator` protocol directly: receive `(fn, set, get, api)`, patch `api`
+to add new behavior, then call `fn(set, get, api)` and return its result. An
+undo/redo middleware built this way needs the full ceremony: a `declare
+module` augmentation for the types, the `history` namespace added by
+mutating `api as any`, and the whole thing cast via `as unknown as History`
+because the type system can't follow the runtime mutation, the same pattern
+every official Zustand middleware uses.
 
 <SideBySide>
 
@@ -786,16 +793,16 @@ function TodoApp() {
 
 ## vs MobX
 
-MobX uses a proxy-based reactive system: `makeAutoObservable` silently
-instruments every property and method on your class, turning fields into
-observables, getters into computeds, and methods into actions. This feels
-magical at first — mutations just work. The cost shows up later: async methods
-require `runInAction` to keep the reactive graph consistent (forgetting it
-causes silent stale-data bugs), every React component that reads observable
-state must be wrapped in `observer()` (forgetting it also causes silent
-stale-data bugs with no error thrown), and when a computed unexpectedly re-runs
-you have to reverse-engineer the reactive graph to find out why. At 16 KB
-gzipped, it is also the heaviest option in this list.
+Kin Store's reactivity is explicit: state changes only through `set` or a
+dispatched reducer, and a component only re-renders because it called
+`useStore`/`useSelector` itself. MobX takes the opposite approach:
+`makeAutoObservable` silently instruments every property and method on a
+class into observables, computeds, and actions, so mutations just work with
+no subscription code to write. That implicitness costs in two places: async
+methods need `runInAction` to keep the reactive graph consistent, and every
+React component reading observable state needs `observer()`, and forgetting
+either one fails silently, stale data with no error, rather than throwing. At
+16 KB gzipped, it's also the heaviest library in this comparison.
 
 <SideBySide>
 
