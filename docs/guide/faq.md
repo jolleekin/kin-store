@@ -8,15 +8,15 @@ description: "Frequently asked questions and honest non-goals: what Kin Store de
 
 ### Is Kin Store production-ready?
 
-Yes for the core API (`createStore`, `withPlugins`, `derive`), the
-official plugins, and the React bindings, all covered by tests that run
-on every publish. The project is young, so treat the usual pre-1.0
-signals (small community, short track record) as real inputs to your own
-risk assessment, not something the docs will talk you out of.
+The core API (`createStore`, `withPlugins`, `derive`), the official
+plugins, and the React bindings are all covered by tests that run on
+every publish. That said, the project is young: small community, short
+track record. Weigh those as real inputs to your own risk assessment,
+not something the docs will talk you out of.
 
 ### Does it work outside React?
 
-Yes. `@kin-store/core` and `@kin-store/plugins` have zero framework
+`@kin-store/core` and `@kin-store/plugins` have zero framework
 dependency: a store is a plain value with `get`/`set`/`subscribe`, usable
 from any JS/TS environment (vanilla, a framework's own reactivity, a
 worker, a Node/Deno backend). `@kin-store/react` is the only official
@@ -24,15 +24,15 @@ framework binding published today.
 
 ### Is there official Vue, Svelte, or Solid support?
 
-Not yet. Nothing in the architecture is React-specific (`useStore` is a
-thin `useSyncExternalStore` wrapper), so a similar binding for another
+Not today. Nothing in the architecture is React-specific (`useStore` is
+a thin `useSyncExternalStore` wrapper), so a similar binding for another
 framework is plausible future work, but no such package exists or is
-published today. `subscribe` is plain enough to wire into another
+published yet. `subscribe` is plain enough to wire into another
 framework's reactivity by hand in the meantime.
 
 ### Does it work with SSR / Next.js?
 
-Yes; see the [Next.js example](/examples/nextjs). SSR mainly changes two
+See the [Next.js example](/examples/nextjs). SSR mainly changes two
 things: where the store instance lives (constructed per-request or via a
 provider, not a module-level singleton shared across requests) and when
 `persist` is allowed to touch `localStorage` (skipped on the server,
@@ -40,10 +40,10 @@ hydrated explicitly on the client).
 
 ### Is there a DevTools integration?
 
-Yes, via the official [`devtools`](/plugins/devtools) plugin, which
-connects to the Redux DevTools Extension for time-travel debugging,
-action replay, and jump-to-state. It is opt-in like every other plugin;
-a store that never registers it carries no devtools code.
+The official [`devtools`](/plugins/devtools) plugin connects a store to
+the Redux DevTools Extension for time-travel debugging, action replay,
+and jump-to-state. It's opt-in like every other plugin; a store that
+never registers it carries no devtools code.
 
 ### Can reducers or methods be async?
 
@@ -85,22 +85,26 @@ for bugs.
 
 ## Non-goals
 
-- **Not a server-state or data-fetching library.** No request cache, no
-  dedup, no background refetch. Pair it with TanStack Query, SWR, or
-  similar for that half of your state.
-- **Not an implicit, proxy-based reactivity system.** State changes only
-  through `set` or a dispatched reducer; nothing mutates a draft behind
-  your back unless you explicitly opt into the [`immer`](/plugins/immer)
-  plugin.
-- **Not a schema-validation library.** State shape is whatever TypeScript
-  type you give `createStore`; validating external input (an API
-  response, a form) is left to a dedicated library.
-- **Not multi-framework today.** `@kin-store/react` is the only official
-  binding; there's no Vue, Svelte, or Solid package yet.
-- **Not a CRDT or a general conflict-resolution system.** `persist` and
-  `broadcast` are last-write-wins; concurrent, mergeable edits are out of
-  scope.
-- **Not trying to out-feature Redux.** No built-in serializable action
-  log format, no time-travel outside the `devtools` plugin, no
-  code-generation. The [comparison page](/comparison) covers the
-  tradeoffs directly.
+Kin Store has no request cache, no dedup, no background refetch; server
+state (cached responses, in-flight data) is TanStack Query's job, and
+`createStore`/`withPlugins` only ever model what the client owns.
+
+State changes only through `set` or a dispatched reducer. Nothing mutates
+a draft behind your back unless you explicitly opt into the
+[`immer`](/plugins/immer) plugin, so there's no implicit, proxy-based
+reactivity happening anywhere by default.
+
+It's also not a schema-validation library: state shape is whatever
+TypeScript type you give `createStore`, and validating external input
+(an API response, a form submission) is left to a dedicated library.
+And it's not multi-framework yet; `@kin-store/react` is the only
+official binding, with no Vue, Svelte, or Solid package.
+
+Neither `persist` nor `broadcast` does conflict resolution beyond
+last-write-wins, so don't reach for either as a substitute for a CRDT on
+state that genuinely needs merged concurrent edits.
+
+Finally, Kin Store isn't trying to out-feature Redux. There's no
+built-in serializable action log format, no time-travel outside the
+`devtools` plugin, and no code-generation step. The
+[comparison page](/comparison) covers those tradeoffs directly.
