@@ -22,8 +22,6 @@ Have an opinion on ordering, or something missing? Open a
   compatibility.
 - Fair migration guides from Zustand, Redux Toolkit, Jotai, and TanStack
   Store, including honest "when Kin Store is the wrong choice" guidance.
-- Lead comparison pages with Kin Store's own wedge (flat, typed plugin
-  composition) instead of centering competitor critique.
 
 ## Distribution and ecosystem
 
@@ -48,3 +46,6 @@ Have an opinion on ordering, or something missing? Open a
   `sitemap.xml`, distinct per-page descriptions, and an FAQ/non-goals page.
   Shipped ahead of the benchmarks/migration-guides gating above since none
   of it depends on unpublished performance claims.
+- Comparison-page framing: the vs Redux/Zustand/MobX sections now lead with
+  Kin Store's own model before naming the other library's cost, instead of
+  opening with competitor critique.
