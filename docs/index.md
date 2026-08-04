@@ -52,9 +52,9 @@ layout: home
       </div>
     </div>
     <div class="principle-grid">
-      <div class="principle"><h4>Type-safe by default, never annotated by hand.</h4></div>
-      <div class="principle"><h4>Explicit, always: if it happened, you triggered it.</h4></div>
       <div class="principle"><h4>Opt-in, not layered: each plugin adds a step, not a wrapper, so bytes only grow when you ask for them.</h4></div>
+      <div class="principle"><h4>Declarative, not imperative: a plugin lists what it adds, without patching the store.</h4></div>
+      <div class="principle"><h4>Explicit, always: if it happened, you triggered it.</h4></div>
       <div class="principle"><h4><code>set</code> or <code>dispatch</code>, your call: both are first-class, neither one's a fallback.</h4></div>
     </div>
   </div>
@@ -116,6 +116,8 @@ const store = withPlugins(todos)
   .use("persist", persist({ key: "todos" }))
   .use("devtools", devtools())
   .use({
+    // A plugin is a plain object: methods/reducers/middleware, nothing
+    // wraps or patches the store to add them.
     methods: (store) => ({
       addTodo(text: string): void {
         store.set((s) => ({ ...s, items: [...s.items, text] }));
@@ -155,6 +157,8 @@ const store = withPlugins(todos)
 
 store.dispatch.addTodo("Buy milk"); // Full intellisense, logged in devtools.
 ```
+
+<p class="demo-note"><code>set</code>/<code>dispatch</code> are both first-class here: pick whichever fits this store or method, not a ladder from one to the other.</p>
 
 <p class="demo-caption">In React</p>
 

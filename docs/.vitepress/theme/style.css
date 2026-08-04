@@ -195,7 +195,7 @@ code {
 
 .hero .tagline {
   font-size: 18px;
-  line-height: 1.6;
+  line-height: 24px;
   color: var(--text-muted);
   max-width: 520px;
   margin: 0;
@@ -261,7 +261,7 @@ code {
 /* Why it exists */
 .why p {
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 20px;
   color: var(--text-muted);
   max-width: 640px;
   margin: 0;
@@ -382,6 +382,17 @@ code {
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow-x: auto;
+}
+
+/* Sits right under a code block (which already carries the 40px bottom
+   margin above), so this only needs its own bottom margin before the next
+   caption. Same size/weight as normal body prose (.why p), not fine print. */
+.demo-note {
+  margin: 0 0 32px;
+  max-width: 640px;
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--text-muted);
 }
 
 .demo pre {
