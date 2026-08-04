@@ -98,7 +98,9 @@ It's also not a schema-validation library: state shape is whatever
 TypeScript type you give `createStore`, and validating external input
 (an API response, a form submission) is left to a dedicated library.
 And it's not multi-framework yet; `@kin-store/react` is the only
-official binding, with no Vue, Svelte, or Solid package.
+official binding, with no Vue, Svelte, or Solid package. If you're
+interested in Kin Store and want bindings for other frameworks, please
+[file an issue](https://github.com/jolleekin/kin-store/issues).
 
 Neither `persist` nor `broadcast` does conflict resolution beyond
 last-write-wins, so don't reach for either as a substitute for a CRDT on
