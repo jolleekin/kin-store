@@ -21,8 +21,8 @@ export default defineConfig({
   description,
 
   themeConfig: {
-    // Comparison stays out of the primary nav (footer link only) — it's
-    // opt-in reading, not the pitch.
+    // Comparison stays out of the primary nav (guide sidebar link only) —
+    // it's opt-in reading, not the pitch.
     nav: [
       { text: "Guide", link: "/guide/" },
       { text: "Plugins", link: "/plugins/" },
@@ -40,6 +40,7 @@ export default defineConfig({
             { text: "Getting Started", link: "/guide/getting-started" },
             { text: "Design Principles", link: "/guide/design-principles" },
             { text: "FAQ & Non-Goals", link: "/guide/faq" },
+            { text: "Comparison", link: "/comparison" },
           ],
         },
         {
@@ -98,7 +99,7 @@ export default defineConfig({
     search: { provider: "local" },
 
     footer: {
-      message: 'MIT License. <a href="/comparison">Comparison</a>',
+      message: "MIT License",
       copyright: "Copyright &copy; 2026-present Man Hoang",
     },
 

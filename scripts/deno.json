@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "bundle-size": "deno run -A bundle-size.ts"
+  },
+  "imports": {
+    "rolldown": "npm:rolldown@^1",
+    "react": "npm:react@^19.2.7",
+    "zustand": "npm:zustand@^5",
+    "@reduxjs/toolkit": "npm:@reduxjs/toolkit@^2",
+    "react-redux": "npm:react-redux@^9",
+    "jotai": "npm:jotai@^2",
+    "mobx": "npm:mobx@^7",
+    "mobx-react-lite": "npm:mobx-react-lite@^5"
+  }
+}

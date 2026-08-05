@@ -33,8 +33,8 @@ deno test -A core/create-store.test.ts
 # Lint (required before commit — see below)
 deno lint
 
-# Bundle-size check for core primitives (writes core/dist/*.min.js.gz)
-cd core && deno task check-size
+# Bundle-size check for core primitives and the react package
+deno task --cwd scripts bundle-size
 
 # Docs site (VitePress)
 cd docs && deno task dev       # dev server

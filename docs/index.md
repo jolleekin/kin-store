@@ -35,19 +35,19 @@ layout: home
       <div class="primitive">
         <span class="step">01</span>
         <code>createStore</code>
-        <span class="size">244 B</span>
+        <span class="size">231 B</span>
         <p>Get, set, subscribe. Nothing else.</p>
       </div>
       <div class="primitive">
         <span class="step">02</span>
         <code>withPlugins</code>
-        <span class="size">1.07 KB</span>
+        <span class="size">1.01 KB</span>
         <p>Add structure one <code>.use()</code> at a time. Reducers, methods, middleware, read top to bottom, run top to bottom.</p>
       </div>
       <div class="primitive">
         <span class="step">03</span>
         <code>derive</code>
-        <span class="size">465 B</span>
+        <span class="size">438 B</span>
         <p>Compose stores into new ones. It tracks which stores you read, not a graph of who depends on whom.</p>
       </div>
     </div>

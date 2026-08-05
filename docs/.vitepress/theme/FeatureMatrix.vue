@@ -17,8 +17,8 @@ const rows: Array<{
 }> = [
   {
     label: 'Bundle size',
-    kin: 'bundle',
-    zustand: '~1.1 KB', redux: '~10 KB', jotai: '~3.5 KB', mobx: '~16 KB',
+    kin: '2.05 KB',
+    zustand: '389 B', redux: '17.57 KB', jotai: '3.98 KB', mobx: '15.62 KB',
     trimmed: true,
   },
   { label: 'Zero dependencies',         kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '✅', trimmed: true },
@@ -111,14 +111,7 @@ const visibleRows = computed(() =>
                 <a v-if="!full" href="/comparison" class="row-link">{{ row.label }}</a>
                 <template v-else>{{ row.label }}</template>
               </td>
-              <td v-if="row.kin === 'bundle'" class="kin">
-                <div class="size-grid">
-                  <span class="size-line">244 B</span><code class="size-label">createStore</code>
-                  <span class="size-line">465 B</span><code class="size-label">derive</code>
-                  <span class="size-line">1.07 KB</span><code class="size-label">withPlugins</code>
-                </div>
-              </td>
-              <td v-else class="kin">{{ row.kin }}</td>
+              <td class="kin">{{ row.kin }}</td>
               <td :class="{ na: row.zustand === '—', noted: !!row.notes?.zustand }" :title="row.notes?.zustand">{{ row.zustand }}</td>
               <td :class="{ na: row.redux   === '—', noted: !!row.notes?.redux   }" :title="row.notes?.redux">{{ row.redux }}</td>
               <td :class="{ na: row.jotai   === '—', noted: !!row.notes?.jotai   }" :title="row.notes?.jotai">{{ row.jotai }}</td>
@@ -128,6 +121,7 @@ const visibleRows = computed(() =>
         </table>
       </div>
       <p class="feature-matrix-legend">✅ full support · ⚠️ partial or conditional · — not applicable (different model)</p>
+      <p class="feature-matrix-legend">Bundle sizes are each library's full package import, bundled with rolldown, minified, and gzipped; tree-shaking down to only the APIs you use will land smaller across the board.</p>
       <p v-if="!full" class="feature-matrix-cta">
         Don't believe it? <a href="/comparison">See full comparison with code examples →</a>
       </p>
@@ -250,10 +244,9 @@ const visibleRows = computed(() =>
 }
 
 .feature-matrix-legend {
-  text-align: center;
   margin-top: 12px;
   font-size: 12px;
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-text-1);
 }
 
 .feature-matrix-cta {
