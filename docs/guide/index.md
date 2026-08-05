@@ -7,24 +7,31 @@ description: "Why Kin Store exists: three primitives (createStore, withPlugins, 
 Kin Store starts from one constraint: the smallest set of ideas a state
 library actually needs, and nothing past that.
 
-## What we optimized for
+## What that meant in practice
 
-- **Structure without ceremony** — plugins add a step, not a wrapper.
-- **Zero boilerplate** — a store is a value and three methods, not a slice,
-  a reducer, and a dispatch table.
-- **100% type-safe by default** — inference does the work; you don't
-  annotate what the compiler can already see.
-- **No hidden cost** — you pay for what you `.use()`, nothing more.
-- **Opt-in complexity that composes linearly** — each capability stacks on
-  the last, it doesn't multiply against it.
-
-## Three primitives
+Three primitives came out of that constraint: `createStore`, `withPlugins`,
+and `derive`.
 
 | Primitive                            | What it does                                                                          |
 | ------------------------------------- | --------------------------------------------------------------------------------------- |
 | [`createStore`](/guide/create-store) | The irreducible floor. `get` · `set` · `subscribe`. Nothing else.                     |
 | [`withPlugins`](/guide/with-plugins) | Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced plugins. |
 | [`derive`](/guide/derive)            | Lazy, dependency-tracked, read-only views composed from one or more stores.           |
+
+None of them carry a framework's worth of internal bookkeeping. A bare
+`createStore` is a value and three methods, nothing else. Whatever
+structure you add on top, methods, reducers, middleware, only exists
+because you `.use()`'d a plugin for it through `withPlugins`; the store
+doesn't route everything through a slice and a dispatch table by default.
+
+Nothing runs through a proxy or a full reactive graph either. A bare store
+costs exactly what `get`/`set`/`subscribe` cost, and each plugin you layer
+on adds its own cost on top, stacking rather than multiplying against what
+was already there.
+
+Type inference comes along on top of that: reducer arguments, dispatch
+calls, and plugin methods are fully inferred, so you're not
+hand-annotating what the compiler already knows.
 
 Curious how this holds up against Redux, Zustand, Jotai, or MobX in
 practice? See the full [comparison](/comparison) — line-by-line, with the

@@ -141,10 +141,11 @@ code {
 }
 
 .site-nav .brand {
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
   margin-right: auto;
-  color: var(--text);
+  color: var(--text-muted);
 }
 
 .site-nav a {
@@ -165,16 +166,16 @@ code {
 }
 
 /* Hero */
-.hero {
-  padding: 56px 24px 40px;
+.home .hero {
+  padding: 72px 24px 48px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 @media (min-width: 640px) {
-  .hero {
-    padding: 88px 56px 64px;
+  .home .hero {
+    padding: 80px 56px 80px;
   }
 }
 
@@ -259,7 +260,7 @@ code {
 }
 
 /* Why it exists */
-.why p {
+.why p:not(.eyebrow) {
   font-size: 15px;
   line-height: 20px;
   color: var(--text-muted);
