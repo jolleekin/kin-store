@@ -24,6 +24,47 @@ for types to flow through call sites.
 
 ::: code-group
 
+```ts [Kin Store]
+import { withPlugins } from "@kin-store/core";
+
+type Todo = { id: number; text: string; done: boolean };
+type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
+
+// Sync and async live side-by-side — reducers for state changes,
+// methods for orchestration. No separate thunk concept.
+const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" }).use({
+  reducers: {
+    addTodo: (state, text: string) => ({
+      ...state,
+      todos: [...state.todos, { id: Date.now(), text, done: false }],
+    }),
+    fetchStart: (state) => ({ ...state, status: "loading" }),
+    fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: "idle" }),
+    fetchRejected: (state) => ({ ...state, status: "failed" }),
+  },
+  middleware: () => (ctx, next) => {
+    console.log("dispatching", ctx.reducer.name, ctx.reducer.args);
+    return next();
+  },
+  methods: (store) => ({
+    async fetchTodos(): Promise<void> {
+      store.dispatch.fetchStart();
+      try {
+        const resp = await fetch("/api/todos");
+        const todos = (await resp.json()) as Todo[];
+        store.dispatch.fetchFulfilled(todos);
+      } catch {
+        store.dispatch.fetchRejected();
+      }
+    },
+  }),
+});
+
+// Fully typed — no manual type exports needed.
+todoStore.dispatch.addTodo("Buy groceries");
+await todoStore.fetchTodos();
+```
+
 ```ts [Redux / RTK]
 import {
   configureStore,
@@ -85,60 +126,19 @@ store.dispatch(todosSlice.actions.addTodo("Buy groceries"));
 store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 ```
 
-```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
-
-type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
-
-// Sync and async live side-by-side — reducers for state changes,
-// methods for orchestration. No separate thunk concept.
-const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" }).use({
-  reducers: {
-    addTodo: (state, text: string) => ({
-      ...state,
-      todos: [...state.todos, { id: Date.now(), text, done: false }],
-    }),
-    fetchStart: (state) => ({ ...state, status: "loading" }),
-    fetchFulfilled: (state, todos: Todo[]) => ({ todos, status: "idle" }),
-    fetchRejected: (state) => ({ ...state, status: "failed" }),
-  },
-  middleware: () => (ctx, next) => {
-    console.log("dispatching", ctx.reducer.name, ctx.reducer.args);
-    return next();
-  },
-  methods: (store) => ({
-    async fetchTodos(): Promise<void> {
-      store.dispatch.fetchStart();
-      try {
-        const resp = await fetch("/api/todos");
-        const todos = (await resp.json()) as Todo[];
-        store.dispatch.fetchFulfilled(todos);
-      } catch {
-        store.dispatch.fetchRejected();
-      }
-    },
-  }),
-});
-
-// Fully typed — no manual type exports needed.
-todoStore.dispatch.addTodo("Buy groceries");
-await todoStore.fetchTodos();
-```
-
 :::
 
 </SideBySide>
 
 **What's different:**
 
-|                     | Redux / RTK                               | Kin Store                     |
-| -------------------- | -------------------------------------------- | -------------------------------- |
-| Async actions       | `createAsyncThunk` + `extraReducers`      | Method that calls reducers    |
-| Middleware          | `(api) => (next) => (action) => ...`      | `(ctx, next) => ...`          |
-| Type exports        | `RootState`, `AppDispatch` manual exports | Fully inferred — zero exports |
-| Access pattern      | `slice.actions.addTodo(...)`              | `store.dispatch.addTodo(...)` |
-| Call logic in React | `useDispatch()` hook required             | Call directly — no hook       |
+|                     | Kin Store                     | Redux / RTK                               |
+| -------------------- | -------------------------------- | -------------------------------------------- |
+| Async actions       | Method that calls reducers    | `createAsyncThunk` + `extraReducers`      |
+| Middleware          | `(ctx, next) => ...`          | `(api) => (next) => (action) => ...`      |
+| Type exports        | Fully inferred — zero exports | `RootState`, `AppDispatch` manual exports |
+| Access pattern      | `store.dispatch.addTodo(...)` | `slice.actions.addTodo(...)`              |
+| Call logic in React | Call directly — no hook       | `useDispatch()` hook required             |
 
 ### Writing extensions
 
@@ -153,85 +153,6 @@ time and throws on conflict.
 <SideBySide>
 
 ::: code-group
-
-```ts [Redux enhancer]
-import { configureStore } from "@reduxjs/toolkit";
-import type { StoreEnhancer } from "@reduxjs/toolkit";
-
-type HistoryExt = {
-  history: {
-    canUndo(): boolean;
-    canRedo(): boolean;
-    undo(): boolean;
-    redo(): boolean;
-  };
-};
-
-// StoreEnhancer<Ext> does not thread state — TState must be manually inferred
-// from the reducer. Action types still require casts to satisfy Redux's Action.
-function makeHistory(): StoreEnhancer<HistoryExt> {
-  return (createStoreApi) => (reducer: any, preloadedState: any) => {
-    type TState = ReturnType<typeof reducer>;
-    type RestoreAction = { type: "@@HISTORY/RESTORE"; payload: TState };
-
-    const snapshots: TState[] = [];
-    let index = 0;
-    let isRestoring = false;
-
-    // Wrap the reducer to intercept a private RESTORE action.
-    const wrapped: typeof reducer = (state, action) =>
-      // Type casts required for type safety.
-      (action as unknown as RestoreAction).type === "@@HISTORY/RESTORE"
-        ? (action as unknown as RestoreAction).payload
-        : reducer(state, action);
-
-    const store = createStoreApi(wrapped, preloadedState);
-    snapshots.push(store.getState());
-
-    store.subscribe(() => {
-      if (isRestoring) return;
-      snapshots.length = index + 1;
-      snapshots.push(store.getState());
-      index = snapshots.length - 1;
-    });
-
-    function restore(saved: TState): void {
-      isRestoring = true;
-      store.dispatch(
-        // Type cast required for type safety.
-        { type: "@@HISTORY/RESTORE", payload: saved } as RestoreAction as never,
-      );
-      isRestoring = false;
-    }
-
-    return {
-      ...store,
-      history: {
-        canUndo: () => index > 0,
-        canRedo: () => index + 1 < snapshots.length,
-        undo(): boolean {
-          if (index <= 0) return false;
-          restore(snapshots[--index]);
-          return true;
-        },
-        redo(): boolean {
-          if (index + 1 >= snapshots.length) return false;
-          restore(snapshots[++index]);
-          return true;
-        },
-      },
-    };
-  };
-}
-
-const store = configureStore({
-  reducer: rootReducer,
-  enhancers: (getDefaultEnhancers) =>
-    getDefaultEnhancers().concat(makeHistory()),
-});
-
-store.history.undo(); // ✓ — snapshots are TState[], but required manual inference and casts
-```
 
 ```ts [Kin Store plugin]
 import { getPluginDispatch } from "@kin-store/core";
@@ -314,6 +235,85 @@ export function history<
 }
 ```
 
+```ts [Redux enhancer]
+import { configureStore } from "@reduxjs/toolkit";
+import type { StoreEnhancer } from "@reduxjs/toolkit";
+
+type HistoryExt = {
+  history: {
+    canUndo(): boolean;
+    canRedo(): boolean;
+    undo(): boolean;
+    redo(): boolean;
+  };
+};
+
+// StoreEnhancer<Ext> does not thread state — TState must be manually inferred
+// from the reducer. Action types still require casts to satisfy Redux's Action.
+function makeHistory(): StoreEnhancer<HistoryExt> {
+  return (createStoreApi) => (reducer: any, preloadedState: any) => {
+    type TState = ReturnType<typeof reducer>;
+    type RestoreAction = { type: "@@HISTORY/RESTORE"; payload: TState };
+
+    const snapshots: TState[] = [];
+    let index = 0;
+    let isRestoring = false;
+
+    // Wrap the reducer to intercept a private RESTORE action.
+    const wrapped: typeof reducer = (state, action) =>
+      // Type casts required for type safety.
+      (action as unknown as RestoreAction).type === "@@HISTORY/RESTORE"
+        ? (action as unknown as RestoreAction).payload
+        : reducer(state, action);
+
+    const store = createStoreApi(wrapped, preloadedState);
+    snapshots.push(store.getState());
+
+    store.subscribe(() => {
+      if (isRestoring) return;
+      snapshots.length = index + 1;
+      snapshots.push(store.getState());
+      index = snapshots.length - 1;
+    });
+
+    function restore(saved: TState): void {
+      isRestoring = true;
+      store.dispatch(
+        // Type cast required for type safety.
+        { type: "@@HISTORY/RESTORE", payload: saved } as RestoreAction as never,
+      );
+      isRestoring = false;
+    }
+
+    return {
+      ...store,
+      history: {
+        canUndo: () => index > 0,
+        canRedo: () => index + 1 < snapshots.length,
+        undo(): boolean {
+          if (index <= 0) return false;
+          restore(snapshots[--index]);
+          return true;
+        },
+        redo(): boolean {
+          if (index + 1 >= snapshots.length) return false;
+          restore(snapshots[++index]);
+          return true;
+        },
+      },
+    };
+  };
+}
+
+const store = configureStore({
+  reducer: rootReducer,
+  enhancers: (getDefaultEnhancers) =>
+    getDefaultEnhancers().concat(makeHistory()),
+});
+
+store.history.undo(); // ✓ — snapshots are TState[], but required manual inference and casts
+```
+
 :::
 
 </SideBySide>
@@ -347,6 +347,59 @@ depends on composition order.
 <SideBySide>
 
 ::: code-group
+
+```ts [Kin Store]
+import { withPlugins } from "@kin-store/core";
+import { history, immer, persist } from "@kin-store/plugins";
+import { useSelector } from "@kin-store/react";
+
+type Todo = { id: number; text: string; done: boolean };
+type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
+
+// Read top-to-bottom — each .use() adds one plugin, not one nesting level.
+const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
+  .use("persist", persist({ key: "todos" }))
+  .use("history", history())
+  .use(
+    immer({
+      methods: (immerStore) => ({
+        addTodo(text: string): void {
+          immerStore.set((draft) => {
+            draft.todos.push(text);
+          });
+        },
+
+        async fetchTodos(): Promise<void> {
+          immerStore.set((draft) => {
+            draft.status = "loading";
+          });
+          try {
+            const resp = await fetch("/api/todos");
+            const todos = (await resp.json()) as Todo[];
+            immerStore.set((draft) => {
+              draft.todos = todos;
+              draft.status = "idle";
+            });
+          } catch {
+            immerStore.set((draft) => {
+              draft.status = "failed";
+            });
+          }
+        },
+      }),
+    }),
+  );
+
+// Plugins can be namespaced — no conflicts, no configuration buried in wrappers.
+await todoStore.persist.hydrate();
+todoStore.history.undo();
+
+// In React — methods are stable refs, not part of the state subscription.
+function TodoApp() {
+  const todos = useSelector(todoStore, (s) => s.todos);
+  return <button onClick={() => todoStore.addTodo("new")}>Add</button>;
+}
+```
 
 ```ts [Zustand]
 import { create } from "zustand";
@@ -410,74 +463,21 @@ function TodoApp() {
 }
 ```
 
-```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
-import { history, immer, persist } from "@kin-store/plugins";
-import { useSelector } from "@kin-store/react";
-
-type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
-
-// Read top-to-bottom — each .use() adds one plugin, not one nesting level.
-const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
-  .use("persist", persist({ key: "todos" }))
-  .use("history", history())
-  .use(
-    immer({
-      methods: (immerStore) => ({
-        addTodo(text: string): void {
-          immerStore.set((draft) => {
-            draft.todos.push(text);
-          });
-        },
-
-        async fetchTodos(): Promise<void> {
-          immerStore.set((draft) => {
-            draft.status = "loading";
-          });
-          try {
-            const resp = await fetch("/api/todos");
-            const todos = (await resp.json()) as Todo[];
-            immerStore.set((draft) => {
-              draft.todos = todos;
-              draft.status = "idle";
-            });
-          } catch {
-            immerStore.set((draft) => {
-              draft.status = "failed";
-            });
-          }
-        },
-      }),
-    }),
-  );
-
-// Plugins can be namespaced — no conflicts, no configuration buried in wrappers.
-await todoStore.persist.hydrate();
-todoStore.history.undo();
-
-// In React — methods are stable refs, not part of the state subscription.
-function TodoApp() {
-  const todos = useSelector(todoStore, (s) => s.todos);
-  return <button onClick={() => todoStore.addTodo("new")}>Add</button>;
-}
-```
-
 :::
 
 </SideBySide>
 
 **What's different:**
 
-|                        | Zustand                                                                    | Kin Store                                                        |
-| ------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Extension/Plugin model | Imperative wrapper — each layer may alter `set`, `get`, or the store shape | Declarative object — declares reducers, methods, lifecycle hooks |
-| Adding persist         | Wrap entire store in `persist(...)`                                        | `.use('persist', persist(...))`                                  |
-| Adding immer           | Wrap again in `immer(...)`                                                 | `.use('immer', immer())`                                         |
-| Adding devtools        | Wrap again in `devtools(...)`                                              | `.use('devtools', devtools(...))`                                |
-| Reading pipeline order | Inside-out                                                                 | Top-to-bottom                                                    |
-| State vs actions       | Same object                                                                | Structurally separate                                            |
-| Call logic in React    | Hook required — subscribes even to stable action refs                      | Call directly — no hook                                          |
+|                        | Kin Store                                                        | Zustand                                                                    |
+| ------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Extension/Plugin model | Declarative object — declares reducers, methods, lifecycle hooks | Imperative wrapper — each layer may alter `set`, `get`, or the store shape |
+| Adding persist         | `.use('persist', persist(...))`                                  | Wrap entire store in `persist(...)`                                        |
+| Adding immer           | `.use('immer', immer())`                                         | Wrap again in `immer(...)`                                                 |
+| Adding devtools        | `.use('devtools', devtools(...))`                                | Wrap again in `devtools(...)`                                              |
+| Reading pipeline order | Top-to-bottom                                                    | Inside-out                                                                 |
+| State vs actions       | Structurally separate                                            | Same object                                                                |
+| Call logic in React    | Call directly — no hook                                          | Hook required — subscribes even to stable action refs                      |
 
 ### Writing extensions
 
@@ -495,6 +495,88 @@ every official Zustand middleware uses.
 <SideBySide>
 
 ::: code-group
+
+```ts [Kin Store plugin]
+import { getPluginDispatch } from "@kin-store/core";
+import type {
+  InferActions,
+  NestedMethods,
+  NestedReducers,
+  StorePlugin,
+} from "@kin-store/core";
+
+type HistoryReducers<TState> = {
+  _restore: (state: TState, saved: TState) => TState;
+};
+
+type HistoryMethods = {
+  canUndo(): boolean;
+  canRedo(): boolean;
+  undo(): boolean;
+  redo(): boolean;
+};
+
+// TState flows through every type position — no any needed.
+export function history<
+  TState,
+  TStoreReducers extends NestedReducers<TState>,
+  TStoreMethods extends NestedMethods,
+  TNamespace extends string | undefined,
+>(): StorePlugin<
+  TState,
+  TStoreReducers,
+  TStoreMethods,
+  TNamespace,
+  HistoryReducers<TState>,
+  HistoryMethods
+> {
+  const snapshots: TState[] = [];
+  let index = 0;
+  let isRestoring = false;
+
+  return {
+    reducers: {
+      // A declared reducer — visible in devtools.
+      _restore: (_state, saved) => saved,
+    },
+
+    methods: (store, { namespace }) => {
+      const dispatch = getPluginDispatch(store, namespace);
+
+      function restore(state: TState): void {
+        isRestoring = true;
+        dispatch._restore(state);
+        isRestoring = false;
+      }
+
+      return {
+        canUndo: () => index > 0,
+        canRedo: () => index + 1 < snapshots.length,
+        undo(): boolean {
+          if (index <= 0) return false;
+          restore(snapshots[--index]);
+          return true;
+        },
+        redo(): boolean {
+          if (index + 1 >= snapshots.length) return false;
+          restore(snapshots[++index]);
+          return true;
+        },
+      };
+    },
+
+    onActivated: (store) => {
+      snapshots.push(store.get());
+      store.subscribe((get) => {
+        if (isRestoring) return;
+        snapshots.length = index + 1;
+        snapshots.push(get());
+        index = snapshots.length - 1;
+      });
+    },
+  };
+}
+```
 
 ```ts [Zustand middleware]
 import { StateCreator, StoreMutatorIdentifier } from "zustand";
@@ -580,100 +662,18 @@ const historyImpl: HistoryImpl = (fn) => (set, get, api) => {
 export const history = historyImpl as unknown as History;
 ```
 
-```ts [Kin Store plugin]
-import { getPluginDispatch } from "@kin-store/core";
-import type {
-  InferActions,
-  NestedMethods,
-  NestedReducers,
-  StorePlugin,
-} from "@kin-store/core";
-
-type HistoryReducers<TState> = {
-  _restore: (state: TState, saved: TState) => TState;
-};
-
-type HistoryMethods = {
-  canUndo(): boolean;
-  canRedo(): boolean;
-  undo(): boolean;
-  redo(): boolean;
-};
-
-// TState flows through every type position — no any needed.
-export function history<
-  TState,
-  TStoreReducers extends NestedReducers<TState>,
-  TStoreMethods extends NestedMethods,
-  TNamespace extends string | undefined,
->(): StorePlugin<
-  TState,
-  TStoreReducers,
-  TStoreMethods,
-  TNamespace,
-  HistoryReducers<TState>,
-  HistoryMethods
-> {
-  const snapshots: TState[] = [];
-  let index = 0;
-  let isRestoring = false;
-
-  return {
-    reducers: {
-      // A declared reducer — visible in devtools.
-      _restore: (_state, saved) => saved,
-    },
-
-    methods: (store, { namespace }) => {
-      const dispatch = getPluginDispatch(store, namespace);
-
-      function restore(state: TState): void {
-        isRestoring = true;
-        dispatch._restore(state);
-        isRestoring = false;
-      }
-
-      return {
-        canUndo: () => index > 0,
-        canRedo: () => index + 1 < snapshots.length,
-        undo(): boolean {
-          if (index <= 0) return false;
-          restore(snapshots[--index]);
-          return true;
-        },
-        redo(): boolean {
-          if (index + 1 >= snapshots.length) return false;
-          restore(snapshots[++index]);
-          return true;
-        },
-      };
-    },
-
-    onActivated: (store) => {
-      snapshots.push(store.get());
-      store.subscribe((get) => {
-        if (isRestoring) return;
-        snapshots.length = index + 1;
-        snapshots.push(get());
-        index = snapshots.length - 1;
-      });
-    },
-  };
-}
-```
-
 :::
 
 </SideBySide>
 
 **What's different:**
 
-|                | Zustand middleware                                      | Kin Store plugin                   |
-| --------------- | --------------------------------------------------------- | ------------------------------------- |
-| Type extension | `declare module` augmentation + `as unknown as History` | `StorePlugin` generics             |
-| Expose methods | Mutate `api as any`                                     | `methods` on a plain object        |
-| Restore state  | `api.setState(saved, true)` — bypasses all middlewares  | `_restore` reducer — full pipeline |
-| Name collision | Silent overwrite                                        | Throws at registration time        |
+|                | Kin Store plugin                   | Zustand middleware                                      |
+| --------------- | ------------------------------------- | --------------------------------------------------------- |
+| Type extension | `StorePlugin` generics             | `declare module` augmentation + `as unknown as History` |
+| Expose methods | `methods` on a plain object        | Mutate `api as any`                                     |
+| Restore state  | `_restore` reducer — full pipeline | `api.setState(saved, true)` — bypasses all middlewares  |
+| Name collision | Throws at registration time        | Silent overwrite                                        |
 
 ::: warning
 
@@ -703,41 +703,6 @@ atoms can be hard to follow in a debugger.
 <SideBySide>
 
 ::: code-group
-
-```ts [Jotai]
-import { atom, useAtomValue, useSetAtom } from "jotai";
-
-type Todo = { id: number; text: string; done: boolean };
-
-// Each field is its own atom — no single "store" concept.
-const todosAtom = atom<Todo[]>([]);
-const statusAtom = atom<"idle" | "loading" | "failed">("idle");
-
-// App logic must be wrapped in an atom.
-const addTodoAtom = atom(null, (get, set, text: string) => {
-  set(todosAtom, (prev) => [...prev, { id: Date.now(), text, done: false }]);
-});
-
-const fetchTodosAtom = atom(null, async (get, set) => {
-  set(statusAtom, "loading");
-  try {
-    const todos = (await fetch("/api/todos").then((r) => r.json())) as Todo[];
-    set(todosAtom, todos);
-    set(statusAtom, "idle");
-  } catch {
-    set(statusAtom, "failed");
-  }
-});
-
-// Hooks required inside React — jotai/vanilla or getDefaultStore() outside.
-function TodoApp() {
-  const todos = useAtomValue(todosAtom);
-  const status = useAtomValue(statusAtom);
-  const addTodo = useSetAtom(addTodoAtom);
-  const fetchTodos = useSetAtom(fetchTodosAtom);
-  // ...
-}
-```
 
 ```ts [Kin Store]
 import { createStore } from "@kin-store/core";
@@ -777,19 +742,54 @@ function TodoApp() {
 }
 ```
 
+```ts [Jotai]
+import { atom, useAtomValue, useSetAtom } from "jotai";
+
+type Todo = { id: number; text: string; done: boolean };
+
+// Each field is its own atom — no single "store" concept.
+const todosAtom = atom<Todo[]>([]);
+const statusAtom = atom<"idle" | "loading" | "failed">("idle");
+
+// App logic must be wrapped in an atom.
+const addTodoAtom = atom(null, (get, set, text: string) => {
+  set(todosAtom, (prev) => [...prev, { id: Date.now(), text, done: false }]);
+});
+
+const fetchTodosAtom = atom(null, async (get, set) => {
+  set(statusAtom, "loading");
+  try {
+    const todos = (await fetch("/api/todos").then((r) => r.json())) as Todo[];
+    set(todosAtom, todos);
+    set(statusAtom, "idle");
+  } catch {
+    set(statusAtom, "failed");
+  }
+});
+
+// Hooks required inside React — jotai/vanilla or getDefaultStore() outside.
+function TodoApp() {
+  const todos = useAtomValue(todosAtom);
+  const status = useAtomValue(statusAtom);
+  const addTodo = useSetAtom(addTodoAtom);
+  const fetchTodos = useSetAtom(fetchTodosAtom);
+  // ...
+}
+```
+
 :::
 
 </SideBySide>
 
 **What's different:**
 
-|                            | Jotai                                  | Kin Store                                            |
-| ---------------------------- | ----------------------------------------- | ------------------------------------------------------ |
-| State model                | Atoms                                  | Stores (value + subscribers)                         |
-| App logic                  | Wrapped in atoms                       | Plain functions / methods                            |
-| Read / write outside React | `jotai/vanilla` or `getDefaultStore()` | Yes — `get()`, `set()` and plain functions / methods |
-| Reactive composition       | Derived atoms                          | `derive((get) => ...)`                               |
-| Mental model               | "think in atoms"                       | "think in domains"                                   |
+|                            | Kin Store                                            | Jotai                                  |
+| ---------------------------- | ------------------------------------------------------ | ----------------------------------------- |
+| State model                | Stores (value + subscribers)                         | Atoms                                  |
+| App logic                  | Plain functions / methods                            | Wrapped in atoms                       |
+| Read / write outside React | Yes — `get()`, `set()` and plain functions / methods | `jotai/vanilla` or `getDefaultStore()` |
+| Reactive composition       | `derive((get) => ...)`                               | Derived atoms                          |
+| Mental model               | "think in domains"                                    | "think in atoms"                       |
 
 ## vs MobX
 
@@ -808,6 +808,48 @@ behind only Redux/RTK.
 <SideBySide>
 
 ::: code-group
+
+```ts [Kin Store]
+import { withPlugins } from "@kin-store/core";
+import { useSelector } from "@kin-store/react";
+
+type Todo = { id: number; text: string; done: boolean };
+type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
+
+// Plain object — no class, no proxy, no instrumentation.
+const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
+  .use({
+    methods: (store) => ({
+      addTodo(text: string): void {
+        store.set((s) => ({
+          ...s,
+          todos: [...s.todos, { id: Date.now(), text, done: false }],
+        }));
+      },
+      async fetchTodos(): Promise<void> {
+        store.set((s) => ({ ...s, status: "loading" }));
+        try {
+          const resp = await fetch("/api/todos");
+          const todos = (await resp.json()) as Todo[];
+          // No runInAction needed — set is always safe after await.
+          store.set({ todos, status: "idle" });
+        } catch {
+          store.set((s) => ({ ...s, status: "failed" }));
+        }
+      },
+    }),
+  });
+
+// No observer() wrapper — subscriptions are opt-in and explicit.
+function TodoApp() {
+  const todos = useSelector(todoStore, (s) => s.todos);
+  return (
+    <button onClick={() => todoStore.addTodo("Buy groceries")}>
+      Add
+    </button>
+  );
+}
+```
 
 ```ts [MobX]
 import { makeAutoObservable, runInAction } from "mobx";
@@ -859,60 +901,18 @@ const TodoApp = observer(() => {
 });
 ```
 
-```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
-import { useSelector } from "@kin-store/react";
-
-type Todo = { id: number; text: string; done: boolean };
-type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
-
-// Plain object — no class, no proxy, no instrumentation.
-const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
-  .use({
-    methods: (store) => ({
-      addTodo(text: string): void {
-        store.set((s) => ({
-          ...s,
-          todos: [...s.todos, { id: Date.now(), text, done: false }],
-        }));
-      },
-      async fetchTodos(): Promise<void> {
-        store.set((s) => ({ ...s, status: "loading" }));
-        try {
-          const resp = await fetch("/api/todos");
-          const todos = (await resp.json()) as Todo[];
-          // No runInAction needed — set is always safe after await.
-          store.set({ todos, status: "idle" });
-        } catch {
-          store.set((s) => ({ ...s, status: "failed" }));
-        }
-      },
-    }),
-  });
-
-// No observer() wrapper — subscriptions are opt-in and explicit.
-function TodoApp() {
-  const todos = useSelector(todoStore, (s) => s.todos);
-  return (
-    <button onClick={() => todoStore.addTodo("Buy groceries")}>
-      Add
-    </button>
-  );
-}
-```
-
 :::
 
 </SideBySide>
 
 **What's different:**
 
-|                        | MobX                                    | Kin Store                        |
-| ------------------------ | ------------------------------------------ | ----------------------------------- |
-| State mutations        | Mutable (proxy-intercepted)             | `set` — no proxy                 |
-| Async updates          | Must wrap in `runInAction`              | `set` after `await` — no wrapper |
-| Call logic in React    | Direct — no hook needed                 | Direct — no hook needed          |
-| Read state in React    | `observer()` on every component         | `useSelector` only where needed  |
-| Class required         | Yes (or `observable({...})`)            | No — plain object                |
-| Reactive graph         | Implicit, auto-tracked                  | Explicit via `derive`            |
-| Silent stale-data bugs | Two sources (`runInAction`, `observer`) | None                             |
+|                        | Kin Store                        | MobX                                    |
+| ------------------------ | ----------------------------------- | ------------------------------------------ |
+| State mutations        | `set` — no proxy                 | Mutable (proxy-intercepted)             |
+| Async updates          | `set` after `await` — no wrapper | Must wrap in `runInAction`              |
+| Call logic in React    | Direct — no hook needed          | Direct — no hook needed                 |
+| Read state in React    | `useSelector` only where needed  | `observer()` on every component         |
+| Class required         | No — plain object                | Yes (or `observable({...})`)            |
+| Reactive graph         | Explicit via `derive`            | Implicit, auto-tracked                  |
+| Silent stale-data bugs | None                             | Two sources (`runInAction`, `observer`) |
