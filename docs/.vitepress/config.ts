@@ -29,6 +29,7 @@ export default defineConfig({
       { text: "React", link: "/react/" },
       { text: "Examples", link: "/examples/" },
       { text: "API Reference", link: "https://jsr.io/@kin-store" },
+      { text: "Kin Form", link: "https://kin-form.pages.dev" },
     ],
 
     sidebar: {
