@@ -1,18 +1,12 @@
 ---
 layout: home
+# Opts out of VPHomeContent's `.vp-doc` prose wrapper (link underlines,
+# paragraph spacing, table display, etc.) — this page's markdown supplies
+# all its own styling via style.css.
+markdownStyles: false
 ---
 
 <div class="home">
-
-<nav class="site-nav">
-  <span class="brand">Kin Store</span>
-  <a href="/guide/getting-started">Guide</a>
-  <a href="/plugins/">Plugins</a>
-  <a href="/react/">React</a>
-  <a href="/examples/">Examples</a>
-  <a href="https://jsr.io/@kin-store">API</a>
-  <VPNavBarSearch />
-</nav>
 
 <section class="hero">
   <h1>Kin Store</h1>
@@ -52,10 +46,22 @@ layout: home
       </div>
     </div>
     <div class="principle-grid">
-      <div class="principle"><h4>Opt-in, not layered: each plugin adds a step, not a wrapper, so bytes only grow when you ask for them.</h4></div>
-      <div class="principle"><h4>Declarative, not imperative: a plugin lists what it adds, without patching the store.</h4></div>
-      <div class="principle"><h4>Explicit, always: if it happened, you triggered it.</h4></div>
-      <div class="principle"><h4><code>set</code> or <code>dispatch</code>, your call: both are first-class, neither one's a fallback.</h4></div>
+      <div class="principle">
+        <h4>Minimal by default</h4>
+        <p>A store starts as <code>get</code>, <code>set</code>, <code>subscribe</code>, nothing else. Methods, reducers, middleware, and derived stores are things you add when you reach for them, not things you start with.</p>
+      </div>
+      <div class="principle">
+        <h4>Explicit, always</h4>
+        <p>No proxies, no auto-tracked reactive graph, no immer unless you add it. State only changes where you called <code>set</code> or <code>dispatch</code>.</p>
+      </div>
+      <div class="principle">
+        <h4>Plugins don't wrap</h4>
+        <p>Each plugin declares what it adds. Stack ten of them and the chain still reads top-to-bottom, nothing nested to unwind.</p>
+      </div>
+      <div class="principle">
+        <h4>Derived state, no wiring</h4>
+        <p><code>derive</code> tracks which stores you read automatically. No selector library, no dependency array to keep in sync by hand.</p>
+      </div>
     </div>
   </div>
 </section>

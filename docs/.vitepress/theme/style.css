@@ -2,8 +2,8 @@
   --bg: #f3f2f2;
   --text: #201e1d;
   --text-muted: color-mix(in srgb, var(--text) 72%, transparent);
-  --accent: #ec3013;
-  --accent-strong: #ae1800;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
   --border: color-mix(in srgb, var(--text) 16%, transparent);
   --code-bg: #ffffff;
   --code-fg: var(--text);
@@ -123,51 +123,9 @@ code {
   margin: 0 auto;
 }
 
-/* Nav */
-.site-nav {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px 24px;
-  padding: 16px 24px;
-}
-
-@media (min-width: 640px) {
-  .site-nav {
-    flex-wrap: nowrap;
-    gap: 32px;
-    padding: 20px 56px;
-  }
-}
-
-.site-nav .brand {
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.02em;
-  margin-right: auto;
-  color: var(--text-muted);
-}
-
-.site-nav a {
-  font-size: 14px;
-  color: var(--text);
-}
-
-/* VPNavBarSearch defaults to flex-grow:1 to fill DefaultTheme's wide nav
-   bar; here it should just sit at its own size among the other nav links. */
-.site-nav .VPNavBarSearch {
-  flex-grow: 0;
-  padding-left: 0 !important;
-}
-
-.site-nav .DocSearch-Button {
-  width: auto;
-  height: auto;
-}
-
 /* Hero */
 .home .hero {
-  padding: 72px 24px 48px;
+  padding-block: 72px 48px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -175,7 +133,7 @@ code {
 
 @media (min-width: 640px) {
   .home .hero {
-    padding: 80px 56px 80px;
+    padding-block: 80px 80px;
   }
 }
 
@@ -246,7 +204,7 @@ code {
 
 @media (min-width: 640px) {
   .home section {
-    padding: 0 56px 64px;
+    padding: 0 32px 64px;
   }
 }
 
@@ -279,7 +237,7 @@ code {
 
 @media (min-width: 640px) {
   .system-card {
-    padding: 40px;
+    padding: 32px;
   }
 }
 
@@ -356,12 +314,23 @@ code {
   }
 }
 
-.principle h4 {
-  margin: 0;
+.principle {
   padding-left: 14px;
   border-left: 2px solid var(--accent);
+}
+
+.principle h4 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.principle p {
+  margin: 0;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 20px;
   color: var(--text-muted);
 }

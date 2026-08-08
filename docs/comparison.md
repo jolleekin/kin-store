@@ -349,9 +349,8 @@ depends on composition order.
 ::: code-group
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
 import { history, immer, persist } from "@kin-store/plugins";
-import { useSelector } from "@kin-store/react";
+import { withPlugins, useSelector } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -705,12 +704,11 @@ atoms can be hard to follow in a debugger.
 ::: code-group
 
 ```ts [Kin Store]
-import { createStore } from "@kin-store/core";
-import { useStore } from "@kin-store/react";
+import { createStore, useStore } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 
-// One store per field — mirrors Jotai's atom-per-field model.
+// One store per field.
 const todosStore = createStore<Todo[]>([]);
 const statusStore = createStore<"idle" | "loading" | "failed">("idle");
 
@@ -730,14 +728,13 @@ async function fetchTodos(): Promise<void> {
   }
 }
 
-// Logic works outside React — no hook required.
-await fetchTodos();
-addTodo("Buy groceries");
-
-// React subscription is opt-in via useStore.
 function TodoApp() {
   const todos = useStore(todosStore);
   const status = useStore(statusStore);
+
+  // addTodo and fetchTodos can be accessed directly anywhere.
+  // No hooks required.
+  
   // ...
 }
 ```
@@ -747,7 +744,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 
 type Todo = { id: number; text: string; done: boolean };
 
-// Each field is its own atom — no single "store" concept.
+// Each field is its own atom.
 const todosAtom = atom<Todo[]>([]);
 const statusAtom = atom<"idle" | "loading" | "failed">("idle");
 
@@ -767,12 +764,14 @@ const fetchTodosAtom = atom(null, async (get, set) => {
   }
 });
 
-// Hooks required inside React — jotai/vanilla or getDefaultStore() outside.
 function TodoApp() {
   const todos = useAtomValue(todosAtom);
   const status = useAtomValue(statusAtom);
+
+  // Hooks required to access logic.
   const addTodo = useSetAtom(addTodoAtom);
   const fetchTodos = useSetAtom(fetchTodosAtom);
+
   // ...
 }
 ```
@@ -810,8 +809,7 @@ behind only Redux/RTK.
 ::: code-group
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
-import { useSelector } from "@kin-store/react";
+import { withPlugins, useSelector } from "@kin-store/react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -831,7 +829,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
         try {
           const resp = await fetch("/api/todos");
           const todos = (await resp.json()) as Todo[];
-          // No runInAction needed — set is always safe after await.
+          // set is always safe after await.
           store.set({ todos, status: "idle" });
         } catch {
           store.set((s) => ({ ...s, status: "failed" }));
@@ -844,9 +842,7 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
 function TodoApp() {
   const todos = useSelector(todoStore, (s) => s.todos);
   return (
-    <button onClick={() => todoStore.addTodo("Buy groceries")}>
-      Add
-    </button>
+    <button onClick={() => todoStore.addTodo("Buy groceries")}>Add</button>
   );
 }
 ```
