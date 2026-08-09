@@ -100,7 +100,7 @@ export default defineConfig({
     search: { provider: "local" },
 
     footer: {
-      message: "MIT License",
+      message: "Released under the MIT License",
       copyright: "Copyright &copy; 2026-present Man Hoang",
     },
 

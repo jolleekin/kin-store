@@ -386,18 +386,3 @@ code {
 .demo .copy {
   display: none;
 }
-
-/* Footer */
-.copyright {
-  margin: 0;
-  padding: 24px;
-  border-top: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-@media (min-width: 640px) {
-  .copyright {
-    padding: 24px 56px;
-  }
-}

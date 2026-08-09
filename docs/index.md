@@ -191,6 +191,4 @@ function TodoList(): JSX.Element {
 
 </section>
 
-<p class="copyright">MIT License. Copyright &copy; 2026-present Man Hoang.</p>
-
 </div>
