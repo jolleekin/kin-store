@@ -93,7 +93,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-display);
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 a {
@@ -125,45 +126,19 @@ code {
 
 /* Hero */
 .home .hero {
-  padding-block: 72px 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding-top: 5rem;
 }
 
 @media (min-width: 640px) {
   .home .hero {
-    padding-block: 80px 80px;
+    padding-top: 8rem;
   }
-}
-
-.hero h1 {
-  font-size: 36px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -0.015em;
-  margin: 0;
-  text-wrap: balance;
-}
-
-@media (min-width: 640px) {
-  .hero h1 {
-    font-size: 56px;
-  }
-}
-
-.hero .tagline {
-  font-size: 18px;
-  line-height: 24px;
-  color: var(--text-muted);
-  max-width: 520px;
-  margin: 0;
 }
 
 .hero .actions {
   display: flex;
   gap: 12px;
-  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .btn-primary,
@@ -171,6 +146,7 @@ code {
   display: inline-block;
   font-weight: 800;
   font-size: 14px;
+  line-height: 20px;
   padding: 10px 20px;
   border-radius: 4px;
 }
@@ -199,31 +175,87 @@ code {
    renders plain `<section>` elements too (e.g. VPSidebarItem group
    headers) — an unscoped rule here would leak this padding into those. */
 .home section {
-  padding: 0 24px 40px;
+  padding: 0 24px 5rem;
+}
+
+.home section:last-child {
+  padding-bottom: 0;
 }
 
 @media (min-width: 640px) {
   .home section {
-    padding: 0 32px 64px;
+    padding: 0 32px 8rem;
   }
 }
 
-.eyebrow {
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
+/* Section typography, standardized in three tiers:
+     .section-header — the section header (h2).
+     .lede            — an optional, larger emphasis paragraph directly
+                         under the header.
+     .prose           — supporting body copy. */
+.section-header {
+  max-width: 720px;
+  margin: 0 0 20px;
+  font-size: 30px;
+  line-height: 36px;
   font-weight: 800;
-  margin: 0 0 16px;
+  letter-spacing: -0.015em;
+  color: var(--text);
 }
 
-/* Why it exists */
-.why p:not(.eyebrow) {
-  font-size: 15px;
-  line-height: 20px;
+@media (min-width: 640px) {
+  .section-header {
+    font-size: 44px;
+    line-height: 48px;
+  }
+}
+
+.lede {
+  max-width: 74ch;
+  margin: 0 0 20px;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prose {
+  max-width: 74ch;
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 24px;
   color: var(--text-muted);
-  max-width: 640px;
+}
+
+.prose:last-child {
+  margin-bottom: 0;
+}
+
+/* Is it a fit? */
+.fit-card {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--code-bg);
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px 40px;
+}
+
+@media (min-width: 640px) {
+  .fit-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.fit-card ul {
   margin: 0;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.fit-card li + li {
+  margin-top: 8px;
 }
 
 /* What it does differently: primitives + principles share one card so
@@ -275,14 +307,14 @@ code {
 }
 
 .primitive .size {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.05em;
   color: var(--text-muted);
 }
 
-.primitive code {
-  font-size: 17px;
-  line-height: 20px;
+.primitive > code {
+  font-size: 20px;
+  line-height: 24px;
   background: none;
   border: none;
   padding: 0;
@@ -291,18 +323,18 @@ code {
 
 .primitive p {
   margin: 0;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 24px;
   color: var(--text-muted);
 }
 
 /* Principles: bound to the primitives above via a divider instead of
    floating as an unlabeled second grid, and each item picks up the same
-   accent color used by the eyebrow and step numbers above it. */
+   accent color used by the step numbers above it. */
 .principle-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px 40px;
+  gap: 24px 40px;
   margin-top: 32px;
   padding-top: 32px;
   border-top: 1px solid var(--border);
@@ -314,25 +346,20 @@ code {
   }
 }
 
-.principle {
-  padding-left: 14px;
-  border-left: 2px solid var(--accent);
-}
-
-.principle h4 {
+.principle .lede {
   margin: 0 0 4px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 20px;
-  color: var(--text);
 }
 
 .principle p {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 20px;
+  line-height: 24px;
   color: var(--text-muted);
+}
+
+.numbers-cta {
+  padding-top: 12px;
 }
 
 /* Demo */
@@ -356,12 +383,12 @@ code {
 
 /* Sits right under a code block (which already carries the 40px bottom
    margin above), so this only needs its own bottom margin before the next
-   caption. Same size/weight as normal body prose (.why p), not fine print. */
+   caption. Same size/weight as normal body prose (.prose), not fine print. */
 .demo-note {
   margin: 0 0 32px;
   max-width: 640px;
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 24px;
   color: var(--text-muted);
 }
 

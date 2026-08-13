@@ -90,84 +90,52 @@ const visibleRows = computed(() =>
 </script>
 
 <template>
-  <section class="feature-matrix" :class="{ 'is-full': full }">
-    <div class="feature-matrix-inner">
-      <h2 v-if="!full" class="feature-matrix-heading">How it compares</h2>
-      <div class="matrix-wrapper">
-        <table class="matrix-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th class="kin">Kin Store</th>
-              <th>Zustand</th>
-              <th>Redux / RTK</th>
-              <th>Jotai</th>
-              <th>MobX</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in visibleRows" :key="row.label">
-              <td>
-                <a v-if="!full" href="/comparison" class="row-link">{{ row.label }}</a>
-                <template v-else>{{ row.label }}</template>
-              </td>
-              <td class="kin">{{ row.kin }}</td>
-              <td :class="{ na: row.zustand === '—', noted: !!row.notes?.zustand }" :title="row.notes?.zustand">{{ row.zustand }}</td>
-              <td :class="{ na: row.redux   === '—', noted: !!row.notes?.redux   }" :title="row.notes?.redux">{{ row.redux }}</td>
-              <td :class="{ na: row.jotai   === '—', noted: !!row.notes?.jotai   }" :title="row.notes?.jotai">{{ row.jotai }}</td>
-              <td :class="{ na: row.mobx    === '—', noted: !!row.notes?.mobx    }" :title="row.notes?.mobx">{{ row.mobx }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="feature-matrix-legend">✅ full support · ⚠️ partial or conditional · — not applicable (different model)</p>
-      <p class="feature-matrix-legend">Bundle sizes are each library's full package import, bundled with rolldown, minified, and gzipped; tree-shaking down to only the APIs you use will land smaller across the board.</p>
-      <p v-if="!full" class="feature-matrix-cta">
-        Don't believe it? <a href="/comparison">See full comparison with code examples →</a>
-      </p>
+  <div class="feature-matrix">
+    <div class="matrix-wrapper">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="kin">Kin Store</th>
+          <th>Zustand</th>
+          <th>Redux / RTK</th>
+          <th>Jotai</th>
+          <th>MobX</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="row in visibleRows" :key="row.label">
+          <td>
+            <a v-if="!full" href="/comparison" class="row-link">{{ row.label }}</a>
+            <template v-else>{{ row.label }}</template>
+          </td>
+          <td class="kin">{{ row.kin }}</td>
+          <td :class="{ na: row.zustand === '—', noted: !!row.notes?.zustand }" :title="row.notes?.zustand">{{ row.zustand }}</td>
+          <td :class="{ na: row.redux   === '—', noted: !!row.notes?.redux   }" :title="row.notes?.redux">{{ row.redux }}</td>
+          <td :class="{ na: row.jotai   === '—', noted: !!row.notes?.jotai   }" :title="row.notes?.jotai">{{ row.jotai }}</td>
+          <td :class="{ na: row.mobx    === '—', noted: !!row.notes?.mobx    }" :title="row.notes?.mobx">{{ row.mobx }}</td>
+        </tr>
+      </tbody>
+    </table>
     </div>
-  </section>
+    <p class="feature-matrix-legend">✅ full support · ⚠️ partial or conditional · — not applicable (different model)</p>
+    <p class="feature-matrix-legend">Bundle sizes are each library's full package import, bundled with rolldown, minified, and gzipped. Tree-shaking down to only the APIs you use will land smaller across the board.</p>
+  </div>
 </template>
 
 <style scoped>
-.feature-matrix {
-  padding: 0 24px 80px;
-}
-
 .feature-matrix.is-full {
   padding: 0 0 40px;
 }
 
-.feature-matrix-inner {
-  max-width: 740px;
-  margin: 0 auto;
-}
-
-.feature-matrix.is-full .feature-matrix-inner {
-  max-width: 100%;
-}
-
-.feature-matrix-heading {
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 24px;
-  color: var(--vp-c-text-1);
-  letter-spacing: -0.01em;
-}
-
 .matrix-wrapper {
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
-  padding: 8px 16px;
   overflow-x: auto;
 }
 
 .matrix-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
-  line-height: 1.5;
+  background-color: white;
 }
 
 .matrix-table th,
@@ -244,24 +212,11 @@ const visibleRows = computed(() =>
 }
 
 .feature-matrix-legend {
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--vp-c-text-1);
-}
-
-.feature-matrix-cta {
+  margin: 12px auto;
+  max-width: 74ch;
   text-align: center;
-  margin-top: 8px;
-  font-size: 14px;
-}
-
-.feature-matrix-cta a {
-  color: var(--vp-c-brand-1);
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.feature-matrix-cta a:hover {
-  text-decoration: underline;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--vp-c-text-1);
 }
 </style>
