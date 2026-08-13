@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Kin Store — a framework-agnostic, zero-dependency TypeScript reactive state library, published to JSR. It's a Deno workspace with three publishable packages plus docs, examples, and a slide deck.
+Kin Store — a framework-agnostic, zero-dependency TypeScript reactive state library, published to JSR. It's a Deno workspace with three publishable packages plus docs and examples.
 
 - `@kin-store/core` (`core/`) — `createStore`, `withPlugins`, `derive`: the primitives everything else is built on.
 - `@kin-store/plugins` (`plugins/`) — official plugins: `persist`, `history`, `immer`, `devtools`.

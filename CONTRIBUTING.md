@@ -6,9 +6,9 @@ up locally, the conventions the codebase follows, and how to submit changes.
 ## Getting set up
 
 This is a [Deno](https://deno.com) workspace with three publishable packages
-(`core`, `plugins`, `react`), a docs site (`docs/`), example apps
-(`examples/`), and a slide deck (`slides/`). Node/npm dependencies are
-consumed via `npm:` specifiers and resolved into `node_modules`.
+(`core`, `plugins`, `react`), a docs site (`docs/`), and example apps
+(`examples/`). Node/npm dependencies are consumed via `npm:` specifiers and
+resolved into `node_modules`.
 
 Install the [Deno CLI](https://docs.deno.com/runtime/getting_started/installation/),
 then from the repo root:

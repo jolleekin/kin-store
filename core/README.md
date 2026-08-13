@@ -19,9 +19,6 @@ Reactive state you want to use.
 Each step is additive — you never undo what you built. Full type safety at every
 step, zero dependencies, zero ceremony.
 
-<a href="https://htmlpreview.github.io/?https://raw.githubusercontent.com/jolleekin/kin-store/refs/heads/main/slides/intro.html" target="_blank">View
-the introduction slides →</a>
-
 ## Design principles
 
 ### **Explicit over implicit**
