@@ -12,7 +12,7 @@ Kin Store — a framework-agnostic, zero-dependency TypeScript reactive state li
 - `docs/` — VitePress site (kinstore.dev): guides, plugin docs, comparison page.
 - `examples/` — standalone Vite apps demonstrating usage (`simple`, `better-redux`, `nextjs-todo`) plus `code-snippets.local/` (untracked scratch snippets used while writing docs, not part of any workspace build).
 
-This is a Deno project (`deno.json` at root defines the workspace: `core`, `plugins`, `react`, `examples/*`, `docs`). Node/npm dependencies (React, immer, vitepress, etc.) are consumed via `npm:` specifiers and resolved into `node_modules` (`nodeModulesDir: auto`).
+This is a Deno project (`deno.json` at root defines the workspace: `core`, `plugins`, `react`, `examples/*`, `docs`, `scripts`). Node/npm dependencies (React, immer, vitepress, etc.) are consumed via `npm:` specifiers and resolved into `node_modules` (`nodeModulesDir: auto`); a package must be a workspace member for its `npm:` specifiers to resolve this way, which is why `scripts` is listed despite keeping its own `deno.json` for task/import isolation.
 
 ## Commands
 

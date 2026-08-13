@@ -7,9 +7,10 @@
  *
  *   deno task --cwd scripts bundle-size
  *
- * (`scripts/` has its own deno.json rather than being a workspace member, so
- * it can pull in rolldown and the comparison libraries without polluting
- * the workspace's own dependency graph.) Each comparison library is measured
+ * (`scripts/` keeps its own deno.json for its rolldown/comparison-library
+ * imports, kept out of the packages' own dependency graphs, though it must
+ * still be a workspace member for those npm: specifiers to resolve into
+ * node_modules.) Each comparison library is measured
  * through its default, React-integrated entry point (with its React
  * bindings, if any, included but the "react" peer dependency itself
  * externalized), reflecting what a React app actually pays to use it.
