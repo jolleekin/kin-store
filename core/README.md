@@ -152,22 +152,28 @@ When the store grows, move logic inside it using `withPlugins` + `methods`. Each
 
 ```ts
 import { withPlugins } from "@kin-store/core";
+import { devtools, persist } from "@kin-store/plugins";
 
-const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState).use({
-  methods: (store) => ({
-    addTodo(text: string): void {
-      store.set((s) => ({ ...s, todos: [...s.todos, text] }));
-    },
-    async fetchTodos(): Promise<void> {
-      store.set((s) => ({ ...s, status: "loading" }));
-      const todos = await api.fetchTodos();
-      store.set((s) => ({ todos, status: "idle" }));
-    },
-  }),
-});
+const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
+  .use("persist", persist({ key: "todos" }))
+  .use("devtools", devtools())
+  .use({
+    // A plugin is a plain object: methods/reducers/middleware, nothing
+    // wraps or patches the store to add them.
+    methods: (store) => ({
+      addTodo(text: string): void {
+        store.set((s) => ({ ...s, todos: [...s.todos, text] }));
+      },
+      async fetchTodos(): Promise<void> {
+        store.set((s) => ({ ...s, status: "loading" }));
+        const todos = await api.fetchTodos();
+        store.set({ todos, status: "idle" });
+      },
+    }),
+  });
 
-todoStore.addTodo("Buy groceries");
-await todoStore.fetchTodos();
+await todoStore.persist.hydrate(); // From the namespaced persist plugin.
+todoStore.addTodo("Buy groceries"); // From the top-level inline plugin.
 ```
 
 ## Step 4 — Add plugins
@@ -230,12 +236,45 @@ const useStore = create(
 Reducers for state changes. Methods for the flow. Middleware to intercept.
 
 Move state mutations into `reducers` when you want traceability — every dispatch
-travels through a middleware pipeline you control. Methods orchestrate the flow:
-calling `dispatch.*`, handling async logic, or sequencing multiple reducers. App
-logic goes last — it can depend on any plugin registered before it.
+travels through a middleware pipeline you control. It isn't a replacement for
+`methods`; the two compose in the same store.
+
+Take the exact store from Step 3 and swap `methods` + `set` for `reducers` +
+`dispatch`:
 
 ```ts
 import { withPlugins } from "@kin-store/core";
+import { devtools, persist } from "@kin-store/plugins";
+
+const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
+  .use("persist", persist({ key: "todos" }))
+  .use("devtools", devtools())
+  .use({
+    reducers: {
+      addTodo: (s, text: string) => ({ ...s, todos: [...s.todos, text] }),
+      fetchStart: (s) => ({ ...s, status: "loading" }),
+      fetchDone: (_s, todos: string[]) => ({ todos, status: "idle" }),
+    },
+    methods: (store) => ({
+      async fetchTodos(): Promise<void> {
+        store.dispatch.fetchStart();
+        const todos = await api.fetchTodos();
+        store.dispatch.fetchDone(todos);
+      },
+    }),
+  });
+
+todoStore.dispatch.addTodo("Buy groceries"); // Full intellisense, logged in devtools.
+```
+
+`set`/`dispatch` are both first-class here: pick whichever fits this store or
+method, not a ladder from one to the other.
+
+Add middleware to observe or intercept every dispatch — including the ones
+plugins trigger internally — and combine with something like `history` for
+undo/redo on the traceable changes:
+
+```ts
 import { history, persist } from "@kin-store/plugins";
 
 type Todo = { id: number; text: string; done: boolean };
