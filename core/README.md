@@ -7,14 +7,14 @@
 ![100% type-safe](https://img.shields.io/badge/100%25%20type--safe-166534?style=flat)
 ![Zero dependencies](https://img.shields.io/badge/Zero%20dependencies-166534?style=flat)
 
-Reactive state you want to use.
+Start with a plain store. Add structure only when the app earns it.
 
-| Style         | API                                             | Minified + Gzip |
-| ------------- | ----------------------------------------------- | --------------- |
-| Simple        | `createStore` + plain functions                 | 231 B           |
-| Zustand-style | `withPlugins` + methods                         | 1.0 KB          |
-| Redux-style   | `withPlugins` + reducers + middleware + methods | 1.0 KB          |
-| Jotai-style   | `derive`                                        | 438 B           |
+| Style    | API                                             | Minified + Gzip |
+| -------- | ----------------------------------------------- | --------------- |
+| Simple   | `createStore` + plain functions                 | 231 B           |
+| Methods  | `withPlugins` + methods                         | 1.0 KB          |
+| Reducers | `withPlugins` + reducers + middleware + methods | 1.0 KB          |
+| Derived  | `derive`                                        | 438 B           |
 
 Each step is additive — you never undo what you built. Full type safety at every
 step, zero dependencies, zero ceremony.
@@ -45,9 +45,9 @@ load-bearing, not decorative.
 `dispatch.*` and `set` are both first-class ways to change state, not a
 primary path and a fallback. `dispatch.*` calls a named reducer through the
 middleware pipeline — traceable, loggable, cancellable. `set` writes state
-directly, no pipeline involved. A `methods`-and-`set` store is a complete
-Zustand-style store; a `reducers`-and-`dispatch.*` store is a complete
-Redux-style store; a method can mix both when part of a change should be
+directly, no pipeline involved. A store built entirely from `methods` and
+`set` is complete on its own; so is one built entirely from `reducers` and
+`dispatch.*`; a method can mix both when part of a change should be
 traceable and part shouldn't. Teams that want `dispatch.*` to be the only door
 in their own codebase should enforce that at their store module's boundary
 (export `dispatch` and methods, not `set`) rather than expect a built-in
@@ -94,7 +94,58 @@ unsubscribe();
 
 ---
 
-## Step 2 — Colocate logic (Zustand-style)
+## Step 2 — Compose stores
+
+Use `derive` to compute values from multiple stores reactively — no
+`withPlugins` required. Dependencies are tracked automatically: no selector
+arrays, no manual wiring, no hidden graph. The derived store stays cold (no
+subscriptions, no caching) until something subscribes to it.
+
+```ts
+import { createStore, derive } from "@kin-store/core";
+
+const userStore = createStore({ name: "Ada", role: "admin" });
+const cartStore = createStore({ items: [] as string[], total: 0 });
+
+// Reads from both stores. Recomputes only when either changes.
+const summary = derive((get) => ({
+  greeting: `Hello, ${get(userStore).name}`,
+  itemCount: get(cartStore).items.length,
+  total: get(cartStore).total,
+}));
+
+console.log(summary.get());
+// { greeting: "Hello, Ada", itemCount: 0, total: 0 }
+```
+
+Conditional dependencies — only stores actually read during a recompute are
+subscribed:
+
+```ts
+const isAdmin = derive((get) => get(userStore).role === "admin");
+
+// When isAdmin is false, changes to `adminStore` do not trigger a recompute.
+const view = derive((get) =>
+  get(isAdmin) ? get(adminStore).dashboard : get(publicStore).feed
+);
+```
+
+Use `prev()` to fold the previous computed value into the next (explicit type
+required since TypeScript cannot infer `TState` from a self-referential
+function):
+
+```ts
+const delta = createStore(1);
+const total = derive<number>((get, prev) => (prev() ?? 0) + get(delta));
+
+total.subscribe((get) => console.log(get()));
+delta.set(5); // 6
+delta.set(3); // 9
+```
+
+---
+
+## Step 3 — Colocate logic
 
 When the store grows, move logic inside it using `withPlugins` + `methods`. Each
 `.use()` call adds a plugin — not a new nesting level:
@@ -119,7 +170,7 @@ todoStore.addTodo("Buy groceries");
 await todoStore.fetchTodos();
 ```
 
-## Step 3 — Add plugins
+## Step 4 — Add plugins
 
 Plugins extend the store with zero nesting. Each `.use()` adds one feature —
 never wraps the previous one:
@@ -174,7 +225,7 @@ const useStore = create(
 
 ---
 
-## Step 4 — Add structure and traceability (Redux-style)
+## Step 5 — Add structure and traceability
 
 Reducers for state changes. Methods for the flow. Middleware to intercept.
 
@@ -263,57 +314,6 @@ todoStore.dispatch.todos.add("Buy groceries");
 todoStore.dispatch.todos.clear();
 
 await todoStore.todos.fetch();
-```
-
----
-
-## Step 5 — Compose stores (Jotai / TanStack-style)
-
-Use `derive` to compute values from multiple stores reactively. Dependencies are
-tracked automatically — no selector arrays, no manual wiring, no hidden graph.
-The derived store stays cold (no subscriptions, no caching) until something
-subscribes to it.
-
-```ts
-import { createStore, derive } from "@kin-store/core";
-
-const userStore = createStore({ name: "Ada", role: "admin" });
-const cartStore = createStore({ items: [] as string[], total: 0 });
-
-// Reads from both stores. Recomputes only when either changes.
-const summary = derive((get) => ({
-  greeting: `Hello, ${get(userStore).name}`,
-  itemCount: get(cartStore).items.length,
-  total: get(cartStore).total,
-}));
-
-console.log(summary.get());
-// { greeting: "Hello, Ada", itemCount: 0, total: 0 }
-```
-
-Conditional dependencies — only stores actually read during a recompute are
-subscribed:
-
-```ts
-const isAdmin = derive((get) => get(userStore).role === "admin");
-
-// When isAdmin is false, changes to `adminStore` do not trigger a recompute.
-const view = derive((get) =>
-  get(isAdmin) ? get(adminStore).dashboard : get(publicStore).feed
-);
-```
-
-Use `prev()` to fold the previous computed value into the next (explicit type
-required since TypeScript cannot infer `TState` from a self-referential
-function):
-
-```ts
-const delta = createStore(1);
-const total = derive<number>((get, prev) => (prev() ?? 0) + get(delta));
-
-total.subscribe((get) => console.log(get()));
-delta.set(5); // 6
-delta.set(3); // 9
 ```
 
 ---
