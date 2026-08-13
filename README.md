@@ -7,7 +7,12 @@
 ![100% type-safe](https://img.shields.io/badge/100%25%20type--safe-166534?style=flat)
 ![Zero dependencies](https://img.shields.io/badge/Zero%20dependencies-166534?style=flat)
 
-Reactive state you want to use.
+Start with a plain store. Add structure only when the app earns it.
+
+Most state libraries pick your architecture before you know if the app needs
+one: actions, reducers, selectors, a provider tree, decided on day one. Kin
+Store leaves that decision to you: `set` and `dispatch` are equally
+first-class, not a beginner tier and an advanced one.
 
 ## Docs
 
