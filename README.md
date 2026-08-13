@@ -17,7 +17,7 @@ Reactive state you want to use.
 
 |                           | **Kin Store** | Zustand | Redux / RTK |  Jotai  |   MobX   |
 | ------------------------- | :-----------: | :-----: | :---------: | :-----: | :------: |
-| Bundle size (React usage) |    2.05 KB    |  389 B  |  17.57 KB   | 3.98 KB | 15.62 KB |
+| Bundle size (React usage) |    2.0 KB     |  389 B  |   17.5 KB   |  4.0 KB | 15.6 KB  |
 | Zero dependencies         |      ✅       |   ✅    |     ❌      |   ✅    |    ✅    |
 | Tiny footprint            |      ✅       |   ✅    |     ❌      |   ✅    |    ❌    |
 | 100% type-safe            |      ✅       |   ⚠️    |     ⚠️      |   ✅    |    ✅    |
@@ -38,7 +38,7 @@ Don't believe it?
 [See full comparison with code examples →](https://kinstore.dev/comparison)
 
 Kin Store is pay-per-use: import only `createStore` and pay 231 B. Import
-`withPlugins` and pay 1.01 KB. The plugin bundles (`persist`, `history`,
+`withPlugins` and pay 1.0 KB. The plugin bundles (`persist`, `history`,
 `immer`) add only what you import.
 
 ## Packages

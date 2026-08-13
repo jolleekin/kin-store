@@ -35,7 +35,7 @@ markdownStyles: false
       <div class="primitive">
         <span class="step">02</span>
         <code>withPlugins</code>
-        <span class="size">1.01 KB</span>
+        <span class="size">1.0 KB</span>
         <p>Add structure one <code>.use()</code> at a time. Reducers, methods, middleware, read top to bottom, run top to bottom.</p>
       </div>
       <div class="primitive">

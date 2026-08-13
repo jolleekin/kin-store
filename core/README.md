@@ -12,8 +12,8 @@ Reactive state you want to use.
 | Style         | API                                             | Minified + Gzip |
 | ------------- | ----------------------------------------------- | --------------- |
 | Simple        | `createStore` + plain functions                 | 231 B           |
-| Zustand-style | `withPlugins` + methods                         | 1.01 KB         |
-| Redux-style   | `withPlugins` + reducers + middleware + methods | 1.01 KB         |
+| Zustand-style | `withPlugins` + methods                         | 1.0 KB          |
+| Redux-style   | `withPlugins` + reducers + middleware + methods | 1.0 KB          |
 | Jotai-style   | `derive`                                        | 438 B           |
 
 Each step is additive — you never undo what you built. Full type safety at every

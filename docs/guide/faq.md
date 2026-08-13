@@ -72,7 +72,7 @@ library instead.
 
 ### What's the bundle size?
 
-`createStore` is 231 B gzipped, `withPlugins` is 1.01 KB, and `derive` is
+`createStore` is 231 B gzipped, `withPlugins` is 1.0 KB, and `derive` is
 438 B, each measured independently since you only pay for what you
 `.use()`. Plugins and the React bindings add their own (small) cost on
 top only when imported.

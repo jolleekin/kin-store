@@ -801,7 +801,7 @@ no subscription code to write. That implicitness costs in two places: async
 methods need `runInAction` to keep the reactive graph consistent, and every
 React component reading observable state needs `observer()`, and forgetting
 either one fails silently, stale data with no error, rather than throwing. At
-15.62 KB gzipped, it's also one of the heaviest libraries in this comparison,
+15.6 KB gzipped, it's also one of the heaviest libraries in this comparison,
 behind only Redux/RTK.
 
 <SideBySide>

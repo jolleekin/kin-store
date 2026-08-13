@@ -97,10 +97,11 @@ async function gzipSize(code: string): Promise<number> {
   return buf.byteLength;
 }
 
-function formatSize(bytes: number, decimals = 2): string {
+function formatSize(bytes: number, decimals = 1): string {
   if (bytes < 1024) return `${bytes} B`;
-  const power = 10 ** decimals;
-  return `${Math.round((bytes / 1024) * power) / power} KB`;
+  const pow = 10 ** decimals;
+  const formatted = (Math.round((bytes / 1024) * pow) / pow).toFixed(decimals);
+  return `${formatted} KB`;
 }
 
 const nameWidth = Math.max(...entries.map((e) => e.name.length));
@@ -123,8 +124,7 @@ for (const entry of entries) {
   const gzip = await gzipSize(code);
 
   console.log(
-    `${entry.name.padEnd(nameWidth)}  ${
-      formatSize(gzip).padStart(8)
+    `${entry.name.padEnd(nameWidth)}  ${formatSize(gzip).padStart(8)
     } gzip (${formatSize(min)} min)`,
   );
 }

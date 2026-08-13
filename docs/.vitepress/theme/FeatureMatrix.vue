@@ -17,8 +17,8 @@ const rows: Array<{
 }> = [
   {
     label: 'Bundle size',
-    kin: '2.05 KB',
-    zustand: '389 B', redux: '17.57 KB', jotai: '3.98 KB', mobx: '15.62 KB',
+    kin: '2.0 KB',
+    zustand: '389 B', redux: '17.5 KB', jotai: '4.0 KB', mobx: '15.6 KB',
     trimmed: true,
   },
   { label: 'Zero dependencies',         kin: '✅', zustand: '✅', redux: '❌', jotai: '✅', mobx: '✅', trimmed: true },
