@@ -134,6 +134,7 @@ const visibleRows = computed(() =>
 }
 
 .matrix-table {
+  display: table;
   width: 100%;
   border-collapse: collapse;
   background-color: white;
@@ -215,7 +216,6 @@ const visibleRows = computed(() =>
 .feature-matrix-legend {
   margin: 12px auto;
   max-width: 74ch;
-  text-align: center;
   font-size: 13px;
   line-height: 16px;
   color: var(--vp-c-text-1);

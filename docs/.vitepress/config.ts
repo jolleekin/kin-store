@@ -122,6 +122,19 @@ export default defineConfig({
     // for errors/null) onto a white background instead of picking an
     // unrelated light theme with a different color language.
     theme: poimandresLight as unknown as ThemeOptions,
+    codeTransformers: [
+      {
+        name: "comment-lines",
+        line(node, line) {
+          const text = (this.tokens[line - 1] ?? [])
+            .map((t) => t.content)
+            .join("");
+          if (text.trimStart().startsWith("//")) {
+            this.addClassToHast(node, "comment-line");
+          }
+        },
+      },
+    ],
   },
 
   vite: {

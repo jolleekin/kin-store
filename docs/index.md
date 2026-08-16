@@ -202,12 +202,16 @@ store.dispatch.addTodo("Buy milk"); // Full intellisense, logged in devtools.
 import { useSelector, useStore } from "@kin-store/react";
 
 function Counter(): JSX.Element {
-  const value = useStore(count); // Re-renders on every change.
+   // Re-renders on every change. Works great for primitive stores.
+  const value = useStore(count);
+  
   return <button onClick={() => count.set((n) => n + 1)}>{value}</button>;
 }
 
 function TodoList(): JSX.Element {
-  const items = useSelector(store, (s) => s.items); // Re-renders only when items changes.
+   // Re-renders only when items changes.
+  const items = useSelector(store, (s) => s.items);
+
   return (
     <ul>
       {items.map((item) => <li key={item}>{item}</li>)}

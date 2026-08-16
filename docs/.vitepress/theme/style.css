@@ -413,3 +413,12 @@ code {
 .demo .copy {
   display: none;
 }
+
+.vp-doc td {
+  vertical-align: top;
+}
+
+.vp-doc .vp-code .line.comment-line {
+  display: block;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
