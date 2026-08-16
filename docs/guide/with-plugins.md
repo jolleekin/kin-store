@@ -128,6 +128,59 @@ await todoStore.fetchTodos();
 todoStore.history.undo();
 ```
 
+## Guarding against race conditions
+
+`dispatch.*` and `methods` don't sequence or cancel async work for you. If
+`fetchTodos` can be called again before the first call resolves, a slower
+first response can land after a faster second one and overwrite it with
+stale data. Guard against it with a request counter:
+
+```ts
+methods: (store) => {
+  let requestId = 0;
+
+  return {
+    async fetchTodos(): Promise<void> {
+      const id = ++requestId;
+      store.dispatch.fetchStart();
+      try {
+        const todos = await api.getTodos();
+        if (id !== requestId) return; // A newer call already resolved.
+        store.dispatch.fetchFulfilled(todos);
+      } catch {
+        if (id !== requestId) return;
+        store.dispatch.fetchRejected();
+      }
+    },
+  };
+},
+```
+
+To cancel the in-flight request itself, rather than just ignoring its
+result, pass an `AbortController`'s `signal` to `fetch` instead, aborting
+the previous controller at the start of each call:
+
+```ts
+methods: (store) => {
+  let controller: AbortController | undefined;
+
+  return {
+    async fetchTodos(): Promise<void> {
+      controller?.abort();
+      controller = new AbortController();
+      store.dispatch.fetchStart();
+      try {
+        const todos = await api.getTodos({ signal: controller.signal });
+        store.dispatch.fetchFulfilled(todos);
+      } catch (e) {
+        if ((e as Error).name === "AbortError") return;
+        store.dispatch.fetchRejected();
+      }
+    },
+  };
+},
+```
+
 ## Two tiers of mutation
 
 | Tier         | How                                    | Good fit for                                                 |

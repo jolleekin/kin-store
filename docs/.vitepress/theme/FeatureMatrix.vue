@@ -120,6 +120,7 @@ const visibleRows = computed(() =>
     </div>
     <p class="feature-matrix-legend">✅ full support · ⚠️ partial or conditional · — not applicable (different model)</p>
     <p class="feature-matrix-legend">Bundle sizes are each library's full package import, bundled with rolldown, minified, and gzipped. Tree-shaking down to only the APIs you use will land smaller across the board.</p>
+    <p class="feature-matrix-legend">Kin Store is new: this table is accurate today, but Redux, Zustand, Jotai, and MobX all carry years of production use this library doesn't have yet. Try it, and <a href="https://github.com/jolleekin/kin-store/issues">tell us where it breaks</a>.</p>
   </div>
 </template>
 

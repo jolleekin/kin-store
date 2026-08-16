@@ -140,6 +140,11 @@ store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 | Access pattern      | `store.dispatch.addTodo(...)` | `slice.actions.addTodo(...)`              |
 | Call logic in React | Call directly — no hook       | `useDispatch()` hook required             |
 
+Redux-Saga's `takeLatest` sequences and cancels concurrent calls to the same
+action for you; Kin Store's `methods` don't, the same tradeoff Zustand makes.
+See [Guarding against race conditions](/guide/with-plugins#guarding-against-race-conditions)
+for the manual pattern.
+
 ### Writing extensions
 
 The fundamental difference is model: Redux enhancers (and Zustand middleware)
