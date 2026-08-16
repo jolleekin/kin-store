@@ -106,7 +106,7 @@ const visibleRows = computed(() =>
       <tbody>
         <tr v-for="row in visibleRows" :key="row.label">
           <td>
-            <a v-if="!full" href="/comparison" class="row-link">{{ row.label }}</a>
+            <a v-if="!full" href="/comparison/" class="row-link">{{ row.label }}</a>
             <template v-else>{{ row.label }}</template>
           </td>
           <td class="kin">{{ row.kin }}</td>

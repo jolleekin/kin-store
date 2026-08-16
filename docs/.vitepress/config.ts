@@ -21,13 +21,12 @@ export default defineConfig({
   description,
 
   themeConfig: {
-    // Comparison stays out of the primary nav (guide sidebar link only) —
-    // it's opt-in reading, not the pitch.
     nav: [
       { text: "Guide", link: "/guide/" },
       { text: "Plugins", link: "/plugins/" },
       { text: "React", link: "/react/" },
       { text: "Examples", link: "/examples/" },
+      { text: "Comparison", link: "/comparison/" },
       { text: "API Reference", link: "https://jsr.io/@kin-store" },
       { text: "Kin Form", link: "https://kin-form.pages.dev" },
     ],
@@ -41,7 +40,6 @@ export default defineConfig({
             { text: "Getting Started", link: "/guide/getting-started" },
             { text: "Design Principles", link: "/guide/design-principles" },
             { text: "FAQ & Non-Goals", link: "/guide/faq" },
-            { text: "Comparison", link: "/comparison" },
           ],
         },
         {
@@ -51,6 +49,14 @@ export default defineConfig({
             { text: "withPlugins", link: "/guide/with-plugins" },
             { text: "derive", link: "/guide/derive" },
             { text: "Writing Plugins", link: "/guide/writing-plugins" },
+          ],
+        },
+      ],
+      "/comparison/": [
+        {
+          text: "Comparison",
+          items: [
+            { text: "Overview", link: "/comparison/" },
           ],
         },
       ],

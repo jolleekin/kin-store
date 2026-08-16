@@ -109,4 +109,4 @@ state that genuinely needs merged concurrent edits.
 Finally, Kin Store isn't trying to out-feature Redux. There's no
 built-in serializable action log format, no time-travel outside the
 `devtools` plugin, and no code-generation step. The
-[comparison page](/comparison) covers those tradeoffs directly.
+[comparison page](/comparison/) covers those tradeoffs directly.
