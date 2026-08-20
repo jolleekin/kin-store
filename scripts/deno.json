@@ -1,8 +1,10 @@
 {
   "tasks": {
-    "bundle-size": "deno run -A bundle-size.ts"
+    "bundle-size": "deno run -A bundle-size.ts",
+    "build-npm": "deno run -A build-npm.ts"
   },
   "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.43.2",
     "rolldown": "npm:rolldown@^1",
     "react": "npm:react@^19.2.7",
     "zustand": "npm:zustand@^5",

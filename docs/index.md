@@ -14,7 +14,7 @@ markdownStyles: false
   <p class="prose">A framework-agnostic reactive state library for TypeScript.</p>
   <div class="actions">
     <a class="btn-primary" href="/guide/getting-started">Get Started</a>
-    <a class="btn-secondary" href="https://github.com/jolleekin/kin-store">View on GitHub</a>
+    <a class="btn-secondary" href="https://github.com/kintools-dev/store">View on GitHub</a>
   </div>
 </section>
 

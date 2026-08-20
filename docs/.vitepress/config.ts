@@ -1,6 +1,8 @@
 import { defineConfig, type ThemeOptions } from "vitepress";
 import llmstxt from "vitepress-plugin-llms";
-import poimandresLight from "./theme/poimandres-light.json" with { type: "json" };
+import poimandresLight from "./theme/poimandres-light.json" with {
+  type: "json",
+};
 
 const SITE_URL = "https://kinstore.dev";
 
@@ -100,7 +102,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/jolleekin/kin-store" },
+      { icon: "github", link: "https://github.com/kintools-dev/store" },
     ],
 
     search: { provider: "local" },
@@ -111,7 +113,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: "https://github.com/jolleekin/kin-store/edit/main/docs/:path",
+      pattern: "https://github.com/kintools-dev/store/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
   },
@@ -166,12 +168,17 @@ export default defineConfig({
 
   head: [
     ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
-    ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
+    ["link", {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossorigin: "",
+    }],
     [
       "link",
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap",
+        href:
+          "https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap",
       },
     ],
     ["meta", { property: "og:type", content: "website" }],

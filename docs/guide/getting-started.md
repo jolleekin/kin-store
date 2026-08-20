@@ -11,15 +11,15 @@ For vanilla projects:
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kintools/store-core
+npm add @kintools/store-core
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kintools/store-core
+pnpm add @kintools/store-core
 ```
 
 ```sh [yarn]
-yarn add jsr:@kintools/store-core
+yarn add @kintools/store-core
 ```
 
 ```sh [deno]
@@ -33,15 +33,15 @@ For React projects (`@kintools/store-core` is included):
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kintools/store-react
+npm add @kintools/store-react
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kintools/store-react
+pnpm add @kintools/store-react
 ```
 
 ```sh [yarn]
-yarn add jsr:@kintools/store-react
+yarn add @kintools/store-react
 ```
 
 ```sh [deno]
@@ -55,15 +55,15 @@ To add official plugins:
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kintools/store-plugins
+npm add @kintools/store-plugins
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kintools/store-plugins
+pnpm add @kintools/store-plugins
 ```
 
 ```sh [yarn]
-yarn add jsr:@kintools/store-plugins
+yarn add @kintools/store-plugins
 ```
 
 ```sh [deno]

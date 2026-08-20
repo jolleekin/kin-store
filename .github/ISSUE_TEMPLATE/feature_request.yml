@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         For open-ended ideas that need discussion before they're concrete,
-        consider starting a [Discussion](https://github.com/jolleekin/kin-store/discussions)
+        consider starting a [Discussion](https://github.com/kintools-dev/store/discussions)
         instead.
 
   - type: textarea

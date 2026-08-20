@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ask a question / start a discussion
-    url: https://github.com/jolleekin/kin-store/discussions
+    url: https://github.com/kintools-dev/store/discussions
     about: Usage questions and open-ended design discussions belong here, not in the issue tracker.
   - name: Report a security vulnerability
-    url: https://github.com/jolleekin/kin-store/security/advisories/new
+    url: https://github.com/kintools-dev/store/security/advisories/new
     about: Please don't file security vulnerabilities as public issues.

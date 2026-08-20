@@ -5,11 +5,11 @@ React bindings for `@kintools/store-core`.
 ## Install
 
 ```sh [npm]
-npx jsr add @kintools/store-react
+npm add @kintools/store-react
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kintools/store-react
+pnpm add @kintools/store-react
 ```
 
 ```sh [deno]

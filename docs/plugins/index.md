@@ -15,11 +15,11 @@ To learn how to write your own plugin, see
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kintools/store-plugins
+npm add @kintools/store-plugins
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kintools/store-plugins
+pnpm add @kintools/store-plugins
 ```
 
 ```sh [deno]

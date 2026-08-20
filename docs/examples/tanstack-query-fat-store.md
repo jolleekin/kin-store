@@ -12,7 +12,7 @@ reducers; see
 [TanStack Query and Primitive Stores](/examples/tanstack-query-primitive-stores)
 for the same app built the other way, one `createStore` per field. Full source
 in
-[`examples/checkout-redux-style-react-query`](https://github.com/jolleekin/kin-store/tree/main/examples/checkout-redux-style-react-query).
+[`examples/checkout-redux-style-react-query`](https://github.com/kintools-dev/store/tree/main/examples/checkout-redux-style-react-query).
 
 ## Why split state at all
 

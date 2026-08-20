@@ -1,4 +1,4 @@
-name: Publish to JSR
+name: Publish
 
 on:
   push:
@@ -34,6 +34,14 @@ jobs:
       - uses: denoland/setup-deno@v2
       - run: deno publish
         working-directory: core
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install -g npm@latest
+      - run: deno task --cwd scripts build-npm core
+      - run: npm publish --provenance --access public
+        working-directory: core/npm
 
   publish-plugins:
     needs: [lint, test]
@@ -47,6 +55,14 @@ jobs:
       - uses: denoland/setup-deno@v2
       - run: deno publish
         working-directory: plugins
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install -g npm@latest
+      - run: deno task --cwd scripts build-npm plugins
+      - run: npm publish --provenance --access public
+        working-directory: plugins/npm
 
   publish-react:
     needs: [lint, test]
@@ -60,3 +76,11 @@ jobs:
       - uses: denoland/setup-deno@v2
       - run: deno publish
         working-directory: react
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm install -g npm@latest
+      - run: deno task --cwd scripts build-npm react
+      - run: npm publish --provenance --access public
+        working-directory: react/npm

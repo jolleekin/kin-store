@@ -76,9 +76,9 @@ and the React bindings add their own (small) cost on top only when imported.
 
 ### Where do I ask a question or report a bug?
 
-[GitHub Discussions](https://github.com/jolleekin/kin-store/discussions) for
+[GitHub Discussions](https://github.com/kintools-dev/store/discussions) for
 questions and design feedback,
-[Issues](https://github.com/jolleekin/kin-store/issues) for bugs.
+[Issues](https://github.com/kintools-dev/store/issues) for bugs.
 
 ## Non-goals
 
@@ -97,7 +97,7 @@ form submission) is left to a dedicated library. And it's not multi-framework
 yet; `@kintools/store-react` is the only official binding, with no Vue, Svelte,
 or Solid package. If you're interested in Kin Store and want bindings for other
 frameworks, please
-[file an issue](https://github.com/jolleekin/kin-store/issues).
+[file an issue](https://github.com/kintools-dev/store/issues).
 
 Neither `persist` nor `broadcast` does conflict resolution beyond
 last-write-wins, so don't reach for either as a substitute for a CRDT on state

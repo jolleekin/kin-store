@@ -11,7 +11,7 @@ state, each field gets its own `createStore`, and a `derive` store merges them
 for persistence. Kin Store still holds what the _client_ owns (cart contents,
 current step, draft promo code); TanStack Query still holds what the _server_
 owns (catalog, stock, computed pricing, order history). Full source in
-[`examples/checkout-jotai-style-react-query`](https://github.com/jolleekin/kin-store/tree/main/examples/checkout-jotai-style-react-query).
+[`examples/checkout-jotai-style-react-query`](https://github.com/kintools-dev/store/tree/main/examples/checkout-jotai-style-react-query).
 
 ## Why split state at all
 

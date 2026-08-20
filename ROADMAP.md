@@ -3,7 +3,7 @@
 This is a snapshot of where Kin Store is headed, not a committed schedule.
 Priorities shift based on real usage and feedback; there are no target dates.
 Have an opinion on ordering, or something missing? Open a
-[Discussion](https://github.com/jolleekin/kin-store/discussions).
+[Discussion](https://github.com/kintools-dev/store/discussions).
 
 ## In progress / near-term
 
@@ -20,8 +20,8 @@ Have an opinion on ordering, or something missing? Open a
 - Production guides: SSR/RSC, React Native, testing, error handling, plugin
   lifecycle, persistence, multi-store design, code splitting, framework
   compatibility.
-- Fair migration guides from Zustand, Redux Toolkit, Jotai, and TanStack
-  Store, including honest "when Kin Store is the wrong choice" guidance.
+- Fair migration guides from Zustand, Redux Toolkit, Jotai, and TanStack Store,
+  including honest "when Kin Store is the wrong choice" guidance.
 
 ## Distribution and ecosystem
 
@@ -32,20 +32,20 @@ Have an opinion on ordering, or something missing? Open a
 ## Discovery
 
 - Focused landing pages (React state management, SSR state, persistence,
-  TypeScript state management), once benchmarks and migration guides above
-  are in place.
+  TypeScript state management), once benchmarks and migration guides above are
+  in place.
 
 ## Recently shipped
 
 - SSR-safe `persist()`, awaited plugin lifecycle hooks with defined error
-  behavior, hardened `useSelector`, an explicit `set` vs `dispatch` policy,
-  and a `PluginStore` helper to simplify plugin-author-facing generics.
+  behavior, hardened `useSelector`, an explicit `set` vs `dispatch` policy, and
+  a `PluginStore` helper to simplify plugin-author-facing generics.
 - A `broadcast` plugin for cross-tab state sync via `BroadcastChannel`.
-- AI/agent discovery: `llms.txt`/`llms-full.txt` and a raw Markdown mirror
-  of every docs page, `robots.txt` explicitly allowing major AI crawlers,
+- AI/agent discovery: `llms.txt`/`llms-full.txt` and a raw Markdown mirror of
+  every docs page, `robots.txt` explicitly allowing major AI crawlers,
   `sitemap.xml`, distinct per-page descriptions, and an FAQ/non-goals page.
-  Shipped ahead of the benchmarks/migration-guides gating above since none
-  of it depends on unpublished performance claims.
-- Comparison-page framing: the vs Redux/Zustand/MobX sections now lead with
-  Kin Store's own model before naming the other library's cost, instead of
-  opening with competitor critique.
+  Shipped ahead of the benchmarks/migration-guides gating above since none of it
+  depends on unpublished performance claims.
+- Comparison-page framing: the vs Redux/Zustand/MobX sections now lead with Kin
+  Store's own model before naming the other library's cost, instead of opening
+  with competitor critique.

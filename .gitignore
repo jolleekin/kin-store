@@ -22,6 +22,11 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 docs/.vitepress/.temp
 
+# npm build output (dnt)
+core/npm
+plugins/npm
+react/npm
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

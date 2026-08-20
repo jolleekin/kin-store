@@ -7,7 +7,7 @@ description: "A Next.js App Router todo app showing what SSR changes about using
 A todo app on the App Router, demonstrating the two things SSR changes about
 using a store: where the instance lives, and when `persist` is allowed to touch
 `localStorage`. Full source in
-[`examples/todo-redux-style-nextjs`](https://github.com/jolleekin/kin-store/tree/main/examples/todo-redux-style-nextjs).
+[`examples/todo-redux-style-nextjs`](https://github.com/kintools-dev/store/tree/main/examples/todo-redux-style-nextjs).
 
 ## The store
 
