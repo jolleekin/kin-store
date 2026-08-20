@@ -1,4 +1,4 @@
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { lastOrderIdStore, startNewOrder } from "../stores.ts";
 
 export function Confirmation() {
@@ -8,7 +8,8 @@ export function Confirmation() {
     <div className="space-y-4 text-center">
       <div className="text-4xl">✅</div>
       <p className="text-slate-200">
-        Order <span className="font-mono text-pink-400">{lastOrderId}</span>{" "}
+        Order <span className="font-mono text-pink-400">{lastOrderId}</span>
+        {" "}
         placed!
       </p>
       <button

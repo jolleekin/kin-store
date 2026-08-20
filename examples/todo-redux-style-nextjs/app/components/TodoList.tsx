@@ -1,6 +1,6 @@
 "use client";
 
-import { useStore, useStoreContext } from "@kin-store/react";
+import { useStore, useStoreContext } from "@kintools/store-react";
 import type { Todo, TodoStore } from "@/lib/store.ts";
 
 function TodoItem({ item }: { item: Todo }) {

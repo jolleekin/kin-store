@@ -14,8 +14,8 @@ Install the browser extension, then register the plugin. No namespace is
 required because the plugin adds no public methods or reducers:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { devtools } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools } from "@kintools/store-plugins";
 
 const store = withPlugins(0)
   .use({
@@ -29,7 +29,7 @@ const store = withPlugins(0)
 ## Options
 
 | Option | Type     | Default       | Description                                                                                                      |
-| ------- | --------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ------ | -------- | ------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `name` | `string` | `"kin-store"` | Name shown in the extension's instance selector. Use a distinct name per store when registering multiple stores. |
 
 ## Production
@@ -54,14 +54,14 @@ tree-shakes the `devtools` import.
 Every state change is forwarded to the extension automatically.
 
 | Source                         | Action type sent              |
-| -------------------------------- | -------------------------------- |
+| ------------------------------ | ----------------------------- |
 | `store.dispatch.name(...args)` | `"name"` with `payload: args` |
 | `store.set(...)`               | `"@@SET"`                     |
 
 ## Supported panel actions
 
 | Panel action           | Effect on the store                                 |
-| ------------------------ | ------------------------------------------------------ |
+| ---------------------- | --------------------------------------------------- |
 | Jump to state / action | Restores the selected state snapshot                |
 | Reset                  | Restores the initial state (at plugin activation)   |
 | Commit                 | Makes the current state the new rollback baseline   |

@@ -7,7 +7,7 @@ description: "derive composes one or more stores into a lazy, dependency-tracked
 Lazy, dependency-tracked, read-only views composed from one or more stores.
 
 ```ts
-import { derive } from "@kin-store/core";
+import { derive } from "@kintools/store-core";
 ```
 
 `derive` computes a value from one or more stores reactively. Dependencies are
@@ -17,7 +17,7 @@ stays cold (no subscriptions, no caching) until something subscribes to it.
 ## Basic usage
 
 ```ts
-import { createStore, derive } from "@kin-store/core";
+import { createStore, derive } from "@kintools/store-core";
 
 const user = createStore({ name: "Ada", role: "admin" });
 const cart = createStore({ items: [] as string[], total: 0 });
@@ -82,7 +82,7 @@ view.destroy();
 ## Key properties
 
 | Property         | Behavior                                                                                |
-| ---------------- | ----------------------------------------------------------------------------------------- |
+| ---------------- | --------------------------------------------------------------------------------------- |
 | **Auto-tracked** | `get()` registers the dependency. No selector arrays needed.                            |
 | **Lazy**         | Cold when no subscribers. Zero computation cost until something listens.                |
 | **Conditional**  | Branches only subscribe to stores they actually read in a given pass.                   |
@@ -93,7 +93,7 @@ view.destroy();
 `derive` works directly with `useStore`:
 
 ```tsx
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 
 function Summary() {
   const { greeting, itemCount } = useStore(summary);

@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 import { devtools } from "./devtools.ts";
 import type {} from "./devtools.ts";
 

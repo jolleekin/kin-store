@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore } from "../store.ts";
 import { calculatePricing } from "../api.ts";
 
@@ -15,6 +15,6 @@ export function useCartPricing() {
     queryKey: ["pricing", items, promoCode, zip],
     queryFn: () => calculatePricing({ items, promoCode, zip }),
     enabled: items.length > 0,
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
   });
 }

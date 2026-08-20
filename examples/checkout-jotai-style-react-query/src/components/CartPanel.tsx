@@ -1,13 +1,13 @@
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { useCallback } from "react";
 
 import { useProductCatalog } from "../queries/products.ts";
 import { PricingBreakdown } from "./PricingBreakdown.tsx";
 import {
+  applyPromoCode,
   itemsStore,
   promoCodeStore,
   setQuantity,
-  applyPromoCode,
   stepStore,
 } from "../stores.ts";
 

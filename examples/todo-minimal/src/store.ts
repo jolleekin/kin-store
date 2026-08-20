@@ -1,4 +1,4 @@
-import { createStore } from "@kin-store/core";
+import { createStore } from "@kintools/store-core";
 
 export type Filter = "all" | "active" | "done";
 

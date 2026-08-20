@@ -8,7 +8,7 @@ Opt-in structure: methods, reducers, middleware, lifecycle hooks, namespaced
 plugins.
 
 ```ts
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 ```
 
 `withPlugins` upgrades a store (or creates one) with a plugin system. Each
@@ -59,7 +59,7 @@ Plugins can be **namespaced** (`.use(namespace, plugin)`) or **top-level**
 surprises:
 
 ```ts
-import { history, persist } from "@kin-store/plugins";
+import { history, persist } from "@kintools/store-plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use("persist", persist({ key: "todos" }))
@@ -85,8 +85,8 @@ through `store.dispatch.*` — they travel through the full middleware pipeline,
 making every state change observable and traceable.
 
 ```ts
-import { CANCELED, withPlugins } from "@kin-store/core";
-import { history, persist } from "@kin-store/plugins";
+import { CANCELED, withPlugins } from "@kintools/store-core";
+import { history, persist } from "@kintools/store-plugins";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -131,9 +131,9 @@ todoStore.history.undo();
 ## Guarding against race conditions
 
 `dispatch.*` and `methods` don't sequence or cancel async work for you. If
-`fetchTodos` can be called again before the first call resolves, a slower
-first response can land after a faster second one and overwrite it with
-stale data. Guard against it with a request counter:
+`fetchTodos` can be called again before the first call resolves, a slower first
+response can land after a faster second one and overwrite it with stale data.
+Guard against it with a request counter:
 
 ```ts
 methods: (store) => {
@@ -156,9 +156,9 @@ methods: (store) => {
 },
 ```
 
-To cancel the in-flight request itself, rather than just ignoring its
-result, pass an `AbortController`'s `signal` to `fetch` instead, aborting
-the previous controller at the start of each call:
+To cancel the in-flight request itself, rather than just ignoring its result,
+pass an `AbortController`'s `signal` to `fetch` instead, aborting the previous
+controller at the start of each call:
 
 ```ts
 methods: (store) => {
@@ -183,30 +183,30 @@ methods: (store) => {
 
 ## Two tiers of mutation
 
-| Tier         | How                                    | Good fit for                                                 |
-| ------------ | --------------------------------------- | -------------------------------------------------------------- |
-| `dispatch.*` | Routes through the middleware pipeline | Changes you want every plugin to see: logging, undo, guards  |
-| `set`        | Writes state directly, no pipeline     | Simple stores, or changes that don't need the pipeline        |
+| Tier         | How                                    | Good fit for                                                |
+| ------------ | -------------------------------------- | ----------------------------------------------------------- |
+| `dispatch.*` | Routes through the middleware pipeline | Changes you want every plugin to see: logging, undo, guards |
+| `set`        | Writes state directly, no pipeline     | Simple stores, or changes that don't need the pipeline      |
 
 Neither tier is a fallback for the other — pick per store, or per method.
 `methods: (store) => ({...})` with `set` calls only is a complete store on its
 own; `reducers` dispatched via `dispatch.*` is a complete store built the other
-way. A method can also mix both in the same call when part of a change should
-be traceable and part shouldn't.
+way. A method can also mix both in the same call when part of a change should be
+traceable and part shouldn't.
 
 If your team standardizes on one style — e.g. "every mutation goes through
 `dispatch.*`" — hold that convention at your store module's boundary (export
 `dispatch` and your methods, not `set`) rather than expecting the library to
 block direct `set` calls; see
-[Two tiers of mutation](./design-principles.md#two-tiers-of-mutation) in
-Design Principles for the full reasoning.
+[Two tiers of mutation](./design-principles.md#two-tiers-of-mutation) in Design
+Principles for the full reasoning.
 
 ## Canceling a dispatch
 
 Return `CANCELED` from a middleware to abort a dispatch without updating state:
 
 ```ts
-import { CANCELED } from '@kin-store/core';
+import { CANCELED } from '@kintools/store-core';
 
 middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;
@@ -244,7 +244,7 @@ await store.todos.fetch();
 A plugin passed to `.use()` is a plain object with any combination of:
 
 | Field         | Description                                          |
-| ------------- | ------------------------------------------------------ |
+| ------------- | ---------------------------------------------------- |
 | `reducers`    | Pure functions `(state, ...args) => nextState`       |
 | `middleware`  | Factory returning middleware function(s)             |
 | `methods`     | Factory returning methods added to the store         |

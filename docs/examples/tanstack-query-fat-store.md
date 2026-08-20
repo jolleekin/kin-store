@@ -5,31 +5,31 @@ description: "A checkout flow split along ownership lines: one withPlugins store
 # TanStack Query and One Fat Store
 
 A checkout flow that splits state along ownership lines: Kin Store holds what
-the *client* owns (cart contents, current step, draft promo code), TanStack
-Query holds what the *server* owns (catalog, stock, computed pricing, order
+the _client_ owns (cart contents, current step, draft promo code), TanStack
+Query holds what the _server_ owns (catalog, stock, computed pricing, order
 history). This variant keeps the client half as one `withPlugins` store with
 reducers; see
 [TanStack Query and Primitive Stores](/examples/tanstack-query-primitive-stores)
-for the same app built the other way, one `createStore` per field. Full
-source in
+for the same app built the other way, one `createStore` per field. Full source
+in
 [`examples/checkout-redux-style-react-query`](https://github.com/jolleekin/kin-store/tree/main/examples/checkout-redux-style-react-query).
 
 ## Why split state at all
 
-Putting everything in one store, client and server data alike, means
-duplicating whatever caching/refetching/invalidation logic a query library
-already solves, or doing without it. Putting everything in the query library
-means treating pending user input (an unconfirmed cart, a promo code being
-typed) as if it were server data with a cache lifetime. Neither fits well.
-The split used here is: if a page refresh should lose it, it's a query; if it
-should survive one, it's a store.
+Putting everything in one store, client and server data alike, means duplicating
+whatever caching/refetching/invalidation logic a query library already solves,
+or doing without it. Putting everything in the query library means treating
+pending user input (an unconfirmed cart, a promo code being typed) as if it were
+server data with a cache lifetime. Neither fits well. The split used here is: if
+a page refresh should lose it, it's a query; if it should survive one, it's a
+store.
 
 ## The store
 
 ```ts
 // src/store.ts
-import { withPlugins } from "@kin-store/core";
-import { devtools, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools, persist } from "@kintools/store-plugins";
 
 export type CartItem = { productId: string; quantity: number };
 export type Step = "cart" | "checkout" | "confirmation";
@@ -87,22 +87,21 @@ export const checkoutStore = withPlugins(initialState)
 
 Nothing here is server data — no product list, no stock counts, no computed
 totals. Just the cart the shopper is building and where they are in the flow,
-all in one place. It's a plain module-level singleton (a client-only SPA has
-no per-request isolation concern, unlike the [Next.js example](/examples/nextjs)),
+all in one place. It's a plain module-level singleton (a client-only SPA has no
+per-request isolation concern, unlike the [Next.js example](/examples/nextjs)),
 and `persist` means an abandoned cart is still there if they come back later.
 
 ## Feeding a store selection into a query key
 
-`useCartPricing` is a **dependent query**: its inputs come straight out of
-Kin Store, and its query key changes whenever they do, so React Query
-refetches automatically as the cart changes. Pricing math (discounts,
-shipping thresholds, tax) stays server-computed rather than duplicated on the
-client:
+`useCartPricing` is a **dependent query**: its inputs come straight out of Kin
+Store, and its query key changes whenever they do, so React Query refetches
+automatically as the cart changes. Pricing math (discounts, shipping thresholds,
+tax) stays server-computed rather than duplicated on the client:
 
 ```ts
 // src/queries/pricing.ts
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore } from "../store.ts";
 import { calculatePricing } from "../api.ts";
 
@@ -120,14 +119,14 @@ export function useCartPricing() {
 }
 ```
 
-Each field needs its own `useSelector` call, since they all live inside the
-same state object, one store subscription per slice a component cares about.
+Each field needs its own `useSelector` call, since they all live inside the same
+state object, one store subscription per slice a component cares about.
 
 ## Writing back from a mutation
 
-The reverse direction: a mutation's `onSuccess` updates Kin Store (client
-state moves to "confirmation") and invalidates a React Query cache (server
-state refetches) in the same callback:
+The reverse direction: a mutation's `onSuccess` updates Kin Store (client state
+moves to "confirmation") and invalidates a React Query cache (server state
+refetches) in the same callback:
 
 ```ts
 // src/mutations/submit-order.ts
@@ -152,12 +151,12 @@ export function useSubmitOrder() {
 
 ## Driving the UI off the store
 
-The top-level `step` selection is what decides which panel renders — no
-router, no separate page per step:
+The top-level `step` selection is what decides which panel renders — no router,
+no separate page per step:
 
 ```tsx
 // src/App.tsx
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore } from "./store.ts";
 import { ProductCatalog } from "./components/ProductCatalog.tsx";
 import { CartPanel } from "./components/CartPanel.tsx";

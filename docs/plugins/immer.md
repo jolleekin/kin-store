@@ -10,8 +10,8 @@ draft mutations instead of returning new state objects.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { immer } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { immer } from "@kintools/store-plugins";
 
 const store = withPlugins({ count: 0, items: [] as string[] })
   .use(immer({

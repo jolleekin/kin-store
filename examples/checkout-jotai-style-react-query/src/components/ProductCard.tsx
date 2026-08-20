@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { itemsStore, setQuantity } from "../stores.ts";
 import { useInventory } from "../queries/inventory.ts";
 import { money } from "../utils.ts";
@@ -23,17 +23,15 @@ export function ProductCard({ product }: { product: Product }) {
         {stock === undefined
           ? "Checking stock…"
           : outOfStock
-            ? "Out of stock"
-            : `${stock} left`}
+          ? "Out of stock"
+          : `${stock} left`}
       </div>
       <button
         type="button"
         disabled={outOfStock}
         onClick={() => setQuantity(product.id, quantity + 1)}
-        className={
-          "mt-auto px-3 py-1.5 rounded-lg text-white text-sm font-medium cursor-pointer bg-pink-600 " +
-          "hover:bg-pink-500 disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        }
+        className={"mt-auto px-3 py-1.5 rounded-lg text-white text-sm font-medium cursor-pointer bg-pink-600 " +
+          "hover:bg-pink-500 disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"}
       >
         {quantity > 0 ? `Add another (${quantity} in cart)` : "Add to cart"}
       </button>

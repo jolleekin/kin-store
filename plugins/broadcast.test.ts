@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 import { broadcast } from "./broadcast.ts";
 
 type CounterState = { count: number };

@@ -1,10 +1,11 @@
 ---
-description: "The official @kin-store/plugins package: broadcast, devtools, history, immer, and persist, installed together and registered with .use()."
+description: "The official @kintools/store-plugins package: broadcast, devtools, history, immer, and persist, installed together and registered with .use()."
 ---
 
 # Official Plugins
 
-Official plugins for `@kin-store/core`, published as `@kin-store/plugins`.
+Official plugins for `@kintools/store-core`, published as
+`@kintools/store-plugins`.
 
 To learn how to write your own plugin, see
 [Writing Plugins](/guide/writing-plugins).
@@ -14,15 +15,15 @@ To learn how to write your own plugin, see
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kin-store/plugins
+npx jsr add @kintools/store-plugins
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/plugins
+pnpm add jsr:@kintools/store-plugins
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/plugins
+deno add jsr:@kintools/store-plugins
 ```
 
 :::
@@ -30,7 +31,7 @@ deno add jsr:@kin-store/plugins
 ## Available plugins
 
 | Plugin                            | Description                                                  |
-| ---------------------------------- | ---------------------------------------------------------------- |
+| --------------------------------- | ------------------------------------------------------------ |
 | [`broadcast`](/plugins/broadcast) | Syncs state across browser tabs with `BroadcastChannel`      |
 | [`devtools`](/plugins/devtools)   | Connects to the Redux DevTools Extension                     |
 | [`history`](/plugins/history)     | Undo / redo / reset with snapshot history                    |
@@ -44,8 +45,8 @@ namespaced. Namespaced plugins (like `persist` and `history` below) expose their
 methods under their namespace key:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { history, immer, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { history, immer, persist } from "@kintools/store-plugins";
 
 const store = withPlugins({ todos: [] as string[], count: 0 })
   .use("persist", persist({ key: "my-store" }))

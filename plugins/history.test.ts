@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 import { history } from "./history.ts";
 
 function makeStore() {

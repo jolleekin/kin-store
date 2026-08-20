@@ -11,8 +11,8 @@ snapshot.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { history } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { history } from "@kintools/store-plugins";
 
 const store = withPlugins({ count: 0 })
   .use({
@@ -34,7 +34,7 @@ store.history.reset(); // count = 0
 ## Plugin methods
 
 | Method      | Description                                                                |
-| ------------ | ------------------------------------------------------------------------------ |
+| ----------- | -------------------------------------------------------------------------- |
 | `canUndo()` | Returns `true` if there is a past state to undo to                         |
 | `canRedo()` | Returns `true` if there is a future state to redo to                       |
 | `undo()`    | Moves back one step; returns `true` if moved, `false` if already at start  |
@@ -45,7 +45,7 @@ store.history.reset(); // count = 0
 ## Options
 
 | Option  | Type     | Default    | Description                                                  |
-| -------- | --------- | ----------- | ---------------------------------------------------------------- |
+| ------- | -------- | ---------- | ------------------------------------------------------------ |
 | `limit` | `number` | `Infinity` | Max snapshots to keep. When exceeded, the oldest is dropped. |
 
 ```ts

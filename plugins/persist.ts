@@ -5,7 +5,7 @@ import {
   type NestedReducers,
   type PluginStore,
   type StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type PromiseOr<T> = Promise<T> | T;
 

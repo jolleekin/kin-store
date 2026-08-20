@@ -42,8 +42,8 @@ variables, not `TState`.
 A plugin can include middleware that runs on every dispatch:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import type { StorePlugin } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
+import type { StorePlugin } from "@kintools/store-core";
 
 type State = { count: number };
 
@@ -90,7 +90,7 @@ Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
 regardless of whether the plugin is namespaced:
 
 ```ts
-import { getPluginDispatch } from "@kin-store/core";
+import { getPluginDispatch } from "@kintools/store-core";
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);
@@ -111,7 +111,7 @@ import type {
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type LoggerOptions = { prefix?: string };
 type LoggerMethods = { getLogs(): string[] };
@@ -152,9 +152,9 @@ export function logger<
 
 `methods`, `onActivated`, and `onDestroy` each receive `store` already typed
 with this plugin's own reducers merged in (and, outside of `methods`, its own
-methods too, see [Dispatching from methods](#dispatching-from-methods) for
-why `methods` can't see its own plugin's methods). Inline callbacks get this
-for free from `StorePlugin`'s own signatures. If you factor logic out into a
+methods too, see [Dispatching from methods](#dispatching-from-methods) for why
+`methods` can't see its own plugin's methods). Inline callbacks get this for
+free from `StorePlugin`'s own signatures. If you factor logic out into a
 standalone helper function instead, name that store type with `PluginStore`
 rather than reconstructing it from `StoreWithPlugins` yourself:
 
@@ -164,7 +164,7 @@ import type {
   NestedReducers,
   PluginStore,
   StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type CounterReducers<TState> = { bump: (state: TState) => TState };
 
@@ -191,7 +191,13 @@ export function counter<
   TStoreReducers extends NestedReducers<TState>,
   TStoreMethods extends NestedMethods,
   TNamespace extends string | undefined,
->(): StorePlugin<TState, TStoreReducers, TStoreMethods, TNamespace, CounterReducers<TState>> {
+>(): StorePlugin<
+  TState,
+  TStoreReducers,
+  TStoreMethods,
+  TNamespace,
+  CounterReducers<TState>
+> {
   return {
     reducers: { bump: (state) => state },
     methods: (store) => ({ logAndBump: () => logAndBump(store) }),

@@ -5,16 +5,16 @@ description: "A Next.js App Router todo app showing what SSR changes about using
 # Next.js
 
 A todo app on the App Router, demonstrating the two things SSR changes about
-using a store: where the instance lives, and when `persist` is allowed to
-touch `localStorage`. Full source in
+using a store: where the instance lives, and when `persist` is allowed to touch
+`localStorage`. Full source in
 [`examples/todo-redux-style-nextjs`](https://github.com/jolleekin/kin-store/tree/main/examples/todo-redux-style-nextjs).
 
 ## The store
 
 ```ts
 // lib/store.ts
-import { withPlugins } from "@kin-store/core";
-import { immer, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { immer, persist } from "@kintools/store-plugins";
 
 export type Filter = "all" | "active" | "done";
 export type Todo = { id: number; text: string; done: boolean };
@@ -65,8 +65,8 @@ export type TodoStore = ReturnType<typeof createTodoStore>;
 
 It's a factory function, not a module-level singleton. A module-level store
 would be shared across every SSR request handled by the same server process —
-one user's todos leaking into another's response. `createTodoStore()` gives
-each render its own instance instead.
+one user's todos leaking into another's response. `createTodoStore()` gives each
+render its own instance instead.
 
 `persist` is configured with `skipHydration: true` because `localStorage`
 doesn't exist on the server. Hydration is triggered explicitly on the client
@@ -81,7 +81,7 @@ filter they last had open.
 "use client";
 
 import { useEffect, useState } from "react";
-import { StoreProvider } from "@kin-store/react";
+import { StoreProvider } from "@kintools/store-react";
 import { createTodoStore } from "@/lib/store.ts";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -97,9 +97,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 ```
 
 `useState(createTodoStore)` runs the factory once per component instance (not
-once per render), and `StoreProvider` makes that instance available to the
-whole tree via context instead of a module import, which is what lets each
-request get its own store in the first place.
+once per render), and `StoreProvider` makes that instance available to the whole
+tree via context instead of a module import, which is what lets each request get
+its own store in the first place.
 
 ```tsx
 // app/layout.tsx
@@ -143,14 +143,14 @@ export default function Page() {
 
 ## Reading and writing from a component
 
-Client components pull the store out of context with `useStoreContext`, then
-use `useStore`/`useSelector` and `dispatch` as usual:
+Client components pull the store out of context with `useStoreContext`, then use
+`useStore`/`useSelector` and `dispatch` as usual:
 
 ```tsx
 // app/components/TodoList.tsx
 "use client";
 
-import { useStore, useStoreContext } from "@kin-store/react";
+import { useStore, useStoreContext } from "@kintools/store-react";
 import type { Todo, TodoStore } from "@/lib/store.ts";
 
 function TodoItem({ item }: { item: Todo }) {

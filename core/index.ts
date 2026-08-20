@@ -1,5 +1,5 @@
 /**
- * `@kin-store/core` — the framework-agnostic primitives every other Kin
+ * `@kintools/store-core` — the framework-agnostic primitives every other Kin
  * Store package builds on.
  *
  * - {@linkcode createStore} creates a minimal reactive store: `get`, `set`,

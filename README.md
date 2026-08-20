@@ -11,8 +11,8 @@ Start with a plain store. Add structure only when the app earns it.
 
 Most state libraries pick your architecture before you know if the app needs
 one: actions, reducers, selectors, a provider tree, decided on day one. Kin
-Store leaves that decision to you: `set` and `dispatch` are equally
-first-class, not a beginner tier and an advanced one.
+Store leaves that decision to you: `set` and `dispatch` are equally first-class,
+not a beginner tier and an advanced one.
 
 ## Docs
 
@@ -20,18 +20,18 @@ first-class, not a beginner tier and an advanced one.
 
 ## Feature matrix
 
-|                           | **Kin Store** | Zustand | Redux / RTK |  Jotai  |   MobX   |
-| ------------------------- | :-----------: | :-----: | :---------: | :-----: | :------: |
-| Bundle size (React usage) |    2.0 KB     |  389 B  |   17.5 KB   |  4.0 KB | 15.6 KB  |
-| Zero dependencies         |      ✅       |   ✅    |     ❌      |   ✅    |    ✅    |
-| Tiny footprint            |      ✅       |   ✅    |     ❌      |   ✅    |    ❌    |
-| 100% type-safe            |      ✅       |   ⚠️    |     ⚠️      |   ✅    |    ✅    |
-| Low boilerplate           |      ✅       |   ⚠️    |     ❌      |   ⚠️    |    ⚠️    |
-| Linear plugin composition |      ✅       |   ❌    |     ❌      |    —    |    —     |
-| Separate state and logic  |      ✅       |   ❌    |     ✅      |    —    |    ✅    |
-| Opt-in complexity         |      ✅       |   ✅    |     ❌      |   ⚠️    |    ❌    |
-| No hidden magic           |      ✅       |   ✅    |     ✅      |   ✅    |    ❌    |
-| Reactive composition      |      ✅       |   ⚠️    |     ❌      |   ✅    |    ✅    |
+|                           | **Kin Store** | Zustand | Redux / RTK | Jotai  |  MobX   |
+| ------------------------- | :-----------: | :-----: | :---------: | :----: | :-----: |
+| Bundle size (React usage) |    2.0 KB     |  389 B  |   17.5 KB   | 4.0 KB | 15.6 KB |
+| Zero dependencies         |      ✅       |   ✅    |     ❌      |   ✅   |   ✅    |
+| Tiny footprint            |      ✅       |   ✅    |     ❌      |   ✅   |   ❌    |
+| 100% type-safe            |      ✅       |   ⚠️    |     ⚠️      |   ✅   |   ✅    |
+| Low boilerplate           |      ✅       |   ⚠️    |     ❌      |   ⚠️   |   ⚠️    |
+| Linear plugin composition |      ✅       |   ❌    |     ❌      |   —    |    —    |
+| Separate state and logic  |      ✅       |   ❌    |     ✅      |   —    |   ✅    |
+| Opt-in complexity         |      ✅       |   ✅    |     ❌      |   ⚠️   |   ❌    |
+| No hidden magic           |      ✅       |   ✅    |     ✅      |   ✅   |   ❌    |
+| Reactive composition      |      ✅       |   ⚠️    |     ❌      |   ✅   |   ✅    |
 
 ✅ full support · ⚠️ partial or conditional · — not applicable (different model)
 
@@ -43,13 +43,13 @@ Don't believe it?
 [See full comparison with code examples →](https://kinstore.dev/comparison)
 
 Kin Store is pay-per-use: import only `createStore` and pay 231 B. Import
-`withPlugins` and pay 1.0 KB. The plugin bundles (`persist`, `history`,
-`immer`) add only what you import.
+`withPlugins` and pay 1.0 KB. The plugin bundles (`persist`, `history`, `immer`)
+add only what you import.
 
 ## Packages
 
-| Package                                     | Description                                                  |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| [`@kin-store/core`](./core/README.md)       | `createStore`, `withPlugins`, `derive` — the core primitives |
-| [`@kin-store/plugins`](./plugins/README.md) | `persist`, `history`, `immer` — official plugins             |
-| [`@kin-store/react`](./react/README.md)     | `useStore`, `useSelector` — React bindings                   |
+| Package                                          | Description                                                  |
+| ------------------------------------------------ | ------------------------------------------------------------ |
+| [`@kintools/store-core`](./core/README.md)       | `createStore`, `withPlugins`, `derive` — the core primitives |
+| [`@kintools/store-plugins`](./plugins/README.md) | `persist`, `history`, `immer` — official plugins             |
+| [`@kintools/store-react`](./react/README.md)     | `useStore`, `useSelector` — React bindings                   |

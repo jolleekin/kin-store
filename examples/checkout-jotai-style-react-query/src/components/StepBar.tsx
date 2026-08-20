@@ -1,5 +1,5 @@
-import { useStore } from "@kin-store/react";
-import { stepStore, type Step } from "../stores.ts";
+import { useStore } from "@kintools/store-react";
+import { type Step, stepStore } from "../stores.ts";
 
 const STEPS: { label: string; value: Step }[] = [
   { label: "Cart", value: "cart" },
@@ -15,9 +15,9 @@ export function StepBar() {
       {STEPS.map(({ label, value }, i) => (
         <span key={value} className="flex items-center gap-2">
           <span
-            className={
-              step === value ? "text-pink-400 font-semibold" : "text-slate-400"
-            }
+            className={step === value
+              ? "text-pink-400 font-semibold"
+              : "text-slate-400"}
           >
             {i + 1}. {label}
           </span>

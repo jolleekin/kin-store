@@ -1,5 +1,5 @@
 {
-  "name": "@kin-store/core",
+  "name": "@kintools/store-core",
   "version": "0.3.0",
   "license": "MIT",
   "exports": {

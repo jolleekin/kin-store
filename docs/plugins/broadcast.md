@@ -14,8 +14,8 @@ doesn't have to wait for the next change to catch up.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { broadcast } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { broadcast } from "@kintools/store-plugins";
 
 const store = withPlugins({ items: [] as string[] })
   .use({

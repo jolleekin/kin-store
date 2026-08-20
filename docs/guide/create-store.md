@@ -7,7 +7,7 @@ description: "createStore is Kin Store's minimal primitive, a value plus get, se
 The irreducible floor. A value and three methods.
 
 ```ts
-import { createStore } from "@kin-store/core";
+import { createStore } from "@kintools/store-core";
 ```
 
 ## Basic usage
@@ -87,7 +87,7 @@ Wraps a listener so it only fires when a selected slice of the state changes.
 Useful for subscribing to a store outside of React without unnecessary re-runs.
 
 ```ts
-import { listenerWithSelector } from "@kin-store/core";
+import { listenerWithSelector } from "@kintools/store-core";
 
 const store = createStore({ count: 0, name: "Alice" });
 

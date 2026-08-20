@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore } from "../store.ts";
 
 export function Confirmation() {
@@ -9,7 +9,8 @@ export function Confirmation() {
       <div className="text-4xl">✅</div>
       <p className="text-slate-200">
         Order <span className="font-mono text-pink-400">{lastOrderId}</span>
-        {" "}placed!
+        {" "}
+        placed!
       </p>
       <button
         type="button"

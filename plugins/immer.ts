@@ -7,7 +7,7 @@ import type {
   SkipFirst,
   StorePlugin,
   StoreWithPlugins,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 import { type Draft, produce } from "immer";
 
@@ -147,7 +147,7 @@ function asImmerStore<
  *
  * @example Basic counter with Immer reducers
  * ```ts
- * import { immer } from "@kin-store/plugins";
+ * import { immer } from "@kintools/store-plugins";
  *
  * const store = withPlugins({ count: 0, items: [] as string[] }).use(
  *   immer({

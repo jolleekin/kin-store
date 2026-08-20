@@ -1,6 +1,6 @@
 import { createContext, type JSX, type ReactNode, useContext } from "react";
 
-import type { ReadonlyStore } from "@kin-store/core";
+import type { ReadonlyStore } from "@kintools/store-core";
 
 const StoreContext = createContext<ReadonlyStore | null>(null);
 
@@ -38,9 +38,8 @@ export function StoreProvider({
   store: ReadonlyStore;
   children: ReactNode;
 }): JSX.Element {
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={store}>{children}
+  </StoreContext.Provider>;
 }
 
 /**

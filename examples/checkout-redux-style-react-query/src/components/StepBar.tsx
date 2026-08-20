@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore, type Step } from "../store.ts";
 
 const STEPS: { label: string; value: Step }[] = [

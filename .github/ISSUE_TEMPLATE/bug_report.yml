@@ -14,7 +14,7 @@ body:
     attributes:
       label: Package and version
       description: Which package and version are you using?
-      placeholder: "@kin-store/core@0.3.0"
+      placeholder: "@kintools/store-core@0.3.0"
     validations:
       required: true
 

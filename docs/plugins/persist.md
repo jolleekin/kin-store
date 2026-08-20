@@ -11,8 +11,8 @@ accepted, including async ones.
 ## Basic usage
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { persist } from "@kintools/store-plugins";
 
 const store = withPlugins({ count: 0 })
   .use({
@@ -84,7 +84,7 @@ await store.persist.hydrate();
 Once registered under a namespace (e.g. `'persist'`), the plugin exposes:
 
 | Method                    | Description                                                           |
-| -------------------------- | ------------------------------------------------------------------------ |
+| ------------------------- | --------------------------------------------------------------------- |
 | `hydrate()`               | Triggers a hydration; returns the in-progress hydration if one exists |
 | `hasHydrated()`           | Returns `true` if at least one hydration has completed                |
 | `hydrationComplete()`     | Returns a promise that resolves after the current or next hydration   |
@@ -110,7 +110,7 @@ store.history.rebase();
 ## Options
 
 | Option          | Type                         | Default        | Description                         |
-| ---------------- | ----------------------------- | ---------------- | -------------------------------------- |
+| --------------- | ---------------------------- | -------------- | ----------------------------------- |
 | `key`           | `string`                     | required       | Storage key                         |
 | `storage`       | `PersistStorage`             | `localStorage` | Storage backend                     |
 | `selector`      | `(state) => partial`         | full state     | Slice to persist                    |

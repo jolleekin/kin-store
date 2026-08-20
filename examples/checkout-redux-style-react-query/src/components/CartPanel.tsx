@@ -1,4 +1,4 @@
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 import { checkoutStore } from "../store.ts";
 import { useProductCatalog } from "../queries/products.ts";
 import { PricingBreakdown } from "./PricingBreakdown.tsx";

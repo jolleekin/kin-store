@@ -3,7 +3,7 @@ import {
   type NestedMethods,
   type NestedReducers,
   type StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type BroadcastReducers<TState> = {
   /** @internal Replace the entire state with one received from another tab. */

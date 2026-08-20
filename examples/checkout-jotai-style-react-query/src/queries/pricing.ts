@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { itemsStore, promoCodeStore, zipStore } from "../stores.ts";
 import { calculatePricing } from "../api.ts";
 

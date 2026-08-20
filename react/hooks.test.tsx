@@ -3,7 +3,7 @@ import { Window } from "happy-dom";
 import { act, renderHook } from "@testing-library/react";
 import { assertEquals, assertThrows } from "@std/assert";
 
-import { createStore, derive, withPlugins } from "@kin-store/core";
+import { createStore, derive, withPlugins } from "@kintools/store-core";
 import { useSelector, useStore } from "./hooks.ts";
 import { StoreProvider, useStoreContext } from "./context.tsx";
 

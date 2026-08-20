@@ -14,18 +14,18 @@ implemented in each library. Full, working setup in every example.
 
 ## vs Redux / RTK
 
-Kin Store keeps sync and async state changes in one flat model: reducers for
-the state change, methods for orchestration, both fully inferred with no
-manual type exports. Redux splits that same logic across a thunk and a
-slice's `extraReducers`, and needs `RootState`/`AppDispatch` exported by hand
-for types to flow through call sites.
+Kin Store keeps sync and async state changes in one flat model: reducers for the
+state change, methods for orchestration, both fully inferred with no manual type
+exports. Redux splits that same logic across a thunk and a slice's
+`extraReducers`, and needs `RootState`/`AppDispatch` exported by hand for types
+to flow through call sites.
 
 <SideBySide>
 
 ::: code-group
 
 ```ts [Kin Store]
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -133,7 +133,7 @@ store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 **What's different:**
 
 |                     | Kin Store                     | Redux / RTK                               |
-| -------------------- | -------------------------------- | -------------------------------------------- |
+| ------------------- | ----------------------------- | ----------------------------------------- |
 | Async actions       | Method that calls reducers    | `createAsyncThunk` + `extraReducers`      |
 | Middleware          | `(ctx, next) => ...`          | `(api) => (next) => (action) => ...`      |
 | Type exports        | Fully inferred — zero exports | `RootState`, `AppDispatch` manual exports |
@@ -142,7 +142,8 @@ store.dispatch(fetchTodos()); // Returns a thunk, not a plain action.
 
 Redux-Saga's `takeLatest` sequences and cancels concurrent calls to the same
 action for you; Kin Store's `methods` don't, the same tradeoff Zustand makes.
-See [Guarding against race conditions](/guide/with-plugins#guarding-against-race-conditions)
+See
+[Guarding against race conditions](/guide/with-plugins#guarding-against-race-conditions)
 for the manual pattern.
 
 ### Writing extensions
@@ -160,13 +161,13 @@ time and throws on conflict.
 ::: code-group
 
 ```ts [Kin Store plugin]
-import { getPluginDispatch } from "@kin-store/core";
+import { getPluginDispatch } from "@kintools/store-core";
 import type {
   InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type HistoryReducers<TState> = {
   _restore: (state: TState, saved: TState) => TState;
@@ -343,8 +344,8 @@ infers as `any`/`unknown` if you omit the explicit type annotation on
 Kin Store's plugins read top-to-bottom: each `.use()` call adds one capability
 without touching the ones before it. Zustand's middleware nests instead, read
 right-to-left with the outer layer wrapping the inner one, so adding `persist`
-and `devtools` means three levels of nesting. Each middleware can also alter
-the store's own API shape: `immer` changes `setState`'s updater from
+and `devtools` means three levels of nesting. Each middleware can also alter the
+store's own API shape: `immer` changes `setState`'s updater from
 `(state: TState) => TState | Partial<TState>` to
 `(state: WritableNonArrayDraft<TState>) => void`, so what `setState` accepts
 depends on composition order.
@@ -354,8 +355,8 @@ depends on composition order.
 ::: code-group
 
 ```ts [Kin Store]
-import { history, immer, persist } from "@kin-store/plugins";
-import { withPlugins, useSelector } from "@kin-store/react";
+import { history, immer, persist } from "@kintools/store-plugins";
+import { useSelector, withPlugins } from "@kintools/store-react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -474,7 +475,7 @@ function TodoApp() {
 **What's different:**
 
 |                        | Kin Store                                                        | Zustand                                                                    |
-| ------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| ---------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Extension/Plugin model | Declarative object — declares reducers, methods, lifecycle hooks | Imperative wrapper — each layer may alter `set`, `get`, or the store shape |
 | Adding persist         | `.use('persist', persist(...))`                                  | Wrap entire store in `persist(...)`                                        |
 | Adding immer           | `.use('immer', immer())`                                         | Wrap again in `immer(...)`                                                 |
@@ -485,29 +486,30 @@ function TodoApp() {
 
 ### Writing extensions
 
-A Kin Store plugin is a declarative object, so writing one means listing what
-it contributes (reducers, middleware, methods, lifecycle hooks) with no
-runtime patching involved. Every Zustand middleware instead implements the
-`StateCreator` protocol directly: receive `(fn, set, get, api)`, patch `api`
-to add new behavior, then call `fn(set, get, api)` and return its result. An
+A Kin Store plugin is a declarative object, so writing one means listing what it
+contributes (reducers, middleware, methods, lifecycle hooks) with no runtime
+patching involved. Every Zustand middleware instead implements the
+`StateCreator` protocol directly: receive `(fn, set, get, api)`, patch `api` to
+add new behavior, then call `fn(set, get, api)` and return its result. An
 undo/redo middleware built this way needs the full ceremony: a `declare
-module` augmentation for the types, the `history` namespace added by
-mutating `api as any`, and the whole thing cast via `as unknown as History`
-because the type system can't follow the runtime mutation, the same pattern
-every official Zustand middleware uses.
+module`
+augmentation for the types, the `history` namespace added by mutating
+`api as any`, and the whole thing cast via `as unknown as History` because the
+type system can't follow the runtime mutation, the same pattern every official
+Zustand middleware uses.
 
 <SideBySide>
 
 ::: code-group
 
 ```ts [Kin Store plugin]
-import { getPluginDispatch } from "@kin-store/core";
+import { getPluginDispatch } from "@kintools/store-core";
 import type {
   InferActions,
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type HistoryReducers<TState> = {
   _restore: (state: TState, saved: TState) => TState;
@@ -673,7 +675,7 @@ export const history = historyImpl as unknown as History;
 **What's different:**
 
 |                | Kin Store plugin                   | Zustand middleware                                      |
-| --------------- | ------------------------------------- | --------------------------------------------------------- |
+| -------------- | ---------------------------------- | ------------------------------------------------------- |
 | Type extension | `StorePlugin` generics             | `declare module` augmentation + `as unknown as History` |
 | Expose methods | `methods` on a plain object        | Mutate `api as any`                                     |
 | Restore state  | `_restore` reducer — full pipeline | `api.setState(saved, true)` — bypasses all middlewares  |
@@ -709,7 +711,7 @@ atoms can be hard to follow in a debugger.
 ::: code-group
 
 ```ts [Kin Store]
-import { createStore, useStore } from "@kin-store/react";
+import { createStore, useStore } from "@kintools/store-react";
 
 type Todo = { id: number; text: string; done: boolean };
 
@@ -739,7 +741,7 @@ function TodoApp() {
 
   // addTodo and fetchTodos can be accessed directly anywhere.
   // No hooks required.
-  
+
   // ...
 }
 ```
@@ -788,33 +790,33 @@ function TodoApp() {
 **What's different:**
 
 |                            | Kin Store                                            | Jotai                                  |
-| ---------------------------- | ------------------------------------------------------ | ----------------------------------------- |
+| -------------------------- | ---------------------------------------------------- | -------------------------------------- |
 | State model                | Stores (value + subscribers)                         | Atoms                                  |
 | App logic                  | Plain functions / methods                            | Wrapped in atoms                       |
 | Read / write outside React | Yes — `get()`, `set()` and plain functions / methods | `jotai/vanilla` or `getDefaultStore()` |
 | Reactive composition       | `derive((get) => ...)`                               | Derived atoms                          |
-| Mental model               | "think in domains"                                    | "think in atoms"                       |
+| Mental model               | "think in domains"                                   | "think in atoms"                       |
 
 ## vs MobX
 
 Kin Store's reactivity is explicit: state changes only through `set` or a
 dispatched reducer, and a component only re-renders because it called
 `useStore`/`useSelector` itself. MobX takes the opposite approach:
-`makeAutoObservable` silently instruments every property and method on a
-class into observables, computeds, and actions, so mutations just work with
-no subscription code to write. That implicitness costs in two places: async
-methods need `runInAction` to keep the reactive graph consistent, and every
-React component reading observable state needs `observer()`, and forgetting
-either one fails silently, stale data with no error, rather than throwing. At
-15.6 KB gzipped, it's also one of the heaviest libraries in this comparison,
-behind only Redux/RTK.
+`makeAutoObservable` silently instruments every property and method on a class
+into observables, computeds, and actions, so mutations just work with no
+subscription code to write. That implicitness costs in two places: async methods
+need `runInAction` to keep the reactive graph consistent, and every React
+component reading observable state needs `observer()`, and forgetting either one
+fails silently, stale data with no error, rather than throwing. At 15.6 KB
+gzipped, it's also one of the heaviest libraries in this comparison, behind only
+Redux/RTK.
 
 <SideBySide>
 
 ::: code-group
 
 ```ts [Kin Store]
-import { withPlugins, useSelector } from "@kin-store/react";
+import { useSelector, withPlugins } from "@kintools/store-react";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -847,7 +849,9 @@ const todoStore = withPlugins<TodoState>({ todos: [], status: "idle" })
 function TodoApp() {
   const todos = useSelector(todoStore, (s) => s.todos);
   return (
-    <button onClick={() => todoStore.addTodo("Buy groceries")}>Add</button>
+    <button onClick={() => todoStore.addTodo("Buy groceries")}>
+      Add
+    </button>
   );
 }
 ```
@@ -909,7 +913,7 @@ const TodoApp = observer(() => {
 **What's different:**
 
 |                        | Kin Store                        | MobX                                    |
-| ------------------------ | ----------------------------------- | ------------------------------------------ |
+| ---------------------- | -------------------------------- | --------------------------------------- |
 | State mutations        | `set` — no proxy                 | Mutable (proxy-intercepted)             |
 | Async updates          | `set` after `await` — no wrapper | Must wrap in `runInAction`              |
 | Call logic in React    | Direct — no hook needed          | Direct — no hook needed                 |

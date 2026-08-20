@@ -20,7 +20,7 @@
 
 import { type OutputChunk, type Plugin, rolldown } from "rolldown";
 
-const CORE_SPECIFIER = "@kin-store/core";
+const CORE_SPECIFIER = "@kintools/store-core";
 
 function coreEntry(name: string): string {
   return new URL(`../core/${name}`, import.meta.url).pathname.slice(1);
@@ -57,7 +57,7 @@ function virtualEntry(name: string, code: string): Entry {
     plugins: [virtualEntryPlugin(id, code)],
     // Comparison libraries are measured as used from a React app: their own
     // React bindings are included, but the "react" peer dependency itself
-    // is externalized, matching how @kin-store/react's own row excludes it.
+    // is externalized, matching how @kintools/store-react's own row excludes it.
     external: ["react"],
   };
 }
@@ -67,7 +67,7 @@ const entries: Entry[] = [
   { name: "withPlugins", input: coreEntry("with-plugins.ts") },
   { name: "derive", input: coreEntry("derive.ts") },
   {
-    name: "@kin-store/react (bindings only)",
+    name: "@kintools/store-react (bindings only)",
     input: REACT_ENTRY,
     external: [CORE_SPECIFIER, "react"],
   },
@@ -125,7 +125,8 @@ for (const entry of entries) {
   const gzip = await gzipSize(code);
 
   console.log(
-    `${entry.name.padEnd(nameWidth)}  ${formatSize(gzip).padStart(8)
-    } gzip (${formatSize(min)} min)`,
+    `${entry.name.padEnd(nameWidth)}  ${formatSize(gzip).padStart(8)} gzip (${
+      formatSize(min)
+    } min)`,
   );
 }

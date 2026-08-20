@@ -7,28 +7,27 @@ description: "The same TanStack Query checkout flow, built with one createStore 
 The same checkout flow as
 [TanStack Query and One Fat Store](/examples/tanstack-query-fat-store), built
 the other way: instead of one `withPlugins` store holding the whole client
-state, each field gets its own `createStore`, and a `derive` store merges
-them for persistence. Kin Store still holds what the *client* owns (cart
-contents, current step, draft promo code); TanStack Query still holds what
-the *server* owns (catalog, stock, computed pricing, order history). Full
-source in
+state, each field gets its own `createStore`, and a `derive` store merges them
+for persistence. Kin Store still holds what the _client_ owns (cart contents,
+current step, draft promo code); TanStack Query still holds what the _server_
+owns (catalog, stock, computed pricing, order history). Full source in
 [`examples/checkout-jotai-style-react-query`](https://github.com/jolleekin/kin-store/tree/main/examples/checkout-jotai-style-react-query).
 
 ## Why split state at all
 
-Putting everything in one store, client and server data alike, means
-duplicating whatever caching/refetching/invalidation logic a query library
-already solves, or doing without it. Putting everything in the query library
-means treating pending user input (an unconfirmed cart, a promo code being
-typed) as if it were server data with a cache lifetime. Neither fits well.
-The split used here is: if a page refresh should lose it, it's a query; if it
-should survive one, it's a store.
+Putting everything in one store, client and server data alike, means duplicating
+whatever caching/refetching/invalidation logic a query library already solves,
+or doing without it. Putting everything in the query library means treating
+pending user input (an unconfirmed cart, a promo code being typed) as if it were
+server data with a cache lifetime. Neither fits well. The split used here is: if
+a page refresh should lose it, it's a query; if it should survive one, it's a
+store.
 
 ## The stores
 
 ```ts
 // src/stores.ts
-import { createStore, derive } from "@kin-store/core";
+import { createStore, derive } from "@kintools/store-core";
 
 export type CartItem = { productId: string; quantity: number };
 export type Step = "cart" | "checkout" | "confirmation";
@@ -109,12 +108,12 @@ needed.
 
 ## Reading a field
 
-Because each field already lives in its own store, a component that only
-cares about one field just subscribes to that one, no selector required:
+Because each field already lives in its own store, a component that only cares
+about one field just subscribes to that one, no selector required:
 
 ```tsx
 // src/App.tsx
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { stepStore } from "./stores.ts";
 
 export function App() {
@@ -123,9 +122,9 @@ export function App() {
 }
 ```
 
-Compare to the fat-store version's `useSelector(checkoutStore, (s) => s.step)`
-— the selector's job (narrowing a subscription to one field) is already done
-by the store boundary itself.
+Compare to the fat-store version's `useSelector(checkoutStore, (s) => s.step)` —
+the selector's job (narrowing a subscription to one field) is already done by
+the store boundary itself.
 
 ## Feeding stores into a query key
 
@@ -135,7 +134,7 @@ separate stores instead of selecting three fields off of one:
 ```ts
 // src/queries/pricing.ts
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { itemsStore, promoCodeStore, zipStore } from "../stores.ts";
 import { calculatePricing } from "../api.ts";
 

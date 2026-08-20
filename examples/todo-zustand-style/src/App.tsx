@@ -1,4 +1,4 @@
-import { useSelector, useStore } from "@kin-store/react";
+import { useSelector, useStore } from "@kintools/store-react";
 import * as React from "react";
 import { type Filter, type Todo, todoStore } from "./store.ts";
 
@@ -121,9 +121,7 @@ function TodoList() {
 
   return (
     <ul className="flex flex-col gap-2 p-0 list-none m-0">
-      {visible.map((item) => (
-        <TodoItem key={item.id} item={item} />
-      ))}
+      {visible.map((item) => <TodoItem key={item.id} item={item} />)}
     </ul>
   );
 }

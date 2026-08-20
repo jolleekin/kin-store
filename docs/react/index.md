@@ -1,29 +1,29 @@
 ---
-description: "@kin-store/react: useStore and useSelector hooks built on useSyncExternalStore, plus StoreProvider/useStoreContext for dependency injection."
+description: "@kintools/store-react: useStore and useSelector hooks built on useSyncExternalStore, plus StoreProvider/useStoreContext for dependency injection."
 ---
 
 # React
 
-React bindings for `@kin-store/core`.
+React bindings for `@kintools/store-core`.
 
 ## Install
 
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kin-store/react
+npx jsr add @kintools/store-react
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/react
+pnpm add jsr:@kintools/store-react
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/react
+deno add jsr:@kintools/store-react
 ```
 
-`@kin-store/react` depends on and re-exports everything from `@kin-store/core`,
-so no need to install it separately.
+`@kintools/store-react` depends on and re-exports everything from
+`@kintools/store-core`, so no need to install it separately.
 
 :::
 
@@ -33,7 +33,7 @@ Subscribes a component to a store's whole state and re-renders on every state
 change. Backed by `useSyncExternalStore`, safe for concurrent mode.
 
 ```tsx
-import { createStore, useStore } from "@kin-store/react";
+import { createStore, useStore } from "@kintools/store-react";
 
 const counter = createStore(0);
 
@@ -73,7 +73,7 @@ when the selector returns a new object or array reference on every call (e.g.
 `.filter()`, `.map()`, object literals):
 
 ```tsx
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 
 // Only re-renders when `name` changes, not on every state update.
 function UserName(): JSX.Element {
@@ -122,7 +122,7 @@ import {
   useStore,
   useStoreContext,
   withPlugins,
-} from "@kin-store/react";
+} from "@kintools/store-react";
 
 const store = withPlugins(0).use({
   reducers: {

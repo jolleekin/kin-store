@@ -1,6 +1,6 @@
-# @kin-store/core
+# @kintools/store-core
 
-[![JSR @kin-store/core](https://jsr.io/badges/@kin-store/core)](https://jsr.io/@kin-store/core)
+[![JSR @kintools/store-core](https://jsr.io/badges/@kintools/store-core)](https://jsr.io/@kintools/store-core)
 ![License: MIT](https://img.shields.io/badge/License-MIT-166534?style=flat)
 ![Framework-agnostic](https://img.shields.io/badge/Framework--agnostic-166534?style=flat)
 ![Tiny footprint](https://img.shields.io/badge/Tiny%20footprint-166534?style=flat)
@@ -42,16 +42,15 @@ load-bearing, not decorative.
 
 ### **Two tiers of mutation**
 
-`dispatch.*` and `set` are both first-class ways to change state, not a
-primary path and a fallback. `dispatch.*` calls a named reducer through the
-middleware pipeline — traceable, loggable, cancellable. `set` writes state
-directly, no pipeline involved. A store built entirely from `methods` and
-`set` is complete on its own; so is one built entirely from `reducers` and
-`dispatch.*`; a method can mix both when part of a change should be
-traceable and part shouldn't. Teams that want `dispatch.*` to be the only door
-in their own codebase should enforce that at their store module's boundary
-(export `dispatch` and methods, not `set`) rather than expect a built-in
-strict mode.
+`dispatch.*` and `set` are both first-class ways to change state, not a primary
+path and a fallback. `dispatch.*` calls a named reducer through the middleware
+pipeline — traceable, loggable, cancellable. `set` writes state directly, no
+pipeline involved. A store built entirely from `methods` and `set` is complete
+on its own; so is one built entirely from `reducers` and `dispatch.*`; a method
+can mix both when part of a change should be traceable and part shouldn't. Teams
+that want `dispatch.*` to be the only door in their own codebase should enforce
+that at their store module's boundary (export `dispatch` and methods, not `set`)
+rather than expect a built-in strict mode.
 
 ---
 
@@ -67,7 +66,7 @@ A store holds a value and notifies listeners when it changes. Logic lives in
 plain top-level functions.
 
 ```ts
-import { createStore } from "@kin-store/core";
+import { createStore } from "@kintools/store-core";
 
 type TodoState = { todos: string[]; status: "idle" | "loading" };
 
@@ -102,7 +101,7 @@ arrays, no manual wiring, no hidden graph. The derived store stays cold (no
 subscriptions, no caching) until something subscribes to it.
 
 ```ts
-import { createStore, derive } from "@kin-store/core";
+import { createStore, derive } from "@kintools/store-core";
 
 const userStore = createStore({ name: "Ada", role: "admin" });
 const cartStore = createStore({ items: [] as string[], total: 0 });
@@ -151,8 +150,8 @@ When the store grows, move logic inside it using `withPlugins` + `methods`. Each
 `.use()` call adds a plugin — not a new nesting level:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { devtools, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools, persist } from "@kintools/store-plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use("persist", persist({ key: "todos" }))
@@ -182,7 +181,7 @@ Plugins extend the store with zero nesting. Each `.use()` adds one feature —
 never wraps the previous one:
 
 ```ts
-import { history, immer, persist } from "@kin-store/plugins";
+import { history, immer, persist } from "@kintools/store-plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use(immer({
@@ -243,8 +242,8 @@ Take the exact store from Step 3 and swap `methods` + `set` for `reducers` +
 `dispatch`:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { devtools, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools, persist } from "@kintools/store-plugins";
 
 const todoStore = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use("persist", persist({ key: "todos" }))
@@ -275,7 +274,7 @@ plugins trigger internally — and combine with something like `history` for
 undo/redo on the traceable changes:
 
 ```ts
-import { history, persist } from "@kin-store/plugins";
+import { history, persist } from "@kintools/store-plugins";
 
 type Todo = { id: number; text: string; done: boolean };
 type TodoState = { todos: Todo[]; status: "idle" | "loading" | "failed" };
@@ -320,7 +319,7 @@ todoStore.history.undo();
 Return `CANCELED` from a middleware to abort a dispatch without updating state:
 
 ```ts
-import { CANCELED } from "@kin-store/core";
+import { CANCELED } from "@kintools/store-core";
 
 middleware: () => (ctx, next) => {
   if (!auth.isLoggedIn()) return CANCELED;
@@ -363,7 +362,7 @@ Wraps a listener so it only fires when a selected slice of the state changes.
 Useful for subscribing to a store outside of React.
 
 ```ts
-import { listenerWithSelector } from "@kin-store/core";
+import { listenerWithSelector } from "@kintools/store-core";
 
 const store = createStore({ count: 0, name: "Alice" });
 
@@ -420,8 +419,8 @@ variables, not `TState`.
 A plugin can include middleware that runs on every dispatch:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import type { StorePlugin } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
+import type { StorePlugin } from "@kintools/store-core";
 
 type State = { count: number };
 
@@ -459,7 +458,7 @@ Use `getPluginDispatch` to call a plugin's own reducers from `methods`,
 regardless of whether the plugin is namespaced:
 
 ```ts
-import { getPluginDispatch } from "@kin-store/core";
+import { getPluginDispatch } from "@kintools/store-core";
 
 methods: (store, { namespace }) => {
   const dispatch = getPluginDispatch(store, namespace);
@@ -480,7 +479,7 @@ import type {
   NestedMethods,
   NestedReducers,
   StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type LoggerOptions = {
   prefix?: string;

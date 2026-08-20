@@ -1,19 +1,19 @@
-# @kin-store/react
+# @kintools/store-react
 
-React bindings for `@kin-store/core`.
+React bindings for `@kintools/store-core`.
 
 ## Install
 
 ```sh [npm]
-npx jsr add @kin-store/react
+npx jsr add @kintools/store-react
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/react
+pnpm add jsr:@kintools/store-react
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/react
+deno add jsr:@kintools/store-react
 ```
 
 ## `useStore`
@@ -22,7 +22,7 @@ Subscribes a component to a store's whole state and re-renders on every state
 change. Backed by `useSyncExternalStore` — safe for concurrent mode.
 
 ```tsx
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 
 function Counter(): JSX.Element {
   const state = useStore(counterStore);
@@ -35,14 +35,14 @@ instead.
 
 ## `useSelector`
 
-Selects a transformed value from the state and re-renders only when that
-value changes, using an equality function to decide whether it actually
-changed. Defaults to `shallowEqual`, which compares the value one level deep —
-safe even when the selector returns a new object or array reference on every
-call (e.g. `.filter()`, `.map()`, object literals).
+Selects a transformed value from the state and re-renders only when that value
+changes, using an equality function to decide whether it actually changed.
+Defaults to `shallowEqual`, which compares the value one level deep — safe even
+when the selector returns a new object or array reference on every call (e.g.
+`.filter()`, `.map()`, object literals).
 
 ```tsx
-import { useSelector } from "@kin-store/react";
+import { useSelector } from "@kintools/store-react";
 
 // Only re-renders when `name` changes, not on every state update.
 function UserName(): JSX.Element {
@@ -88,8 +88,8 @@ import {
   StoreProvider,
   useSelector,
   useStoreContext,
-} from "@kin-store/react";
-import { withPlugins } from "@kin-store/core";
+} from "@kintools/store-react";
+import { withPlugins } from "@kintools/store-core";
 
 const store = withPlugins({ count: 0 }).use({
   reducers: {

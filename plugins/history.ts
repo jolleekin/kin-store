@@ -3,7 +3,7 @@ import {
   type NestedMethods,
   type NestedReducers,
   type StorePlugin,
-} from "@kin-store/core";
+} from "@kintools/store-core";
 
 type HistoryReducers<TState> = {
   /** @internal Replace the entire state (used by undo/redo/reset). */
@@ -66,7 +66,7 @@ export type HistoryOptions = {
  * Creates a plugin that tracks state history and enables undo / redo / reset.
  *
  * Every state change that goes through the dispatch pipeline is recorded.
- * Changes made via {@linkcode import("@kin-store/core").StoreWithPlugins.set set}
+ * Changes made via {@linkcode import("@kintools/store-core").StoreWithPlugins.set set}
  * (which bypasses the pipeline) are **also** recorded because the plugin
  * subscribes to all state changes via `store.subscribe`.
  *

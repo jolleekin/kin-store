@@ -1,5 +1,5 @@
-import { withPlugins } from "@kin-store/core";
-import { devtools, immer, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools, immer, persist } from "@kintools/store-plugins";
 
 export type Filter = "all" | "active" | "done";
 

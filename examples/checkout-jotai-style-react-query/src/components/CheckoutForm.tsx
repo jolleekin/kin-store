@@ -1,4 +1,4 @@
-import { useStore } from "@kin-store/react";
+import { useStore } from "@kintools/store-react";
 import { useCallback } from "react";
 
 import { itemsStore, stepStore, zipStore } from "../stores.ts";
@@ -59,9 +59,8 @@ export function CheckoutForm() {
         </button>
         <button
           type="button"
-          disabled={
-            !zip || !pricing.data || pricing.isFetching || submitOrder.isPending
-          }
+          disabled={!zip || !pricing.data || pricing.isFetching ||
+            submitOrder.isPending}
           onClick={handlePlaceOrderClick}
           className="flex-1 px-4 py-2 font-semibold rounded-lg bg-pink-600 hover:bg-pink-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white cursor-pointer"
         >

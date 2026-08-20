@@ -101,7 +101,7 @@ markdownStyles: false
 <p class="demo-caption"><span class="step">01</span> Declare</p>
 
 ```ts
-import { createStore } from "@kin-store/core";
+import { createStore } from "@kintools/store-core";
 
 const count = createStore(0);
 
@@ -136,7 +136,7 @@ unsubscribe();
 <p class="demo-caption"><span class="step">03</span> Compose</p>
 
 ```ts
-import { derive } from "@kin-store/core";
+import { derive } from "@kintools/store-core";
 
 const itemCount = derive((get) => get(todos).items.length);
 console.log(itemCount.get()); // 1
@@ -145,8 +145,8 @@ console.log(itemCount.get()); // 1
 <p class="demo-caption"><span class="step">04</span> When the store earns it, add structure</p>
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { devtools, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { devtools, persist } from "@kintools/store-plugins";
 
 const store = withPlugins(todos)
   .use("persist", persist({ key: "todos" }))
@@ -199,17 +199,17 @@ store.dispatch.addTodo("Buy milk"); // Full intellisense, logged in devtools.
 <p class="demo-caption">In React</p>
 
 ```tsx
-import { useSelector, useStore } from "@kin-store/react";
+import { useSelector, useStore } from "@kintools/store-react";
 
 function Counter(): JSX.Element {
-   // Re-renders on every change. Works great for primitive stores.
+  // Re-renders on every change. Works great for primitive stores.
   const value = useStore(count);
-  
+
   return <button onClick={() => count.set((n) => n + 1)}>{value}</button>;
 }
 
 function TodoList(): JSX.Element {
-   // Re-renders only when items changes.
+  // Re-renders only when items changes.
   const items = useSelector(store, (s) => s.items);
 
   return (

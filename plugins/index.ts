@@ -1,6 +1,6 @@
 /**
- * `@kin-store/plugins` — official plugins for `@kin-store/core`'s
- * {@linkcode import("@kin-store/core").withPlugins withPlugins}.
+ * `@kintools/store-plugins` — official plugins for `@kintools/store-core`'s
+ * {@linkcode import("@kintools/store-core").withPlugins withPlugins}.
  *
  * - {@linkcode broadcast} syncs a store's state across browser tabs with
  *   `BroadcastChannel`.

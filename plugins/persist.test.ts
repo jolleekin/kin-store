@@ -1,5 +1,5 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { withPlugins } from "@kin-store/core";
+import { withPlugins } from "@kintools/store-core";
 import { persist, type PersistStorage } from "./persist.ts";
 
 function makeMemoryStorage(): PersistStorage & {

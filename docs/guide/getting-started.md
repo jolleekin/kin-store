@@ -1,5 +1,5 @@
 ---
-description: "Install @kin-store/core, @kin-store/react, or @kin-store/plugins from JSR, write your first store with createStore, and grow it with withPlugins."
+description: "Install @kintools/store-core, @kintools/store-react, or @kintools/store-plugins from JSR, write your first store with createStore, and grow it with withPlugins."
 ---
 
 # Getting Started
@@ -11,41 +11,41 @@ For vanilla projects:
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kin-store/core
+npx jsr add @kintools/store-core
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/core
+pnpm add jsr:@kintools/store-core
 ```
 
 ```sh [yarn]
-yarn add jsr:@kin-store/core
+yarn add jsr:@kintools/store-core
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/core
+deno add jsr:@kintools/store-core
 ```
 
 :::
 
-For React projects (`@kin-store/core` is included):
+For React projects (`@kintools/store-core` is included):
 
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kin-store/react
+npx jsr add @kintools/store-react
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/react
+pnpm add jsr:@kintools/store-react
 ```
 
 ```sh [yarn]
-yarn add jsr:@kin-store/react
+yarn add jsr:@kintools/store-react
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/react
+deno add jsr:@kintools/store-react
 ```
 
 :::
@@ -55,19 +55,19 @@ To add official plugins:
 ::: code-group
 
 ```sh [npm]
-npx jsr add @kin-store/plugins
+npx jsr add @kintools/store-plugins
 ```
 
 ```sh [pnpm]
-pnpm add jsr:@kin-store/plugins
+pnpm add jsr:@kintools/store-plugins
 ```
 
 ```sh [yarn]
-yarn add jsr:@kin-store/plugins
+yarn add jsr:@kintools/store-plugins
 ```
 
 ```sh [deno]
-deno add jsr:@kin-store/plugins
+deno add jsr:@kintools/store-plugins
 ```
 
 :::
@@ -77,7 +77,7 @@ deno add jsr:@kin-store/plugins
 Create a store, write plain functions, done:
 
 ```ts
-import { createStore } from "@kin-store/core";
+import { createStore } from "@kintools/store-core";
 
 type TodoState = { todos: string[]; status: "idle" | "loading" };
 
@@ -95,8 +95,8 @@ console.log(store.get());
 When your app grows, move logic into the store with `.use()`:
 
 ```ts
-import { withPlugins } from "@kin-store/core";
-import { history, persist } from "@kin-store/plugins";
+import { withPlugins } from "@kintools/store-core";
+import { history, persist } from "@kintools/store-plugins";
 
 const store = withPlugins({ todos: [], status: "idle" } as TodoState)
   .use("persist", persist({ key: "todos" }))
